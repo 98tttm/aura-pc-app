@@ -1,21 +1,71 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# ============================================================
+# AuraPC App — ProGuard Rules
+# ============================================================
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep line numbers for crash stack traces
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# ---- Data models (Gson / Retrofit response bodies) --------
+-keep class com.example.aura_pc_app.data.model.** { *; }
+-keep class com.example.aura_pc_app.domain.model.** { *; }
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# ---- Retrofit -----------------------------------------------
+-keepattributes Signature
+-keepattributes Exceptions
+-keep class retrofit2.** { *; }
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
+-dontwarn retrofit2.**
+
+# ---- OkHttp -------------------------------------------------
+-keep class okhttp3.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**
+
+# ---- Gson ---------------------------------------------------
+-keep class com.google.gson.** { *; }
+-dontwarn com.google.gson.**
+
+# ---- Room ---------------------------------------------------
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-keep @androidx.room.Dao class *
+-dontwarn androidx.room.**
+
+# ---- Lifecycle (ViewModel / LiveData) -----------------------
+-keep class * extends androidx.lifecycle.ViewModel { *; }
+-keep class * extends androidx.lifecycle.AndroidViewModel { *; }
+-keepclassmembers class * extends androidx.lifecycle.ViewModel {
+    <init>(...);
+}
+-dontwarn androidx.lifecycle.**
+
+# ---- WorkManager -------------------------------------------
+-keep class * extends androidx.work.Worker
+-keep class * extends androidx.work.ListenableWorker
+-dontwarn androidx.work.**
+
+# ---- Security Crypto / Biometric ---------------------------
+-dontwarn androidx.security.**
+-dontwarn androidx.biometric.**
+
+# ---- Parcelable --------------------------------------------
+-keepclassmembers class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator CREATOR;
+}
+
+# ---- Enums -------------------------------------------------
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# ---- Native methods ----------------------------------------
+-keepclasseswithmembernames class * {
+    native <methods>;
+}

@@ -6,7 +6,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import com.example.aura_pc_app.data.db.dao.UserDao;
 import com.example.aura_pc_app.data.db.entity.UserEntity;
-import com.example.aura_pc_app.util.Constants;
+import com.example.aura_pc_app.utils.Constants;
 
 @Database(entities = {UserEntity.class}, version = 1, exportSchema = true)
 public abstract class AppDatabase extends RoomDatabase {

@@ -4,16 +4,12 @@ plugins {
 
 android {
     namespace = "com.example.aura_pc_app"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.aura_pc_app"
-        minSdk = 26
-        targetSdk = 36
+        minSdk = 24
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 

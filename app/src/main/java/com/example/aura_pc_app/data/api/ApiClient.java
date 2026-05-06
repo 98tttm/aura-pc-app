@@ -1,6 +1,6 @@
 package com.example.aura_pc_app.data.api;
 
-import com.example.aura_pc_app.util.Constants;
+import com.example.aura_pc_app.utils.Constants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;

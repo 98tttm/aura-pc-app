@@ -1,4 +1,4 @@
-package com.example.aura_pc_app.util;
+package com.example.aura_pc_app.utils;
 
 public final class Constants {
     public static final String BASE_URL = "https://api.aurapc.com/v1/";
