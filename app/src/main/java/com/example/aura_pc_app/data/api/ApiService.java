@@ -7,6 +7,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.POST;
+import retrofit2.http.Query; // Thêm thư viện Query cho phân trang
 
 public interface ApiService {
     @POST("auth/login")
@@ -17,4 +18,13 @@ public interface ApiService {
 
     @GET("users/{id}")
     Call<Map<String, Object>> getUserById(@Path("id") int id);
+
+    @GET("products")
+    Call<ProductResponse> getProductsPaginated(
+            @Query("page") int page,
+            @Query("limit") int limit
+    );
+
+    @POST("cart/sync")
+    Call<CartResponse> syncCartToServer(@Body SyncCartRequest request);
 }
