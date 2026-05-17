@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Màu nền trắng mờ (Glass effect) -->
+    <solid android:color="#E6FFFFFF" />
+    <!-- Bo tròn góc 30dp -->
+    <corners android:radius="30dp" />
+    <!-- Viền mỏng để làm nổi bật khối -->
+    <stroke
+        android:width="1dp"
+        android:color="#1A000000" />
+</shape>

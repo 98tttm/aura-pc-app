@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <color name="black">#221815</color>
+    <color name="black_gallery">#0F1111</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="orange_primary">#FF6B00</color>
+    <color name="orange_dark">#C85A00</color>
+    <color name="orange_dark_icon">#FF6B00</color>
+    <color name="orange_light">#F8ECE7</color>
+    <color name="gray_bg">#F7F7F7</color>
+    <color name="gray_text">#B8B8B8</color>
+    <color name="gray_light">#F2F2F2</color>
+    <color name="gray_border">#F0F0F0</color>
+    <color name="divider">#EEEEEE</color>
+    <color name="star_yellow">#FF6B00</color>
+    <color name="price_color">#C85A00</color>
+    <color name="glass_white">#CCFFFFFF</color>
+    <color name="discount_bg">#FDEBEC</color>
+    <color name="discount_text">#E53935</color>
+    <color name="text_gray_label">#8E8E93</color>
+    <color name="border_light">#EAD9D1</color>
+    <color name="border_selected">#FF6B00</color>
+    <color name="section_viewed_bg">#FFF9F8</color>
 
     <!-- Aura Brand Palette -->
     <color name="aura_primary">#1A237E</color>

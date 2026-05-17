@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">aura_pc_app</string>
+    <string name="add_to_cart">Thêm</string>
+    <string name="buy_now">Mua ngay</string>
+    <string name="specs_title">Thông số kỹ thuật</string>
+    <string name="description_title">Mô tả sản phẩm</string>
+    <string name="related_products">Có thể bạn thích</string>
+    <string name="viewed_products">Sản phẩm đã xem</string>
+    <string name="view_all">Xem tất cả</string>
+    <string name="sold_count_format">Đã bán %1$s</string>
+    <string name="reviews_count_format">(%1$d đánh giá)</string>
+    <string name="stock_status_placeholder">Còn hàng (15 sản phẩm)</string>
+    <string name="product_name_placeholder">Aura Nova X9 - Hiệu năng vô cực</string>
+    <string name="product_description_placeholder">Aura Nova X9 là cỗ máy trạm được thiết kế dành cho các nhà sáng tạo nội dung chuyên nghiệp và game thủ đam mê cấu hình khủng. Với khả năng xử lý đồ họa mạnh mẽ...</string>
+    <string name="consult_text">Tư vấn</string>
 </resources>
