@@ -1,20 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">AuraPC</string>
-    <string name="search_hint">Tìm kiếm sản phẩm...</string>
+    <string name="search_hint">Search products...</string>
 
-    <string name="cd_open_menu">Mở menu</string>
-    <string name="cd_search">Tìm kiếm</string>
-    <string name="cd_notifications">Thông báo</string>
-    <string name="cd_filter_products">Lọc sản phẩm</string>
-    <string name="cd_open_filters">Mở bộ lọc</string>
-    <string name="cd_product_image_acer_nitro_v16s">Laptop Gaming Acer Nitro V 16S</string>
-    <string name="cd_add_to_cart">Thêm vào giỏ hàng</string>
+    <string name="cd_open_menu">Open menu</string>
+    <string name="cd_search">Search</string>
+    <string name="cd_notifications">Notifications</string>
+    <string name="cd_filter_products">Filter products</string>
+    <string name="cd_open_filters">Open filters</string>
+    <string name="cd_product_image_acer_nitro_v16s">Acer Nitro V 16S gaming laptop</string>
+    <string name="cd_add_to_cart">Add to cart</string>
 
-    <string name="filter_all">Tất cả</string>
-    <string name="filter_best_seller">Bán chạy</string>
-    <string name="filter_good_price">Giá tốt</string>
+    <string name="filter_all">All</string>
+    <string name="filter_best_seller">Best sellers</string>
+    <string name="filter_good_price">Best deals</string>
     <string name="filter_gaming">Gaming</string>
-    <string name="filter_office">Văn phòng</string>
+    <string name="filter_office">Office</string>
 
     <string name="nav_home">Home</string>
     <string name="nav_categories">Categories</string>

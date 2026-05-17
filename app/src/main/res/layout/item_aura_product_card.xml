@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="362dp"
+    android:background="@drawable/bg_product_card"
+    android:clipToOutline="true"
+    android:elevation="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="118dp"
+            android:padding="8dp">
+
+            <ImageView
+                android:id="@+id/productImage"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_laptop_clip"
+                android:clipToOutline="true"
+                android:contentDescription="@string/cd_product_image_acer_nitro_v16s"
+                android:scaleType="centerCrop"
+                android:src="@drawable/aura_laptop" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="4dp">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_star" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false"
+                    android:text="@string/product_rating"
+                    android:textColor="@color/aura_ink"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/product_review_count"
+                    android:textColor="@color/aura_review"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/productTitle"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="2dp"
+                android:text="@string/product_title_acer_nitro_v16s"
+                android:textColor="@color/aura_ink"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="2dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="16dp"
+                    android:background="@drawable/bg_spec_badge"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/product_spec_gpu_rtx_4060"
+                    android:textColor="@color/aura_muted"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_spec_badge"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:text="@string/product_spec_ram_16gb"
+                    android:textColor="@color/aura_muted"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="96dp"
+                android:layout_marginTop="6dp"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|start"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/oldPriceText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:alpha="0.55"
+                        android:includeFontPadding="false"
+                        android:text="@string/product_old_price_acer_nitro_v16s"
+                        android:textColor="@color/aura_muted"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="34dp"
+                        android:fontFamily="sans-serif-bold"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:singleLine="true"
+                        android:text="@string/product_price_acer_nitro_v16s"
+                        android:textColor="@color/aura_orange"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/productBuyButton"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="6dp"
+                    android:background="@drawable/bg_dark_circle"
+                    android:contentDescription="@string/cd_add_to_cart"
+                    android:elevation="8dp"
+                    android:padding="9dp"
+                    android:scaleType="center"
+                    android:src="@drawable/icon"
+                    android:translationZ="2dp" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="23dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_discount_badge"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/product_discount_15"
+        android:textColor="@color/aura_white"
+        android:textSize="12sp" />
+</FrameLayout>
