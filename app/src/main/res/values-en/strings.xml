@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AuraPC</string>
+    <string name="search_hint">Search products...</string>
+
+    <string name="cd_open_menu">Open menu</string>
+    <string name="cd_search">Search</string>
+    <string name="cd_notifications">Notifications</string>
+    <string name="cd_filter_products">Filter products</string>
+    <string name="cd_open_filters">Open filters</string>
+    <string name="cd_product_image_acer_nitro_v16s">Acer Nitro V 16S gaming laptop</string>
+    <string name="cd_add_to_cart">Add to cart</string>
+
+    <string name="filter_all">All</string>
+    <string name="filter_best_seller">Best sellers</string>
+    <string name="filter_good_price">Best deals</string>
+    <string name="filter_gaming">Gaming</string>
+    <string name="filter_office">Office</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_categories">Categories</string>
+    <string name="nav_cart">Cart</string>
+    <string name="nav_blog">Blog</string>
+    <string name="nav_profile">Profile</string>
+
+    <string name="product_rating">4.8</string>
+    <string name="product_review_count">(124)</string>
+    <string name="product_title_acer_nitro_v16s">Laptop Gaming\nAcer Nitro V 16S</string>
+    <string name="product_spec_gpu_rtx_4060">RTX 4060</string>
+    <string name="product_spec_ram_16gb">16GB RAM</string>
+    <string name="product_old_price_acer_nitro_v16s">28.990.000đ</string>
+    <string name="product_price_acer_nitro_v16s">24.590.000đ</string>
+    <string name="product_discount_15">-15%</string>
+</resources>

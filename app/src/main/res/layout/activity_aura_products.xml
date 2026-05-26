@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/aura_white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:background="@color/aura_white"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
+
+            <ImageButton
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_open_menu"
+                android:padding="8dp"
+                android:src="@drawable/ic_menu" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="28dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="@string/app_name"
+                android:textColor="@color/aura_black"
+                android:textSize="20sp" />
+
+            <ImageButton
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_search"
+                android:padding="8dp"
+                android:src="@drawable/ic_search" />
+
+            <FrameLayout
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="16dp">
+
+                <ImageButton
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/cd_notifications"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_bell" />
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_notify_dot" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:fillViewport="false"
+            android:overScrollMode="never"
+            android:paddingBottom="146dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="12dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_search_pill"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="17dp"
+                    android:paddingEnd="8dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_search_muted" />
+
+                    <EditText
+                        android:id="@+id/searchInput"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:hint="@string/search_hint"
+                        android:includeFontPadding="false"
+                        android:inputType="text"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:singleLine="true"
+                        android:textColor="@color/aura_ink"
+                        android:textColorHint="@color/aura_placeholder"
+                        android:textSize="16sp" />
+
+                    <ImageButton
+                        android:id="@+id/searchFilterButton"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/bg_dark_circle"
+                        android:contentDescription="@string/cd_filter_products"
+                        android:elevation="7dp"
+                        android:padding="10dp"
+                        android:src="@drawable/filter"
+                        android:translationZ="2dp" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="16dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/AuraChip"
+                            android:background="@drawable/bg_chip_active"
+                            android:text="@string/filter_all"
+                            android:textColor="@color/aura_white" />
+
+                        <TextView
+                            style="@style/AuraChip"
+                            android:layout_marginStart="16dp"
+                            android:text="@string/filter_best_seller" />
+
+                        <TextView
+                            style="@style/AuraChip"
+                            android:layout_marginStart="16dp"
+                            android:text="@string/filter_good_price" />
+
+                        <TextView
+                            style="@style/AuraChip"
+                            android:layout_marginStart="16dp"
+                            android:text="@string/filter_gaming" />
+
+                        <TextView
+                            style="@style/AuraChip"
+                            android:layout_marginStart="16dp"
+                            android:background="@drawable/bg_chip_subtle"
+                            android:text="@string/filter_office" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <GridLayout
+                    android:id="@+id/productGrid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:alignmentMode="alignBounds"
+                    android:columnCount="2"
+                    android:columnOrderPreserved="false"
+                    android:gravity="center_horizontal"
+                    android:rowCount="4"
+                    android:useDefaultMargins="false">
+
+                    <FrameLayout style="@style/AuraProductGridItemLeft">
+                        <include layout="@layout/item_aura_product_card" />
+                    </FrameLayout>
+
+                    <FrameLayout style="@style/AuraProductGridItemRight">
+                        <include layout="@layout/item_aura_product_card" />
+                    </FrameLayout>
+
+                    <FrameLayout style="@style/AuraProductGridItemLeft">
+                        <include layout="@layout/item_aura_product_card" />
+                    </FrameLayout>
+
+                    <FrameLayout style="@style/AuraProductGridItemRight">
+                        <include layout="@layout/item_aura_product_card" />
+                    </FrameLayout>
+
+                    <FrameLayout style="@style/AuraProductGridItemLeft">
+                        <include layout="@layout/item_aura_product_card" />
+                    </FrameLayout>
+
+                    <FrameLayout style="@style/AuraProductGridItemRight">
+                        <include layout="@layout/item_aura_product_card" />
+                    </FrameLayout>
+
+                    <FrameLayout style="@style/AuraProductGridItemLeft">
+                        <include layout="@layout/item_aura_product_card" />
+                    </FrameLayout>
+
+                    <FrameLayout style="@style/AuraProductGridItemRight">
+                        <include layout="@layout/item_aura_product_card" />
+                    </FrameLayout>
+                </GridLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="116dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="18dp">
+
+                    <ProgressBar
+                        android:id="@+id/loadingProgress"
+                        android:layout_width="32dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:indeterminate="true"
+                        android:indeterminateTint="@color/aura_orange" />
+                </FrameLayout>
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/contextualFab"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="128dp"
+        android:background="@drawable/bg_dark_circle"
+        android:contentDescription="@string/cd_open_filters"
+        android:elevation="14dp"
+        android:paddingStart="18dp"
+        android:paddingTop="22dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="22dp"
+        android:src="@drawable/filter"
+        android:translationZ="3dp" />
+
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="350dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_bottom_nav"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:elevation="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="35dp"
+        android:paddingTop="17dp"
+        android:paddingEnd="35dp"
+        android:paddingBottom="17dp">
+
+        <LinearLayout
+            style="@style/AuraBottomNavItem"
+            android:alpha="0.6">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="18dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_home" />
+
+            <TextView
+                style="@style/AuraBottomNavText"
+                android:text="@string/nav_home" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="19dp"
+            android:layout_height="1dp" />
+
+        <LinearLayout
+            style="@style/AuraBottomNavItem"
+            android:alpha="0.6">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_categories"
+                android:tint="@color/aura_nav_muted" />
+
+            <TextView
+                style="@style/AuraBottomNavText"
+                android:text="@string/nav_categories" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="19dp"
+            android:layout_height="1dp" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:clipToPadding="false">
+
+            <LinearLayout
+                style="@style/AuraBottomNavItem"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_cart"
+                    android:tint="@color/aura_orange" />
+
+                <TextView
+                    style="@style/AuraBottomNavText"
+                    android:text="@string/nav_cart"
+                    android:textColor="@color/aura_orange" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="4dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="-3dp"
+                android:background="@drawable/bg_nav_active_dot" />
+        </FrameLayout>
+
+        <Space
+            android:layout_width="19dp"
+            android:layout_height="1dp" />
+
+        <LinearLayout
+            style="@style/AuraBottomNavItem">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_blog" />
+
+            <TextView
+                style="@style/AuraBottomNavText"
+                android:text="@string/nav_blog"
+                android:textColor="#FF9E9E9E" />
+        </LinearLayout>
+
+        <Space
+            android:layout_width="19dp"
+            android:layout_height="1dp" />
+
+        <LinearLayout
+            style="@style/AuraBottomNavItem"
+            android:alpha="0.6">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_profile" />
+
+            <TextView
+                style="@style/AuraBottomNavText"
+                android:text="@string/nav_profile" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

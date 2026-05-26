@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AuraChip">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:background">@drawable/bg_chip_default</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:textColor">@color/aura_muted</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="AuraProductGridItemLeft">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">362dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:layout_marginBottom">14dp</item>
+        <item name="android:layout_columnWeight">1</item>
+    </style>
+
+    <style name="AuraProductGridItemRight">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">362dp</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginBottom">14dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:translationY">12dp</item>
+    </style>
+
+    <style name="AuraBottomNavItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="AuraBottomNavIcon">
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:contentDescription">@null</item>
+    </style>
+
+    <style name="AuraBottomNavText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">12dp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:textColor">@color/aura_nav_muted</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+</resources>

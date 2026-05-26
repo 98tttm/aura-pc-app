@@ -31,4 +31,20 @@
     <color name="aura_error">#B00020</color>
     <color name="aura_on_primary">#FFFFFF</color>
     <color name="aura_coin_gold">#FFD700</color>
+
+    <!-- AuraPC Figma mobile product listing -->
+    <color name="aura_white">#FFFFFFFF</color>
+    <color name="aura_black">#FF000000</color>
+    <color name="aura_ink">#FF261812</color>
+    <color name="aura_muted">#FF5A4136</color>
+    <color name="aura_nav_muted">#FF5F5E5E</color>
+    <color name="aura_orange">#FFFF6B00</color>
+    <color name="aura_orange_dot">#FFFD761A</color>
+    <color name="aura_soft_orange">#FFFFF1EB</color>
+    <color name="aura_soft_orange_strong">#FFFEE3D8</color>
+    <color name="aura_line">#FFE9ECEF</color>
+    <color name="aura_search_border">#33E2BFB0</color>
+    <color name="aura_glass">#B3FFFFFF</color>
+    <color name="aura_review">#995A4136</color>
+    <color name="aura_placeholder">#805A4136</color>
 </resources>
