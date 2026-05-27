@@ -19,6 +19,7 @@ import com.example.aura_pc_app.adapter.RelatedProductAdapter;
 import com.example.aura_pc_app.adapter.SpecAdapter;
 import com.example.aura_pc_app.adapter.ViewedProductAdapter;
 import com.example.aura_pc_app.domain.repository.mock.MockData;
+import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.domain.model.Product;
 
 import java.util.Locale;
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView thumbnailRecyclerView, specsRecyclerView, relatedRecyclerView, viewedRecyclerView;
     private TextView productName, ratingText, soldCount, reviewCount, currentPrice, oldPrice, discountBadge, productDescription;
     private ImageView mainProductImage, btnFavorite;
-    private android.view.View btnConsult, btnAddToCart, btnBuyNow, bottomNavCard;
+    private android.view.View btnConsult, btnAddToCart, btnBuyNow;
     private boolean isFavorite = false;
 
     @Override
@@ -45,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         loadData();
+        
+        // Initialize Bottom Navigation
+        BottomNavigationHelper.setup(this, BottomNavigationHelper.TAB_HOME);
     }
 
     private void initViews() {
@@ -61,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         btnConsult = findViewById(R.id.btnConsult);
         btnAddToCart = findViewById(R.id.btnAddToCart);
         btnBuyNow = findViewById(R.id.btnBuyNow);
-        bottomNavCard = findViewById(R.id.bottomNavCard);
 
         thumbnailRecyclerView = findViewById(R.id.thumbnailRecyclerView);
         specsRecyclerView = findViewById(R.id.specsRecyclerView);
@@ -92,10 +95,6 @@ public class MainActivity extends AppCompatActivity {
 
         btnBuyNow.setOnClickListener(v -> {
             android.widget.Toast.makeText(this, "Đang chuyển đến trang thanh toán", android.widget.Toast.LENGTH_SHORT).show();
-        });
-
-        bottomNavCard.setOnClickListener(v -> {
-            android.widget.Toast.makeText(this, "Chức năng thanh điều hướng đang phát triển", android.widget.Toast.LENGTH_SHORT).show();
         });
     }
 

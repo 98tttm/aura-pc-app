@@ -31,4 +31,22 @@
     <string name="product_old_price_acer_nitro_v16s">28.990.000đ</string>
     <string name="product_price_acer_nitro_v16s">24.590.000đ</string>
     <string name="product_discount_15">-15%</string>
+
+    <!-- Cart Screen -->
+    <string name="cart_title">Giỏ hàng của bạn</string>
+    <string name="cart_item_count">2 sản phẩm trong giỏ</string>
+    <string name="cart_coupon_hint">Nhập mã giảm giá</string>
+    <string name="cart_apply">Áp dụng</string>
+    <string name="cart_summary_title">Tóm tắt đơn hàng</string>
+    <string name="cart_subtotal">Tạm tính</string>
+    <string name="cart_shipping">Phí vận chuyển</string>
+    <string name="cart_shipping_free">Miễn phí</string>
+    <string name="cart_total">Tổng cộng</string>
+    <string name="cart_checkout">Thanh toán ngay</string>
+    <string name="cart_recommended">Sản phẩm mua cùng</string>
+    <string name="cart_see_all">Xem tất cả</string>
+    <string name="cart_dummy_product_name">Aura Obsidian Pro X</string>
+    <string name="cart_dummy_product_specs">Intel i9, 64GB RAM, RTX 4090</string>
+    <string name="cart_dummy_price">85.000.000đ</string>
+    <string name="cart_dummy_total_price">100.500.000đ</string>
 </resources>

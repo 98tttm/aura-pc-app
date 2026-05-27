@@ -45,6 +45,25 @@
     <color name="aura_line">#FFE9ECEF</color>
     <color name="aura_search_border">#33E2BFB0</color>
     <color name="aura_glass">#B3FFFFFF</color>
-    <color name="aura_review">#995A4136</color>
-    <color name="aura_placeholder">#805A4136</color>
+    <!-- Premium Palette -->
+    <color name="premium_orange_start">#FF6B00</color>
+    <color name="premium_orange_end">#C85A00</color>
+    <color name="premium_glass_white">#CCFFFFFF</color>
+    <color name="premium_glass_border">#66FFFFFF</color>
+    <color name="premium_nav_inactive">#B8B8B8</color>
+    <color name="premium_nav_active">#FF6B00</color>
+
+    <!-- Checkout Premium Palette -->
+    <color name="checkout_bg">#FAFAFA</color>
+    <color name="checkout_dark_brown">#2B170F</color>
+    <color name="checkout_border">#F1DDD3</color>
+    <color name="checkout_soft_peach">#FDF5F1</color>
+    <color name="checkout_gray">#8E8E8E</color>
+    <color name="checkout_gradient_start">#FF7A00</color>
+    <color name="checkout_gradient_end">#B45300</color>
+    <color name="checkout_blue">#1E88E5</color>
+
+    <!-- Missing resources for build fix -->
+    <color name="aura_placeholder">#E0E0E0</color>
+    <color name="aura_review">#FFD700</color>
 </resources>

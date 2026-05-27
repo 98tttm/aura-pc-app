@@ -16,12 +16,11 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- Product Image -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="120dp"
-            app:cardBackgroundColor="#F7F7F7"
-            app:cardCornerRadius="12dp"
+            app:cardBackgroundColor="@color/black_gallery"
+            app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
 
@@ -29,9 +28,20 @@
                 android:id="@+id/productImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="12dp"
-                android:scaleType="centerInside"
+                android:scaleType="centerCrop"
                 android:src="@drawable/product_case" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_discount_badge"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="2dp"
+                android:text="NEW"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:textStyle="bold" />
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Product Name -->
