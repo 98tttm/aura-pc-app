@@ -8,21 +8,22 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.card.MaterialCardView;
 import com.example.aura_pc_app.R;
 
 import java.util.List;
 
 public class ProductImageAdapter extends RecyclerView.Adapter<ProductImageAdapter.ViewHolder> {
-    private List<Integer> images;
+    private List<String> images;
     private int selectedPosition = 0;
     private OnImageClickListener listener;
 
     public interface OnImageClickListener {
-        void onImageClick(int imageRes);
+        void onImageClick(String imageUrl);
     }
 
-    public ProductImageAdapter(List<Integer> images) {
+    public ProductImageAdapter(List<String> images) {
         this.images = images;
     }
 
@@ -39,7 +40,11 @@ public class ProductImageAdapter extends RecyclerView.Adapter<ProductImageAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.imageView.setImageResource(images.get(position));
+        // Load image URL using Glide
+        Glide.with(holder.itemView.getContext())
+                .load(images.get(position))
+                .placeholder(R.drawable.product_case)
+                .into(holder.imageView);
         
         if (selectedPosition == position) {
             holder.cardView.setStrokeWidth(4); // Thick border

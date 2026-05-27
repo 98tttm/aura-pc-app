@@ -13,7 +13,7 @@ public interface ApiService {
     Call<Map<String, Object>> login(@Body Map<String, String> credentials);
 
     @GET("products")
-    Call<List<Map<String, Object>>> getProducts();
+    Call<Map<String, Object>> getProducts();
 
     @GET("users/{id}")
     Call<Map<String, Object>> getUserById(@Path("id") int id);
