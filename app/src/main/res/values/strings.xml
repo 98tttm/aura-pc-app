@@ -62,4 +62,15 @@
     <string name="product_name_placeholder">Aura Nova X9 - Hiệu năng vô cực</string>
     <string name="product_description_placeholder">Aura Nova X9 là cỗ máy trạm được thiết kế dành cho các nhà sáng tạo nội dung chuyên nghiệp và game thủ đam mê cấu hình khủng. Với khả năng xử lý đồ họa mạnh mẽ...</string>
     <string name="consult_text">Tư vấn</string>
+
+    <!-- MOB-002 — Network & Auth strings -->
+    <string name="error_network">Không thể kết nối mạng. Vui lòng kiểm tra kết nối.</string>
+    <string name="error_server">Máy chủ gặp sự cố. Vui lòng thử lại sau.</string>
+    <string name="error_unauthorized">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</string>
+    <string name="error_unknown">Đã xảy ra lỗi không xác định.</string>
+    <string name="msg_token_saved">Token đã được lưu an toàn</string>
+    <string name="msg_token_cleared">Đã xóa toàn bộ phiên đăng nhập</string>
+    <string name="msg_token_refreshed">Token đã được làm mới thành công</string>
+    <string name="label_loading">Đang tải…</string>
 </resources>
+

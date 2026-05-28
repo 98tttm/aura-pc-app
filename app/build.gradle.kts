@@ -37,6 +37,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -78,12 +79,17 @@ dependencies {
     // MPAndroidChart
     implementation(libs.mpandroidchart)
 
+    // Glide for image loading from URL
+    implementation(libs.glide)
+    annotationProcessor(libs.glide.compiler)
+
     // Firebase FCM — add google-services.json and apply plugin first:
     // plugins { id("com.google.gms.google-services") }
     // implementation(platform(libs.firebase.bom))
     // implementation("com.google.firebase:firebase-messaging")
 
     testImplementation(libs.junit)
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }

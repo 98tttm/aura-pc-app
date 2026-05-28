@@ -18,7 +18,7 @@ public class UserRepository {
     public UserRepository(Application application) {
         AppDatabase db = AppDatabase.getInstance(application);
         userDao = db.userDao();
-        apiService = ApiClient.getInstance().getApiService();
+        apiService = ApiClient.getInstance(application).getApiService();
         executor = Executors.newSingleThreadExecutor();
     }
 
