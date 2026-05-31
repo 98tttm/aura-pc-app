@@ -17,11 +17,15 @@
     <string name="filter_gaming">Gaming</string>
     <string name="filter_office">Văn phòng</string>
 
-    <string name="nav_home">Home</string>
-    <string name="nav_categories">Categories</string>
-    <string name="nav_cart">Cart</string>
-    <string name="nav_blog">Blog</string>
-    <string name="nav_profile">Profile</string>
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_categories">Danh mục</string>
+    <string name="nav_cart">Giỏ hàng</string>
+    <string name="nav_blog">Tin tức</string>
+    <string name="nav_profile">Cá nhân</string>
+    <string name="home_title">Trang chủ AuraPC</string>
+    <string name="home_subtitle">Chào mừng bạn đến trải nghiệm mua sắm cao cấp.</string>
+    <string name="blog_screen_title">Tin tức</string>
+    <string name="profile_screen_title">Cá nhân</string>
 
     <string name="product_rating">4.8</string>
     <string name="product_review_count">(124)</string>
@@ -49,4 +53,77 @@
     <string name="cart_dummy_product_specs">Intel i9, 64GB RAM, RTX 4090</string>
     <string name="cart_dummy_price">85.000.000đ</string>
     <string name="cart_dummy_total_price">100.500.000đ</string>
+
+    <!-- Product Detail -->
+    <string name="add_to_cart">Thêm</string>
+    <string name="buy_now">Mua ngay</string>
+    <string name="specs_title">Thông số kỹ thuật</string>
+    <string name="description_title">Mô tả sản phẩm</string>
+    <string name="related_products">Có thể bạn thích</string>
+    <string name="viewed_products">Sản phẩm đã xem</string>
+    <string name="view_all">Xem tất cả</string>
+    <string name="sold_count_format">Đã bán %1$s</string>
+    <string name="reviews_count_format">(%1$d đánh giá)</string>
+    <string name="stock_status_placeholder">Còn hàng (15 sản phẩm)</string>
+    <string name="product_name_placeholder">Aura Nova X9 - Hiệu năng vô cực</string>
+    <string name="product_description_placeholder">Aura Nova X9 là cỗ máy trạm được thiết kế dành cho các nhà sáng tạo nội dung chuyên nghiệp và game thủ đam mê cấu hình khủng. Với khả năng xử lý đồ họa mạnh mẽ...</string>
+    <string name="consult_text">Tư vấn</string>
+
+    <!-- Network & Auth -->
+    <string name="error_network">Không thể kết nối mạng. Vui lòng kiểm tra kết nối.</string>
+    <string name="error_server">Máy chủ gặp sự cố. Vui lòng thử lại sau.</string>
+    <string name="error_unauthorized">Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.</string>
+    <string name="error_unknown">Đã xảy ra lỗi không xác định.</string>
+    <string name="msg_token_saved">Token đã được lưu an toàn</string>
+    <string name="msg_token_cleared">Đã xóa toàn bộ phiên đăng nhập</string>
+    <string name="msg_token_refreshed">Token đã được làm mới thành công</string>
+    <string name="label_loading">Đang tải...</string>
+
+    <!-- SĐT + OTP Login -->
+    <string name="login_title">Chào mừng trở lại</string>
+    <string name="login_subtitle">Đăng nhập để tiếp tục trải nghiệm mua sắm đồ công nghệ</string>
+    <string name="phone_hint">000 000 000</string>
+    <string name="btn_send_otp">Đăng nhập</string>
+    <string name="otp_title">Xác thực OTP</string>
+    <string name="otp_subtitle">Mã OTP đã được gửi đến số điện thoại %1$s</string>
+    <string name="otp_hint">000000</string>
+    <string name="btn_verify_otp">Xác nhận</string>
+    <string name="otp_countdown">Gửi lại mã sau %1$02d:%2$02d</string>
+    <string name="otp_countdown_text">Gửi lại mã sau %1$s</string>
+    <string name="btn_resend_otp">Gửi lại OTP</string>
+    <string name="error_invalid_phone">Số điện thoại không hợp lệ</string>
+    <string name="error_invalid_otp">Mã OTP không hợp lệ (cần đúng 6 chữ số)</string>
+    <string name="error_request_otp_failed">Yêu cầu gửi OTP thất bại. Vui lòng thử lại.</string>
+    <string name="error_network_retry">Lỗi kết nối mạng. Vui lòng kiểm tra lại.</string>
+    <string name="error_verify_otp_failed">Mã OTP không chính xác hoặc đã hết hạn.</string>
+    <string name="error_otp_failed">Mã OTP không chính xác, vui lòng thử lại</string>
+    <string name="error_otp_expired">Mã OTP đã hết hạn, vui lòng gửi lại mã mới</string>
+    <string name="login_success">Đăng nhập thành công!</string>
+    <string name="msg_support_connecting">Đang kết nối trung tâm hỗ trợ...</string>
+    <string name="msg_terms_policy">Chính sách &amp; Điều khoản dịch vụ</string>
+    <string name="msg_google_login_pending">Đăng nhập Google đang phát triển</string>
+    <string name="msg_facebook_login_pending">Đăng nhập Facebook đang phát triển</string>
+    <string name="msg_resending_otp">Đang gửi lại mã OTP mới...</string>
+    <string name="label_phone">Số điện thoại</string>
+    <string name="label_otp">Nhập mã OTP</string>
+    <string name="phone_prefix">+84</string>
+    <string name="or_continue_with">Hoặc tiếp tục với</string>
+    <string name="btn_google">Google</string>
+    <string name="btn_facebook">Facebook</string>
+    <string name="support">Hỗ trợ</string>
+    <string name="terms">Điều khoản</string>
+    <string name="change_phone">Thay đổi số điện thoại</string>
+    <string name="language_switch_to_en">EN</string>
+    <string name="language_switch_to_vi">VI</string>
+    <string name="notification_otp_title">Mã OTP đăng nhập</string>
+    <string name="notification_otp_message">Mã OTP của bạn là %1$s</string>
+    <string name="notification_otp_sent">Mã OTP đã được gửi đến %1$s</string>
+    <string name="notification_request_failed_title">Không gửi được OTP</string>
+    <string name="notification_verify_success_title">Đăng nhập thành công</string>
+    <string name="notification_verify_success_message">Đang chuyển đến trang chủ</string>
+    <string name="notification_verify_failed_title">Xác thực thất bại</string>
+    <string name="cd_aurapc_logo">Logo AuraPC</string>
+    <string name="cd_dropdown">Mở danh sách</string>
+    <string name="cd_forward">Tiếp tục</string>
+    <string name="cd_change_language">Chuyển ngôn ngữ</string>
 </resources>

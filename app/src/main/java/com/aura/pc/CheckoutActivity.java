@@ -1,5 +1,6 @@
 package com.aura.pc;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,11 +9,17 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.R;
+import com.example.aura_pc_app.utils.LocaleManager;
 
 public class CheckoutActivity extends AppCompatActivity {
 
     private LinearLayout paymentCard1, paymentCard2, paymentCard3;
     private ImageView radio1, radio2, radio3;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleManager.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

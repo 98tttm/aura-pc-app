@@ -66,6 +66,11 @@ public class TokenManager implements TokenProvider {
         Log.d(TAG, "Refresh token saved (encrypted)");
     }
 
+    public void saveCurrentUserJson(String userJson) {
+        encryptedPrefs.edit().putString(Constants.KEY_CURRENT_USER, userJson).apply();
+        Log.d(TAG, "Current user saved (encrypted)");
+    }
+
     // ── Read ──────────────────────────────────────────────
 
     @Override
@@ -75,6 +80,10 @@ public class TokenManager implements TokenProvider {
 
     public String getRefreshToken() {
         return encryptedPrefs.getString(Constants.KEY_REFRESH_TOKEN, null);
+    }
+
+    public String getCurrentUserJson() {
+        return encryptedPrefs.getString(Constants.KEY_CURRENT_USER, null);
     }
 
     // ── Clear / Check ─────────────────────────────────────

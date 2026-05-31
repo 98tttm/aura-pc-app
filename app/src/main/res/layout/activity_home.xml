@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="100dp"
                 android:fontFamily="sans-serif-black"
-                android:text="AuraPC Home"
+                android:text="@string/home_title"
                 android:textColor="@color/checkout_dark_brown"
                 android:textSize="24sp" />
 
@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Welcome to the premium experience."
+                android:text="@string/home_subtitle"
                 android:textColor="@color/checkout_gray"
                 android:textSize="16sp" />
 

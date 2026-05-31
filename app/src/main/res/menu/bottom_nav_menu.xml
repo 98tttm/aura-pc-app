@@ -3,21 +3,21 @@
     <item
         android:id="@+id/nav_home"
         android:icon="@android:drawable/ic_menu_today"
-        android:title="Trang chủ" />
+        android:title="@string/nav_home" />
     <item
         android:id="@+id/nav_categories"
         android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:title="Danh mục" />
+        android:title="@string/nav_categories" />
     <item
         android:id="@+id/nav_cart"
         android:icon="@android:drawable/ic_menu_save"
-        android:title="Giỏ hàng" />
+        android:title="@string/nav_cart" />
     <item
         android:id="@+id/nav_blog"
         android:icon="@android:drawable/ic_menu_agenda"
-        android:title="Tin tức" />
+        android:title="@string/nav_blog" />
     <item
         android:id="@+id/nav_profile"
         android:icon="@android:drawable/ic_menu_myplaces"
-        android:title="Cá nhân" />
+        android:title="@string/nav_profile" />
 </menu>
