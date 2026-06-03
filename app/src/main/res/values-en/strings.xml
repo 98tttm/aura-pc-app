@@ -80,17 +80,18 @@
     <string name="label_loading">Loading...</string>
 
     <!-- Phone + OTP Login -->
-    <string name="login_title">Welcome back</string>
-    <string name="login_subtitle">Sign in to continue your tech shopping experience</string>
+    <string name="login_title">Sign in</string>
+    <string name="login_subtitle">Please sign in to enjoy exclusive member benefits.</string>
     <string name="phone_hint">000 000 000</string>
-    <string name="btn_send_otp">Sign in</string>
-    <string name="otp_title">OTP verification</string>
+    <string name="btn_send_otp">Continue</string>
+    <string name="otp_title">Enter verification code</string>
     <string name="otp_subtitle">The OTP was sent to %1$s</string>
+    <string name="otp_subtitle_countdown">The verification code was sent to\n%1$s and expires in %2$s</string>
     <string name="otp_hint">000000</string>
-    <string name="btn_verify_otp">Verify</string>
+    <string name="btn_verify_otp">Continue</string>
     <string name="otp_countdown">Resend code in %1$02d:%2$02d</string>
     <string name="otp_countdown_text">Resend code in %1$s</string>
-    <string name="btn_resend_otp">Resend OTP</string>
+    <string name="btn_resend_otp"><u>Resend verification code</u></string>
     <string name="error_invalid_phone">Invalid phone number</string>
     <string name="error_invalid_otp">Invalid OTP code (6 digits required)</string>
     <string name="error_request_otp_failed">OTP request failed. Please try again.</string>
@@ -112,7 +113,7 @@
     <string name="btn_facebook">Facebook</string>
     <string name="support">Support</string>
     <string name="terms">Terms</string>
-    <string name="change_phone">Change phone number</string>
+    <string name="change_phone">Change phone</string>
     <string name="language_switch_to_en">EN</string>
     <string name="language_switch_to_vi">VI</string>
     <string name="notification_otp_title">Login OTP</string>

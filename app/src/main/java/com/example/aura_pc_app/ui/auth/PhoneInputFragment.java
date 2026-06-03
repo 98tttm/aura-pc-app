@@ -45,6 +45,20 @@ public class PhoneInputFragment extends BaseFragment<FragmentPhoneInputBinding> 
             @Override
             public void afterTextChanged(Editable s) {}
         });
+        binding.etPhone.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                binding.loginCard.animate()
+                        .translationY(-dpToPx(150))
+                        .setDuration(220L)
+                        .start();
+                scrollInputIntoView();
+            } else {
+                binding.loginCard.animate()
+                        .translationY(0f)
+                        .setDuration(180L)
+                        .start();
+            }
+        });
 
         // Xử lý sự kiện click nút "Gửi mã OTP"
         binding.btnContinue.setOnClickListener(v -> {
@@ -121,6 +135,23 @@ public class PhoneInputFragment extends BaseFragment<FragmentPhoneInputBinding> 
             binding.btnContent.setVisibility(View.VISIBLE);
             binding.btnContinue.setClickable(true);
         }
+    }
+
+    private void scrollInputIntoView() {
+        binding.authScroll.postDelayed(() -> {
+            int[] scrollLocation = new int[2];
+            int[] inputLocation = new int[2];
+            binding.authScroll.getLocationOnScreen(scrollLocation);
+            binding.etPhone.getLocationOnScreen(inputLocation);
+
+            int inputTopInScroll = inputLocation[1] - scrollLocation[1] + binding.authScroll.getScrollY();
+            int targetScroll = Math.max(0, inputTopInScroll - dpToPx(160));
+            binding.authScroll.smoothScrollTo(0, targetScroll);
+        }, 260L);
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
     @Override

@@ -6,25 +6,26 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.aura_pc_app.R;
-import com.example.aura_pc_app.data.api.ApiResponse;
 import com.example.aura_pc_app.databinding.FragmentOtpVerificationBinding;
 import com.example.aura_pc_app.ui.base.BaseFragment;
+import com.example.aura_pc_app.utils.LocaleManager;
 
 public class OtpVerificationFragment extends BaseFragment<FragmentOtpVerificationBinding> {
 
     private AuthViewModel viewModel;
     private boolean resendRequested;
+    private TextView[] otpDigits;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Khởi tạo AuthViewModel chung
         viewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
         setupViews();
@@ -33,13 +34,19 @@ public class OtpVerificationFragment extends BaseFragment<FragmentOtpVerificatio
     }
 
     private void setupViews() {
-        // Hiển thị số điện thoại nhận mã trong Subtitle
-        String phoneVal = viewModel.getPhone().getValue();
-        binding.tvSubtitle.setText(getString(R.string.otp_subtitle, phoneVal));
+        otpDigits = new TextView[] {
+                binding.otpDigit1,
+                binding.otpDigit2,
+                binding.otpDigit3,
+                binding.otpDigit4,
+                binding.otpDigit5,
+                binding.otpDigit6
+        };
+        updateOtpBoxes("");
+        updateSubtitle(viewModel.getCountdownText().getValue());
     }
 
     private void setupListeners() {
-        // Lắng nghe thay đổi OTP
         binding.etOtp.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -47,14 +54,30 @@ public class OtpVerificationFragment extends BaseFragment<FragmentOtpVerificatio
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 binding.tvOtpError.setVisibility(View.GONE);
-                viewModel.getOtp().setValue(s.toString().trim());
+                String otp = s.toString().trim();
+                viewModel.getOtp().setValue(otp);
+                updateOtpBoxes(otp);
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
         });
 
-        // Click nút "Xác nhận"
+        binding.etOtp.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                binding.otpCard.animate()
+                        .translationY(-dpToPx(150))
+                        .setDuration(220L)
+                        .start();
+                scrollOtpIntoView();
+            } else {
+                binding.otpCard.animate()
+                        .translationY(0f)
+                        .setDuration(180L)
+                        .start();
+            }
+        });
+        binding.otpInputFrame.setOnClickListener(v -> binding.etOtp.requestFocus());
         binding.btnVerify.setOnClickListener(v -> {
             String otpVal = binding.etOtp.getText().toString().trim();
             if (viewModel.validateOtp(otpVal)) {
@@ -72,13 +95,11 @@ public class OtpVerificationFragment extends BaseFragment<FragmentOtpVerificatio
             }
         });
 
-        // Click nút "Gửi lại OTP" khi đếm ngược kết thúc
         binding.btnResend.setOnClickListener(v -> {
             resendRequested = true;
             viewModel.requestOtp();
         });
 
-        // Click link "Thay đổi số điện thoại" quay lại màn hình nhập SĐT
         binding.tvChangePhone.setOnClickListener(v -> {
             viewModel.stopCountdownTimer();
             viewModel.getOtp().setValue("");
@@ -89,33 +110,22 @@ public class OtpVerificationFragment extends BaseFragment<FragmentOtpVerificatio
             }
         });
 
-        // Hỗ trợ & Điều khoản
-        binding.tvSupport.setOnClickListener(v -> 
-            Toast.makeText(getContext(), R.string.msg_support_connecting, Toast.LENGTH_SHORT).show()
+        binding.tvSupport.setOnClickListener(v ->
+                Toast.makeText(getContext(), R.string.msg_support_connecting, Toast.LENGTH_SHORT).show()
         );
-        binding.tvTerms.setOnClickListener(v -> 
-            Toast.makeText(getContext(), R.string.msg_terms_policy, Toast.LENGTH_SHORT).show()
+        binding.tvTerms.setOnClickListener(v ->
+                Toast.makeText(getContext(), R.string.msg_terms_policy, Toast.LENGTH_SHORT).show()
         );
     }
 
     private void observeViewModel() {
-        // Quan sát text đếm ngược countdown
-        viewModel.getCountdownText().observe(getViewLifecycleOwner(), text -> {
-            binding.tvCountdown.setText(getString(R.string.otp_countdown_text, text));
-        });
+        viewModel.getCountdownText().observe(getViewLifecycleOwner(), this::updateSubtitle);
 
-        // Quan sát trạng thái bộ đếm chạy để ẩn/hiện nút Gửi lại mã
         viewModel.getIsTimerRunning().observe(getViewLifecycleOwner(), isRunning -> {
-            if (isRunning) {
-                binding.tvCountdown.setVisibility(View.VISIBLE);
-                binding.btnResend.setVisibility(View.GONE);
-            } else {
-                binding.tvCountdown.setVisibility(View.GONE);
-                binding.btnResend.setVisibility(View.VISIBLE);
-            }
+            binding.tvCountdown.setVisibility(View.GONE);
+            binding.btnResend.setVisibility(View.VISIBLE);
         });
 
-        // Quan sát phản hồi API gửi lại OTP
         viewModel.getRequestOtpResponse().observe(getViewLifecycleOwner(), response -> {
             if (response == null || !resendRequested) return;
 
@@ -143,7 +153,7 @@ public class OtpVerificationFragment extends BaseFragment<FragmentOtpVerificatio
                     if (getActivity() instanceof AuthActivity) {
                         ((AuthActivity) getActivity()).showTopNotification(
                                 getString(R.string.notification_request_failed_title),
-                            response.getMessage()
+                                response.getMessage()
                         );
                     }
                     viewModel.clearRequestOtpResponse();
@@ -151,7 +161,6 @@ public class OtpVerificationFragment extends BaseFragment<FragmentOtpVerificatio
             }
         });
 
-        // Quan sát phản hồi API xác thực OTP
         viewModel.getVerifyOtpResponse().observe(getViewLifecycleOwner(), response -> {
             if (response == null) return;
 
@@ -178,7 +187,7 @@ public class OtpVerificationFragment extends BaseFragment<FragmentOtpVerificatio
                     if (getActivity() instanceof AuthActivity) {
                         ((AuthActivity) getActivity()).showTopNotification(
                                 getString(R.string.notification_verify_failed_title),
-                            response.getMessage()
+                                response.getMessage()
                         );
                     }
                     viewModel.clearVerifyOtpResponse();
@@ -199,8 +208,64 @@ public class OtpVerificationFragment extends BaseFragment<FragmentOtpVerificatio
         }
     }
 
+    private void updateOtpBoxes(String otp) {
+        if (otpDigits == null) return;
+        for (int i = 0; i < otpDigits.length; i++) {
+            otpDigits[i].setText(i < otp.length() ? String.valueOf(otp.charAt(i)) : "");
+        }
+    }
+
+    private void updateSubtitle(String countdown) {
+        String phoneVal = viewModel.getPhone().getValue();
+        binding.tvSubtitle.setText(getString(
+                R.string.otp_subtitle_countdown,
+                phoneVal,
+                formatCountdown(countdown)
+        ));
+    }
+
+    private String formatCountdown(String countdown) {
+        if (countdown == null || !countdown.contains(":")) {
+            return LocaleManager.isVietnamese(requireContext()) ? "5 phút" : "5 min";
+        }
+
+        String[] parts = countdown.split(":");
+        if (parts.length != 2) return countdown;
+
+        try {
+            int minutes = Integer.parseInt(parts[0]);
+            int seconds = Integer.parseInt(parts[1]);
+            if (LocaleManager.isVietnamese(requireContext())) {
+                return minutes + " phút " + seconds + " giây";
+            }
+            return minutes + " min " + seconds + " sec";
+        } catch (NumberFormatException ignored) {
+            return countdown;
+        }
+    }
+
+    private void scrollOtpIntoView() {
+        binding.authScroll.postDelayed(() -> {
+            int[] scrollLocation = new int[2];
+            int[] inputLocation = new int[2];
+            binding.authScroll.getLocationOnScreen(scrollLocation);
+            binding.otpInputFrame.getLocationOnScreen(inputLocation);
+
+            int inputTopInScroll = inputLocation[1] - scrollLocation[1] + binding.authScroll.getScrollY();
+            int targetScroll = Math.max(0, inputTopInScroll - dpToPx(170));
+            binding.authScroll.smoothScrollTo(0, targetScroll);
+        }, 260L);
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+
     @Override
-    protected FragmentOtpVerificationBinding inflateBinding(@NonNull LayoutInflater inflater, @Nullable ViewGroup container) {
+    protected FragmentOtpVerificationBinding inflateBinding(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container
+    ) {
         return FragmentOtpVerificationBinding.inflate(inflater, container, false);
     }
 }

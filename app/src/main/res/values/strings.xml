@@ -78,17 +78,18 @@
     <string name="label_loading">Đang tải…</string>
 
     <!-- MOB-006 — SĐT + OTP Login strings -->
-    <string name="login_title">Chào mừng trở lại</string>
-    <string name="login_subtitle">Đăng nhập để tiếp tục trải nghiệm mua sắm đồ công nghệ</string>
+    <string name="login_title">Đăng nhập</string>
+    <string name="login_subtitle">Vui lòng đăng nhập để hưởng những đặc quyền dành cho thành viên.</string>
     <string name="phone_hint">000 000 000</string>
-    <string name="btn_send_otp">Đăng nhập</string>
-    <string name="otp_title">Xác thực OTP</string>
+    <string name="btn_send_otp">Tiếp tục</string>
+    <string name="otp_title">Nhập mã xác thực</string>
     <string name="otp_subtitle">Mã OTP đã được gửi đến số điện thoại %1$s</string>
+    <string name="otp_subtitle_countdown">Mã xác thực được gửi đến số điện thoại\n%1$s có hiệu lực trong %2$s</string>
     <string name="otp_hint">000000</string>
-    <string name="btn_verify_otp">Xác nhận</string>
+    <string name="btn_verify_otp">Tiếp tục</string>
     <string name="otp_countdown">Gửi lại mã sau %1$02d:%2$02d</string>
     <string name="otp_countdown_text">Gửi lại mã sau %1$s</string>
-    <string name="btn_resend_otp">Gửi lại OTP</string>
+    <string name="btn_resend_otp"><u>Gửi lại mã xác thực cho tôi</u></string>
     <string name="error_invalid_phone">Số điện thoại không hợp lệ</string>
     <string name="error_invalid_otp">Mã OTP không hợp lệ (cần đúng 6 chữ số)</string>
     <string name="error_request_otp_failed">Yêu cầu gửi OTP thất bại. Vui lòng thử lại.</string>
@@ -112,7 +113,7 @@
     <string name="btn_facebook">Facebook</string>
     <string name="support">Hỗ trợ</string>
     <string name="terms">Điều khoản</string>
-    <string name="change_phone">Thay đổi số điện thoại</string>
+    <string name="change_phone">Đổi số điện thoại</string>
     <string name="language_switch_to_en">EN</string>
     <string name="language_switch_to_vi">VI</string>
     <string name="notification_otp_title">Mã OTP đăng nhập</string>

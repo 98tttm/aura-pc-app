@@ -3,6 +3,7 @@ package com.example.aura_pc_app.ui.auth;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -39,8 +40,9 @@ public class AuthActivity extends BaseActivity<ActivityAuthBinding> {
     }
 
     private void configureSystemBars() {
-        getWindow().setStatusBarColor(getColor(R.color.checkout_bg));
-        getWindow().setNavigationBarColor(getColor(R.color.checkout_bg));
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getWindow().setStatusBarColor(getColor(R.color.white));
+        getWindow().setNavigationBarColor(getColor(R.color.white));
         WindowInsetsControllerCompat controller =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         controller.setAppearanceLightStatusBars(true);
@@ -55,6 +57,7 @@ public class AuthActivity extends BaseActivity<ActivityAuthBinding> {
             LocaleManager.toggleLanguage(this);
             recreate();
         });
+        binding.btnCloseAuth.setOnClickListener(v -> finish());
     }
 
     public void showOtpNotification(Map<String, Object> data, String fallbackPhone) {
