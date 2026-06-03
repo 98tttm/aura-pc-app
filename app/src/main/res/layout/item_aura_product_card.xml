@@ -68,7 +68,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/product_review_count"
                     android:textColor="@color/aura_review"
-                    android:textSize="12sp" />
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <TextView
@@ -131,16 +131,16 @@
                     <TextView
                         android:id="@+id/oldPriceText"
                         android:layout_width="wrap_content"
-                        android:layout_height="20dp"
-                        android:alpha="0.55"
+                        android:layout_height="21dp"
                         android:includeFontPadding="false"
                         android:text="@string/product_old_price_acer_nitro_v16s"
-                        android:textColor="@color/aura_muted"
+                        android:textColor="@color/aura_placeholder"
                         android:textSize="14sp" />
 
                     <TextView
+                        android:id="@+id/newPriceText"
                         android:layout_width="wrap_content"
-                        android:layout_height="34dp"
+                        android:layout_height="36dp"
                         android:fontFamily="sans-serif-bold"
                         android:gravity="center_vertical"
                         android:includeFontPadding="false"

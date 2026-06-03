@@ -14,61 +14,85 @@
         <LinearLayout
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:background="@color/aura_white"
-            android:elevation="2dp"
+            android:layout_height="69dp"
+            android:background="#CCFFFFFF"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="20dp"
             android:paddingEnd="20dp">
-
-            <ImageButton
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/cd_open_menu"
-                android:padding="8dp"
-                android:src="@drawable/ic_menu" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="28dp"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
-                android:gravity="center"
+                android:gravity="start|center_vertical"
                 android:includeFontPadding="false"
+                android:letterSpacing="-0.05"
                 android:text="@string/app_name"
-                android:textColor="@color/aura_black"
-                android:textSize="20sp" />
-
-            <ImageButton
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/cd_search"
-                android:padding="8dp"
-                android:src="@drawable/ic_search" />
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <FrameLayout
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:layout_marginStart="16dp">
+                android:layout_width="36dp"
+                android:layout_height="36dp">
 
                 <ImageButton
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
+                    android:id="@+id/btnCart"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/nav_cart"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_cart" />
+
+                <TextView
+                    android:id="@+id/cartBadge"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/bg_badge_red"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="3"
+                    android:textColor="@color/aura_white"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp">
+
+                <ImageButton
+                    android:id="@+id/btnNotifications"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/cd_notifications"
                     android:padding="8dp"
                     android:src="@drawable/ic_bell" />
 
-                <View
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
+                <TextView
+                    android:id="@+id/notificationBadge"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_gravity="top|end"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/bg_notify_dot" />
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/bg_badge_orange"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="12"
+                    android:textColor="@color/aura_white"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
             </FrameLayout>
         </LinearLayout>
 
@@ -285,32 +309,13 @@
 
             <TextView
                 style="@style/AuraBottomNavText"
-                android:text="@string/nav_home" />
+                android:text="Home" />
         </LinearLayout>
 
         <Space
-            android:layout_width="19dp"
-            android:layout_height="1dp" />
-
-        <LinearLayout
-            style="@style/AuraBottomNavItem"
-            android:alpha="0.6">
-
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_categories"
-                app:tint="@color/aura_nav_muted" />
-
-            <TextView
-                style="@style/AuraBottomNavText"
-                android:text="@string/nav_categories" />
-        </LinearLayout>
-
-        <Space
-            android:layout_width="19dp"
-            android:layout_height="1dp" />
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
         <FrameLayout
             android:layout_width="wrap_content"
@@ -324,15 +329,15 @@
                 android:layout_height="match_parent">
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_cart"
+                    android:src="@drawable/ic_categories"
                     app:tint="@color/aura_orange" />
 
                 <TextView
                     style="@style/AuraBottomNavText"
-                    android:text="@string/nav_cart"
+                    android:text="Categories"
                     android:textColor="@color/aura_orange" />
             </LinearLayout>
 
@@ -345,27 +350,29 @@
         </FrameLayout>
 
         <Space
-            android:layout_width="19dp"
-            android:layout_height="1dp" />
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
         <LinearLayout
-            style="@style/AuraBottomNavItem">
+            style="@style/AuraBottomNavItem"
+            android:alpha="0.6">
 
             <ImageView
-                android:layout_width="22dp"
+                android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:contentDescription="@null"
-                android:src="@drawable/ic_blog" />
+                android:src="@drawable/ic_cart" />
 
             <TextView
                 style="@style/AuraBottomNavText"
-                android:text="@string/nav_blog"
-                android:textColor="#FF9E9E9E" />
+                android:text="Cart" />
         </LinearLayout>
 
         <Space
-            android:layout_width="19dp"
-            android:layout_height="1dp" />
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
 
         <LinearLayout
             style="@style/AuraBottomNavItem"
@@ -379,7 +386,7 @@
 
             <TextView
                 style="@style/AuraBottomNavText"
-                android:text="@string/nav_profile" />
+                android:text="Profile" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>
