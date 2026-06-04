@@ -14,85 +14,65 @@
         <LinearLayout
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
-            android:layout_height="69dp"
-            android:background="#CCFFFFFF"
+            android:layout_height="64dp"
+            android:background="@color/aura_white"
+            android:elevation="2dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="20dp"
             android:paddingEnd="20dp">
+
+            <ImageButton
+                android:id="@+id/topMenuButton"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_open_menu"
+                android:padding="8dp"
+                android:src="@drawable/ic_menu" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="28dp"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
-                android:gravity="start|center_vertical"
+                android:gravity="center"
                 android:includeFontPadding="false"
-                android:letterSpacing="-0.05"
                 android:text="@string/app_name"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textColor="@color/aura_black"
+                android:textSize="20sp" />
+
+            <ImageButton
+                android:id="@+id/topSearchButton"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_search"
+                android:padding="8dp"
+                android:src="@drawable/ic_search" />
 
             <FrameLayout
-                android:layout_width="36dp"
-                android:layout_height="36dp">
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="16dp">
 
                 <ImageButton
-                    android:id="@+id/btnCart"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/nav_cart"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_cart" />
-
-                <TextView
-                    android:id="@+id/cartBadge"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_gravity="top|end"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_badge_red"
-                    android:fontFamily="sans-serif-medium"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text="3"
-                    android:textColor="@color/aura_white"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="8dp">
-
-                <ImageButton
-                    android:id="@+id/btnNotifications"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:id="@+id/topNotificationsButton"
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/cd_notifications"
                     android:padding="8dp"
-                    android:src="@drawable/ic_bell" />
+                    android:src="@drawable/ic_figma_bell_bold"
+                    app:tint="@color/aura_black" />
 
-                <TextView
-                    android:id="@+id/notificationBadge"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
                     android:layout_gravity="top|end"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/bg_badge_orange"
-                    android:fontFamily="sans-serif-medium"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text="12"
-                    android:textColor="@color/aura_white"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_notify_dot" />
             </FrameLayout>
         </LinearLayout>
 
@@ -280,113 +260,12 @@
         android:src="@drawable/filter"
         android:translationZ="3dp" />
 
-    <LinearLayout
-        android:id="@+id/bottomNavigation"
-        android:layout_width="350dp"
-        android:layout_height="70dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/bg_bottom_nav"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:elevation="16dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingStart="35dp"
-        android:paddingTop="17dp"
-        android:paddingEnd="35dp"
-        android:paddingBottom="17dp">
-
-        <LinearLayout
-            style="@style/AuraBottomNavItem"
-            android:alpha="0.6">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="18dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_home" />
-
-            <TextView
-                style="@style/AuraBottomNavText"
-                android:text="Home" />
-        </LinearLayout>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:clipChildren="false"
-            android:clipToPadding="false">
-
-            <LinearLayout
-                style="@style/AuraBottomNavItem"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_categories"
-                    app:tint="@color/aura_orange" />
-
-                <TextView
-                    style="@style/AuraBottomNavText"
-                    android:text="Categories"
-                    android:textColor="@color/aura_orange" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="4dp"
-                android:layout_height="4dp"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="-3dp"
-                android:background="@drawable/bg_nav_active_dot" />
-        </FrameLayout>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <LinearLayout
-            style="@style/AuraBottomNavItem"
-            android:alpha="0.6">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_cart" />
-
-            <TextView
-                style="@style/AuraBottomNavText"
-                android:text="Cart" />
-        </LinearLayout>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
-
-        <LinearLayout
-            style="@style/AuraBottomNavItem"
-            android:alpha="0.6">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_profile" />
-
-            <TextView
-                style="@style/AuraBottomNavText"
-                android:text="Profile" />
-        </LinearLayout>
-    </LinearLayout>
+    <include
+        layout="@layout/view_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp" />
 </FrameLayout>

@@ -18,5 +18,6 @@ public class BlogActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blog);
         BottomNavigationHelper.setup(this, BottomNavigationHelper.TAB_BLOG);
+        BottomNavigationHelper.setupHeader(this);
     }
 }

@@ -23,13 +23,15 @@
         <activity
             android:name=".ui.auth.AuthActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize|stateHidden">
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.home.HomeActivity" android:exported="true" />
         <activity android:name="com.aura.pc.ui.categories.CategoriesActivity" />
         <activity android:name="com.aura.pc.ui.cart.CartActivity" />
         <activity android:name="com.aura.pc.ui.blog.BlogActivity" />

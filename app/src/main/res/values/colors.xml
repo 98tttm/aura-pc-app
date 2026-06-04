@@ -23,11 +23,11 @@
     <color name="section_viewed_bg">#FFF9F8</color>
 
     <!-- Aura Brand Palette -->
-    <color name="primary_container">#131B2E</color>
-    <color name="on_tertiary_container">#3980F4</color>
-    <color name="aura_primary">#1A237E</color>
-    <color name="aura_primary_variant">#283593</color>
-    <color name="aura_secondary">#00BCD4</color>
+    <color name="primary_container">#FF6B00</color>
+    <color name="on_tertiary_container">#FF6B00</color>
+    <color name="aura_primary">#FF6B00</color>
+    <color name="aura_primary_variant">#FF6B00</color>
+    <color name="aura_secondary">#FF6B00</color>
     <color name="aura_background">#F5F5F5</color>
     <color name="aura_surface">#FFFFFF</color>
     <color name="aura_error">#B00020</color>
@@ -63,7 +63,7 @@
     <color name="checkout_gray">#8E8E8E</color>
     <color name="checkout_gradient_start">#FF7A00</color>
     <color name="checkout_gradient_end">#B45300</color>
-    <color name="checkout_blue">#1E88E5</color>
+    <color name="checkout_blue">#FF6B00</color>
 
     <!-- Missing resources for build fix -->
     <color name="aura_placeholder">#805A4136</color>
@@ -88,12 +88,12 @@
     <color name="on_background">#0B1C30</color>
     <color name="on_primary_container">#5A6178</color>
     <color name="error">#BA1A1A</color>
-    <color name="auth_figma_navy">#142035</color>
-    <color name="auth_figma_button">#324677</color>
+    <color name="auth_figma_navy">#FF6B00</color>
+    <color name="auth_figma_button">#FF6B00</color>
     <color name="auth_figma_text">#0A0A0A</color>
     <color name="auth_figma_muted">#4B5563</color>
     <color name="auth_figma_border">#D9DCE2</color>
-    <color name="auth_figma_link">#244A86</color>
+    <color name="auth_figma_link">#FF6B00</color>
     <color name="auth_figma_error_bg">#FFDDE1</color>
     <color name="auth_figma_error">#FF1F2D</color>
 </resources>
