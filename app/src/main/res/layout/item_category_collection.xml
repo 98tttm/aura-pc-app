@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/categoryCollectionRoot"
+    android:layout_width="match_parent"
+    android:layout_height="86dp"
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/aura_white"
+    app:cardCornerRadius="22dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/aura_line"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingEnd="16dp">
+
+        <ImageView
+            android:id="@+id/categoryCollectionIcon"
+            android:layout_width="58dp"
+            android:layout_height="58dp"
+            android:background="@drawable/bg_category_icon_soft"
+            android:contentDescription="@null"
+            android:padding="14dp"
+            android:src="@drawable/ic_categories"
+            app:tint="@color/aura_orange" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/categoryCollectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-black"
+                android:maxLines="1"
+                android:text="@string/category_collection_gaming"
+                android:textColor="@color/aura_ink"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/categoryCollectionSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/category_collection_gaming_subtitle"
+                android:textColor="@color/aura_muted"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_arrow_forward_rounded"
+            app:tint="@color/aura_orange" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

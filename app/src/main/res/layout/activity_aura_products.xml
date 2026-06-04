@@ -23,6 +23,7 @@
             android:paddingEnd="20dp">
 
             <ImageButton
+                android:id="@+id/topMenuButton"
                 android:layout_width="34dp"
                 android:layout_height="34dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -42,6 +43,7 @@
                 android:textSize="20sp" />
 
             <ImageButton
+                android:id="@+id/topSearchButton"
                 android:layout_width="34dp"
                 android:layout_height="34dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -55,12 +57,14 @@
                 android:layout_marginStart="16dp">
 
                 <ImageButton
+                    android:id="@+id/topNotificationsButton"
                     android:layout_width="34dp"
                     android:layout_height="34dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/cd_notifications"
                     android:padding="8dp"
-                    android:src="@drawable/ic_bell" />
+                    android:src="@drawable/ic_figma_bell_bold"
+                    app:tint="@color/aura_black" />
 
                 <View
                     android:layout_width="8dp"
@@ -256,130 +260,12 @@
         android:src="@drawable/filter"
         android:translationZ="3dp" />
 
-    <LinearLayout
-        android:id="@+id/bottomNavigation"
-        android:layout_width="350dp"
-        android:layout_height="70dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/bg_bottom_nav"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:elevation="16dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingStart="35dp"
-        android:paddingTop="17dp"
-        android:paddingEnd="35dp"
-        android:paddingBottom="17dp">
-
-        <LinearLayout
-            style="@style/AuraBottomNavItem"
-            android:alpha="0.6">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="18dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_home" />
-
-            <TextView
-                style="@style/AuraBottomNavText"
-                android:text="@string/nav_home" />
-        </LinearLayout>
-
-        <Space
-            android:layout_width="19dp"
-            android:layout_height="1dp" />
-
-        <LinearLayout
-            style="@style/AuraBottomNavItem"
-            android:alpha="0.6">
-
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_categories"
-                app:tint="@color/aura_nav_muted" />
-
-            <TextView
-                style="@style/AuraBottomNavText"
-                android:text="@string/nav_categories" />
-        </LinearLayout>
-
-        <Space
-            android:layout_width="19dp"
-            android:layout_height="1dp" />
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:clipChildren="false"
-            android:clipToPadding="false">
-
-            <LinearLayout
-                style="@style/AuraBottomNavItem"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_cart"
-                    app:tint="@color/aura_orange" />
-
-                <TextView
-                    style="@style/AuraBottomNavText"
-                    android:text="@string/nav_cart"
-                    android:textColor="@color/aura_orange" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="4dp"
-                android:layout_height="4dp"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="-3dp"
-                android:background="@drawable/bg_nav_active_dot" />
-        </FrameLayout>
-
-        <Space
-            android:layout_width="19dp"
-            android:layout_height="1dp" />
-
-        <LinearLayout
-            style="@style/AuraBottomNavItem">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="20dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_blog" />
-
-            <TextView
-                style="@style/AuraBottomNavText"
-                android:text="@string/nav_blog"
-                android:textColor="#FF9E9E9E" />
-        </LinearLayout>
-
-        <Space
-            android:layout_width="19dp"
-            android:layout_height="1dp" />
-
-        <LinearLayout
-            style="@style/AuraBottomNavItem"
-            android:alpha="0.6">
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_profile" />
-
-            <TextView
-                style="@style/AuraBottomNavText"
-                android:text="@string/nav_profile" />
-        </LinearLayout>
-    </LinearLayout>
+    <include
+        layout="@layout/view_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp" />
 </FrameLayout>

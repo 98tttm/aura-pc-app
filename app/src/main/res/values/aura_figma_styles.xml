@@ -69,4 +69,55 @@
         <item name="elevation">12dp</item>
         <item name="backgroundTint">@null</item>
     </style>
+
+    <style name="HomeQuickActionCard">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">118dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="cardBackgroundColor">@color/aura_white</item>
+        <item name="cardCornerRadius">22dp</item>
+        <item name="cardElevation">2dp</item>
+        <item name="strokeColor">@color/aura_line</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="HomeQuickActionContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">14dp</item>
+    </style>
+
+    <style name="HomeQuickActionIcon">
+        <item name="android:layout_width">38dp</item>
+        <item name="android:layout_height">38dp</item>
+        <item name="android:background">@drawable/bg_category_icon_soft</item>
+        <item name="android:contentDescription">@null</item>
+        <item name="android:padding">9dp</item>
+        <item name="tint">@color/aura_orange</item>
+    </style>
+
+    <style name="HomeQuickActionTitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/aura_ink</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="HomeQuickActionSubtitle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">@color/aura_muted</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

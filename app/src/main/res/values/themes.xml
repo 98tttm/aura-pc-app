@@ -6,7 +6,7 @@
         <item name="colorSecondary">@color/aura_secondary</item>
         <item name="colorError">@color/aura_error</item>
         <item name="android:colorBackground">@color/aura_background</item>
-        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="colorSurface">@color/aura_surface</item>
         <item name="colorOnPrimary">@color/aura_on_primary</item>
     </style>

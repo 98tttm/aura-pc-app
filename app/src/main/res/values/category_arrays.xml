@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="category_group_names">
+        <item>Bàn - Ghế</item>
+        <item>Gaming Gear</item>
+        <item>Laptop</item>
+        <item>Linh Kiện</item>
+        <item>Màn hình</item>
+        <item>PC</item>
+        <item>Phụ kiện</item>
+    </string-array>
+
+    <array name="category_group_item_arrays">
+        <item>@array/category_group_desk_chair</item>
+        <item>@array/category_group_gaming_gear</item>
+        <item>@array/category_group_laptop</item>
+        <item>@array/category_group_components</item>
+        <item>@array/category_group_monitor</item>
+        <item>@array/category_group_pc</item>
+        <item>@array/category_group_accessory</item>
+    </array>
+
+    <string-array name="category_group_desk_chair">
+        <item>Bàn Công Thái Học</item>
+        <item>Bàn Gaming</item>
+        <item>Ghế công thái học</item>
+        <item>Ghế giá tốt</item>
+    </string-array>
+
+    <string-array name="category_group_gaming_gear">
+        <item>Bàn phím</item>
+        <item>Chuột</item>
+        <item>Loa</item>
+        <item>Lót chuột</item>
+        <item>Microphone</item>
+        <item>Tai nghe</item>
+        <item>Tay cầm</item>
+        <item>Webcam</item>
+        <item>Đĩa chơi game</item>
+    </string-array>
+
+    <string-array name="category_group_laptop">
+        <item>ACER | PREDATOR</item>
+        <item>ASUS</item>
+        <item>GIGABYTE | AORUS</item>
+        <item>HP</item>
+        <item>Hi - End</item>
+        <item>LENOVO</item>
+        <item>Laptop A.I</item>
+        <item>MSI</item>
+        <item>SINH VIÊN</item>
+        <item>Văn phòng</item>
+    </string-array>
+
+    <string-array name="category_group_components">
+        <item>CPU</item>
+        <item>Case máy tính</item>
+        <item>HDD</item>
+        <item>Mainboard</item>
+        <item>Nguồn máy tính</item>
+        <item>Quạt Case</item>
+        <item>RAM</item>
+        <item>SSD</item>
+        <item>Tản nhiệt CPU</item>
+        <item>VGA</item>
+    </string-array>
+
+    <string-array name="category_group_monitor">
+        <item>AOC</item>
+        <item>Asus</item>
+        <item>Dell</item>
+        <item>Di động</item>
+        <item>Gaming</item>
+        <item>Gigabyte</item>
+        <item>Koorui</item>
+        <item>MSI</item>
+        <item>Philips</item>
+        <item>Samsung</item>
+        <item>Đồ họa</item>
+    </string-array>
+
+    <string-array name="category_group_pc">
+        <item>PC AI</item>
+        <item>PC Asus</item>
+        <item>PC Gigabyte</item>
+        <item>PC MSI</item>
+        <item>PC gaming</item>
+        <item>PC văn phòng</item>
+        <item>PC đồ họa</item>
+    </string-array>
+
+    <string-array name="category_group_accessory">
+        <item>Balo</item>
+        <item>Phụ kiện PC</item>
+        <item>Thiết bị mạng</item>
+    </string-array>
+</resources>

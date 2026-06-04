@@ -172,7 +172,7 @@
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
                     android:text="f"
-                    android:textColor="#1877F2"
+                    android:textColor="#FF6B00"
                     android:textSize="34sp" />
 
                 <TextView
@@ -187,7 +187,7 @@
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
                     android:text="G"
-                    android:textColor="#4285F4"
+                    android:textColor="#FF6B00"
                     android:textSize="30sp" />
 
                 <TextView

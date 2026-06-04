@@ -1,207 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/bottomNavCardRoot"
+    android:id="@+id/bottomNavCard"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
-    app:cardBackgroundColor="@color/premium_glass_white"
-    app:cardCornerRadius="32dp"
-    app:cardElevation="8dp"
-    app:strokeColor="@color/premium_glass_border"
-    app:strokeWidth="1dp">
+    android:layout_height="62dp"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
+        android:layout_width="302dp"
+        android:layout_height="54dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_bottom_nav_figma"
+        android:elevation="10dp"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:paddingHorizontal="12dp">
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp">
 
-        <!-- Home -->
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/nav_home_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:orientation="vertical">
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageView
                 android:id="@+id/nav_home_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_nav_home"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="13dp"
+                android:contentDescription="@string/nav_home"
+                android:src="@drawable/ic_figma_nav_home"
                 app:tint="@color/premium_nav_inactive" />
-
-            <TextView
-                android:id="@+id/nav_home_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/nav_home"
-                android:textColor="@color/premium_nav_inactive"
-                android:textSize="12sp" />
 
             <View
                 android:id="@+id/nav_home_indicator"
                 android:layout_width="4dp"
                 android:layout_height="4dp"
-                android:layout_marginTop="2dp"
-                android:visibility="invisible"
-                android:background="@drawable/bg_nav_active_dot" />
-        </LinearLayout>
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="9dp"
+                android:background="@drawable/bg_nav_active_dot"
+                android:visibility="invisible" />
+        </FrameLayout>
 
-        <!-- Categories -->
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/nav_categories_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:orientation="vertical">
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageView
                 android:id="@+id/nav_categories_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_nav_categories"
+                android:layout_gravity="center"
+                android:contentDescription="@string/nav_categories"
+                android:src="@drawable/ic_figma_nav_categories"
                 app:tint="@color/premium_nav_inactive" />
-
-            <TextView
-                android:id="@+id/nav_categories_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/nav_categories"
-                android:textColor="@color/premium_nav_inactive"
-                android:textSize="12sp" />
 
             <View
                 android:id="@+id/nav_categories_indicator"
                 android:layout_width="4dp"
                 android:layout_height="4dp"
-                android:layout_marginTop="2dp"
-                android:visibility="invisible"
-                android:background="@drawable/bg_nav_active_dot" />
-        </LinearLayout>
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="9dp"
+                android:background="@drawable/bg_nav_active_dot"
+                android:visibility="invisible" />
+        </FrameLayout>
 
-        <!-- Cart -->
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/nav_cart_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:orientation="vertical">
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageView
                 android:id="@+id/nav_cart_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_nav_cart"
+                android:layout_gravity="center"
+                android:contentDescription="@string/nav_cart"
+                android:src="@drawable/ic_figma_nav_cart"
                 app:tint="@color/premium_nav_inactive" />
-
-            <TextView
-                android:id="@+id/nav_cart_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/nav_cart"
-                android:textColor="@color/premium_nav_inactive"
-                android:textSize="12sp" />
 
             <View
                 android:id="@+id/nav_cart_indicator"
                 android:layout_width="4dp"
                 android:layout_height="4dp"
-                android:layout_marginTop="2dp"
-                android:visibility="invisible"
-                android:background="@drawable/bg_nav_active_dot" />
-        </LinearLayout>
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="9dp"
+                android:background="@drawable/bg_nav_active_dot"
+                android:visibility="invisible" />
+        </FrameLayout>
 
-        <!-- Blog -->
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/nav_blog_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:orientation="vertical">
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageView
                 android:id="@+id/nav_blog_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_nav_blog"
+                android:layout_gravity="center"
+                android:contentDescription="@string/nav_blog"
+                android:src="@drawable/ic_figma_nav_blog"
                 app:tint="@color/premium_nav_inactive" />
-
-            <TextView
-                android:id="@+id/nav_blog_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/nav_blog"
-                android:textColor="@color/premium_nav_inactive"
-                android:textSize="12sp" />
 
             <View
                 android:id="@+id/nav_blog_indicator"
                 android:layout_width="4dp"
                 android:layout_height="4dp"
-                android:layout_marginTop="2dp"
-                android:visibility="invisible"
-                android:background="@drawable/bg_nav_active_dot" />
-        </LinearLayout>
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="9dp"
+                android:background="@drawable/bg_nav_active_dot"
+                android:visibility="invisible" />
+        </FrameLayout>
 
-        <!-- Profile -->
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/nav_profile_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:orientation="vertical">
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageView
                 android:id="@+id/nav_profile_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_nav_profile"
+                android:layout_gravity="center"
+                android:contentDescription="@string/nav_profile"
+                android:src="@drawable/ic_figma_nav_user"
                 app:tint="@color/premium_nav_inactive" />
-
-            <TextView
-                android:id="@+id/nav_profile_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/nav_profile"
-                android:textColor="@color/premium_nav_inactive"
-                android:textSize="12sp" />
 
             <View
                 android:id="@+id/nav_profile_indicator"
                 android:layout_width="4dp"
                 android:layout_height="4dp"
-                android:layout_marginTop="2dp"
-                android:visibility="invisible"
-                android:background="@drawable/bg_nav_active_dot" />
-        </LinearLayout>
-
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="9dp"
+                android:background="@drawable/bg_nav_active_dot"
+                android:visibility="invisible" />
+        </FrameLayout>
     </LinearLayout>
-
-</com.google.android.material.card.MaterialCardView>
+</FrameLayout>
