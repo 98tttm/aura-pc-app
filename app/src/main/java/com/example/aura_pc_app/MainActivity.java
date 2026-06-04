@@ -1,5 +1,6 @@
 package com.example.aura_pc_app;
 
+import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ import com.example.aura_pc_app.domain.repository.mock.MockData;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.domain.model.Product;
 import com.example.aura_pc_app.domain.model.ProductSpec;
+import com.example.aura_pc_app.utils.LocaleManager;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mainProductImage, btnFavorite;
     private android.view.View btnConsult, btnAddToCart, btnBuyNow;
     private boolean isFavorite = false;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleManager.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

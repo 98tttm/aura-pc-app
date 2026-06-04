@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="ring"
-    android:innerRadius="12dp"
-    android:thickness="4dp"
-    android:useLevel="false">
-    <solid android:color="@color/aura_orange" />
-</shape>
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromDegrees="0"
+    android:toDegrees="360"
+    android:pivotX="50%"
+    android:pivotY="50%">
+    <shape
+        android:shape="ring"
+        android:innerRadius="10dp"
+        android:thickness="3dp"
+        android:useLevel="false">
+        <gradient
+            android:type="sweep"
+            android:useLevel="false"
+            android:startColor="@android:color/transparent"
+            android:centerColor="#80FF6B00"
+            android:endColor="@color/aura_orange" />
+    </shape>
+</rotate>

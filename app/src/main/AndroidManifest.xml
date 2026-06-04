@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -18,15 +19,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Aura_pc_app">
+        <activity android:name=".MainActivity" />
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".ui.auth.AuthActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.auth.AuthActivity" />
         <activity android:name=".ui.home.HomeActivity" android:exported="true" />
         <activity android:name="com.aura.pc.ui.categories.CategoriesActivity" />
         <activity android:name="com.aura.pc.ui.cart.CartActivity" />

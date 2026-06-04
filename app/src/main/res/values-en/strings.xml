@@ -22,6 +22,10 @@
     <string name="nav_cart">Cart</string>
     <string name="nav_blog">Blog</string>
     <string name="nav_profile">Profile</string>
+    <string name="home_title">AuraPC Home</string>
+    <string name="home_subtitle">Welcome to the premium experience.</string>
+    <string name="blog_screen_title">Blog</string>
+    <string name="profile_screen_title">Profile</string>
 
     <string name="product_rating">4.8</string>
     <string name="product_review_count">(124)</string>
@@ -31,4 +35,96 @@
     <string name="product_old_price_acer_nitro_v16s">28.990.000đ</string>
     <string name="product_price_acer_nitro_v16s">24.590.000đ</string>
     <string name="product_discount_15">-15%</string>
+
+    <!-- Cart Screen -->
+    <string name="cart_title">Your cart</string>
+    <string name="cart_item_count">2 items in cart</string>
+    <string name="cart_coupon_hint">Enter promo code</string>
+    <string name="cart_apply">Apply</string>
+    <string name="cart_summary_title">Offers &amp; promo codes</string>
+    <string name="cart_subtotal">Subtotal (2)</string>
+    <string name="cart_shipping">Shipping</string>
+    <string name="cart_shipping_free">Free</string>
+    <string name="cart_total">Total payment</string>
+    <string name="cart_checkout">Checkout now</string>
+    <string name="cart_recommended">You may also like</string>
+    <string name="cart_see_all">See all</string>
+    <string name="cart_dummy_product_name">Aura Obsidian Pro X</string>
+    <string name="cart_dummy_product_specs">Intel i9, 64GB RAM, RTX 4090</string>
+    <string name="cart_dummy_price">85.000.000đ</string>
+    <string name="cart_dummy_total_price">100.500.000đ</string>
+
+    <!-- Product Detail -->
+    <string name="add_to_cart">Add</string>
+    <string name="buy_now">Buy now</string>
+    <string name="specs_title">Specifications</string>
+    <string name="description_title">Product description</string>
+    <string name="related_products">You may like</string>
+    <string name="viewed_products">Recently viewed</string>
+    <string name="view_all">See all</string>
+    <string name="sold_count_format">Sold %1$s</string>
+    <string name="reviews_count_format">(%1$d reviews)</string>
+    <string name="stock_status_placeholder">In stock (15 items)</string>
+    <string name="product_name_placeholder">Aura Nova X9 - Limitless performance</string>
+    <string name="product_description_placeholder">Aura Nova X9 is a workstation built for professional creators and gamers who need powerful hardware. It delivers strong graphics performance...</string>
+    <string name="consult_text">Consult</string>
+
+    <!-- Network & Auth -->
+    <string name="error_network">Unable to connect. Please check your network.</string>
+    <string name="error_server">The server had a problem. Please try again later.</string>
+    <string name="error_unauthorized">Your session has expired. Please sign in again.</string>
+    <string name="error_unknown">An unknown error occurred.</string>
+    <string name="msg_token_saved">Token saved securely</string>
+    <string name="msg_token_cleared">All sign-in session data cleared</string>
+    <string name="msg_token_refreshed">Token refreshed successfully</string>
+    <string name="label_loading">Loading...</string>
+
+    <!-- Phone + OTP Login -->
+    <string name="login_title">Sign in</string>
+    <string name="login_subtitle">Please sign in to enjoy exclusive member benefits.</string>
+    <string name="phone_hint">000 000 000</string>
+    <string name="btn_send_otp">Continue</string>
+    <string name="otp_title">Enter verification code</string>
+    <string name="otp_subtitle">The OTP was sent to %1$s</string>
+    <string name="otp_subtitle_countdown">The verification code was sent to\n%1$s and expires in %2$s</string>
+    <string name="otp_hint">000000</string>
+    <string name="btn_verify_otp">Continue</string>
+    <string name="otp_countdown">Resend code in %1$02d:%2$02d</string>
+    <string name="otp_countdown_text">Resend code in %1$s</string>
+    <string name="btn_resend_otp"><u>Resend verification code</u></string>
+    <string name="error_invalid_phone">Invalid phone number</string>
+    <string name="error_invalid_otp">Invalid OTP code (6 digits required)</string>
+    <string name="error_request_otp_failed">OTP request failed. Please try again.</string>
+    <string name="error_network_retry">Network error. Please check your connection.</string>
+    <string name="error_verify_otp_failed">The OTP is incorrect or has expired.</string>
+    <string name="error_otp_failed">Incorrect OTP code. Please try again</string>
+    <string name="error_otp_expired">The OTP has expired. Please request a new code</string>
+    <string name="login_success">Signed in successfully!</string>
+    <string name="msg_support_connecting">Connecting to support...</string>
+    <string name="msg_terms_policy">Policy &amp; Terms of service</string>
+    <string name="msg_google_login_pending">Google sign-in is in development</string>
+    <string name="msg_facebook_login_pending">Facebook sign-in is in development</string>
+    <string name="msg_resending_otp">Requesting a new OTP...</string>
+    <string name="label_phone">Phone number</string>
+    <string name="label_otp">Enter OTP</string>
+    <string name="phone_prefix">+84</string>
+    <string name="or_continue_with">Or continue with</string>
+    <string name="btn_google">Google</string>
+    <string name="btn_facebook">Facebook</string>
+    <string name="support">Support</string>
+    <string name="terms">Terms</string>
+    <string name="change_phone">Change phone</string>
+    <string name="language_switch_to_en">EN</string>
+    <string name="language_switch_to_vi">VI</string>
+    <string name="notification_otp_title">Login OTP</string>
+    <string name="notification_otp_message">Your OTP is %1$s</string>
+    <string name="notification_otp_sent">The OTP was sent to %1$s</string>
+    <string name="notification_request_failed_title">OTP request failed</string>
+    <string name="notification_verify_success_title">Signed in successfully</string>
+    <string name="notification_verify_success_message">Redirecting to home</string>
+    <string name="notification_verify_failed_title">Verification failed</string>
+    <string name="cd_aurapc_logo">AuraPC logo</string>
+    <string name="cd_dropdown">Open list</string>
+    <string name="cd_forward">Continue</string>
+    <string name="cd_change_language">Change language</string>
 </resources>

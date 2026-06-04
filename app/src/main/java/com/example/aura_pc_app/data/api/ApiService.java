@@ -27,4 +27,10 @@ public interface ApiService {
 
     @POST("cart/sync")
     Call<CartResponse> syncCartToServer(@Body SyncCartRequest request);
+
+    @POST("auth/request-otp")
+    Call<Map<String, Object>> requestOtp(@Body Map<String, String> body);
+
+    @POST("auth/verify-otp")
+    Call<Map<String, Object>> verifyOtp(@Body Map<String, String> body);
 }

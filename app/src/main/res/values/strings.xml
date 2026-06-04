@@ -16,11 +16,15 @@
     <string name="filter_gaming">Gaming</string>
     <string name="filter_office">Văn phòng</string>
 
-    <string name="nav_home">Home</string>
-    <string name="nav_categories">Categories</string>
-    <string name="nav_cart">Cart</string>
-    <string name="nav_blog">Blog</string>
-    <string name="nav_profile">Profile</string>
+    <string name="nav_home">Trang chủ</string>
+    <string name="nav_categories">Danh mục</string>
+    <string name="nav_cart">Giỏ hàng</string>
+    <string name="nav_blog">Tin tức</string>
+    <string name="nav_profile">Cá nhân</string>
+    <string name="home_title">Trang chủ AuraPC</string>
+    <string name="home_subtitle">Chào mừng bạn đến trải nghiệm mua sắm cao cấp.</string>
+    <string name="blog_screen_title">Tin tức</string>
+    <string name="profile_screen_title">Cá nhân</string>
 
     <string name="product_rating">4.8</string>
     <string name="product_review_count">(124)</string>
@@ -72,5 +76,59 @@
     <string name="msg_token_cleared">Đã xóa toàn bộ phiên đăng nhập</string>
     <string name="msg_token_refreshed">Token đã được làm mới thành công</string>
     <string name="label_loading">Đang tải…</string>
+
+    <!-- MOB-006 — SĐT + OTP Login strings -->
+    <string name="login_title">Đăng nhập</string>
+    <string name="login_subtitle">Vui lòng đăng nhập để hưởng những đặc quyền dành cho thành viên.</string>
+    <string name="phone_hint">000 000 000</string>
+    <string name="btn_send_otp">Tiếp tục</string>
+    <string name="otp_title">Nhập mã xác thực</string>
+    <string name="otp_subtitle">Mã OTP đã được gửi đến số điện thoại %1$s</string>
+    <string name="otp_subtitle_countdown">Mã xác thực được gửi đến số điện thoại\n%1$s có hiệu lực trong %2$s</string>
+    <string name="otp_hint">000000</string>
+    <string name="btn_verify_otp">Tiếp tục</string>
+    <string name="otp_countdown">Gửi lại mã sau %1$02d:%2$02d</string>
+    <string name="otp_countdown_text">Gửi lại mã sau %1$s</string>
+    <string name="btn_resend_otp"><u>Gửi lại mã xác thực cho tôi</u></string>
+    <string name="error_invalid_phone">Số điện thoại không hợp lệ</string>
+    <string name="error_invalid_otp">Mã OTP không hợp lệ (cần đúng 6 chữ số)</string>
+    <string name="error_request_otp_failed">Yêu cầu gửi OTP thất bại. Vui lòng thử lại.</string>
+    <string name="error_network_retry">Lỗi kết nối mạng. Vui lòng kiểm tra lại.</string>
+    <string name="error_verify_otp_failed">Mã OTP không chính xác hoặc đã hết hạn.</string>
+    <string name="error_otp_failed">Mã OTP không chính xác, vui lòng thử lại</string>
+    <string name="error_otp_expired">Mã OTP đã hết hạn, vui lòng gửi lại mã mới</string>
+    <string name="login_success">Đăng nhập thành công!</string>
+    <string name="msg_support_connecting">Đang kết nối trung tâm hỗ trợ...</string>
+    <string name="msg_terms_policy">Chính sách &amp; Điều khoản dịch vụ</string>
+    <string name="msg_google_login_pending">Đăng nhập Google đang phát triển</string>
+    <string name="msg_facebook_login_pending">Đăng nhập Facebook đang phát triển</string>
+    <string name="msg_resending_otp">Đang gửi lại mã OTP mới...</string>
+
+    <!-- MOB-006 UI Labels (extracted from hardcoded text) -->
+    <string name="label_phone">Số điện thoại</string>
+    <string name="label_otp">Nhập mã OTP</string>
+    <string name="phone_prefix">+84</string>
+    <string name="or_continue_with">Hoặc tiếp tục với</string>
+    <string name="btn_google">Google</string>
+    <string name="btn_facebook">Facebook</string>
+    <string name="support">Hỗ trợ</string>
+    <string name="terms">Điều khoản</string>
+    <string name="change_phone">Đổi số điện thoại</string>
+    <string name="language_switch_to_en">EN</string>
+    <string name="language_switch_to_vi">VI</string>
+    <string name="notification_otp_title">Mã OTP đăng nhập</string>
+    <string name="notification_otp_message">Mã OTP của bạn là %1$s</string>
+    <string name="notification_otp_sent">Mã OTP đã được gửi đến %1$s</string>
+    <string name="notification_request_failed_title">Không gửi được OTP</string>
+    <string name="notification_verify_success_title">Đăng nhập thành công</string>
+    <string name="notification_verify_success_message">Đang chuyển đến trang chủ</string>
+    <string name="notification_verify_failed_title">Xác thực thất bại</string>
+
+    <!-- Content Descriptions for Accessibility -->
+    <string name="cd_aurapc_logo">Logo AuraPC</string>
+    <string name="cd_dropdown">Mở danh sách</string>
+    <string name="cd_forward">Tiếp tục</string>
+    <string name="cd_change_language">Chuyển ngôn ngữ</string>
 </resources>
+
 
