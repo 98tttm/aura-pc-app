@@ -1,22 +1,28 @@
 package com.example.aura_pc_app.ui.auth;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+
 import androidx.annotation.Nullable;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.aura.pc.ui.profile.CheckingAccountActivity;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.databinding.ActivityAuthBinding;
 import com.example.aura_pc_app.ui.base.BaseActivity;
-import com.example.aura_pc_app.ui.home.HomeActivity;
 import com.example.aura_pc_app.utils.LocaleManager;
+
 import java.util.Map;
 
 public class AuthActivity extends BaseActivity<ActivityAuthBinding> {
 
+    public static final String EXTRA_LOGIN_SUCCESS = "extra_login_success";
     private static final long NOTIFICATION_VISIBLE_MS = 7000L;
 
     private AuthViewModel viewModel;
@@ -25,13 +31,17 @@ public class AuthActivity extends BaseActivity<ActivityAuthBinding> {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getIntent().getBooleanExtra(EXTRA_LOGIN_SUCCESS, false)) {
+            navigateAfterLoginSuccess(this);
+            finish();
+            return;
+        }
+
         configureSystemBars();
         setupLanguageToggle();
 
-        // Khởi tạo AuthViewModel chia sẻ cho cả Activity và các Fragment con
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-        // Mặc định hiển thị màn hình nhập Số điện thoại
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.auth_container, new PhoneInputFragment())
@@ -135,10 +145,16 @@ public class AuthActivity extends BaseActivity<ActivityAuthBinding> {
     }
 
     public void navigateToHome() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        navigateAfterLoginSuccess(this);
         finish();
+    }
+
+    public static void navigateAfterLoginSuccess(Context context) {
+        Intent intent = new Intent(context, CheckingAccountActivity.class);
+        if (!(context instanceof Activity)) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        context.startActivity(intent);
     }
 
     @Override
