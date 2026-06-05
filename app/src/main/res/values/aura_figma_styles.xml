@@ -16,18 +16,21 @@
     <style name="AuraProductGridItemLeft">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">362dp</item>
-        <item name="android:layout_marginEnd">5dp</item>
-        <item name="android:layout_marginBottom">14dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginBottom">27dp</item>
         <item name="android:layout_columnWeight">1</item>
+        <item name="android:clipChildren">false</item>
+        <item name="android:clipToPadding">false</item>
     </style>
 
     <style name="AuraProductGridItemRight">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">362dp</item>
-        <item name="android:layout_marginStart">5dp</item>
-        <item name="android:layout_marginBottom">14dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginBottom">27dp</item>
         <item name="android:layout_columnWeight">1</item>
-        <item name="android:translationY">12dp</item>
+        <item name="android:clipChildren">false</item>
+        <item name="android:clipToPadding">false</item>
     </style>
 
     <style name="AuraBottomNavItem">

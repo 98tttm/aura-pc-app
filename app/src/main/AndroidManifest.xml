@@ -33,9 +33,16 @@
             </intent-filter>
         </activity>
         <activity android:name="com.aura.pc.ui.categories.CategoriesActivity" />
+        <activity android:name="com.aura.pc.ui.products.ProductListActivity" />
         <activity android:name="com.aura.pc.ui.cart.CartActivity" />
         <activity android:name="com.aura.pc.ui.blog.BlogActivity" />
         <activity android:name="com.aura.pc.ui.profile.ProfileActivity" />
+        <activity
+            android:name="com.aura.pc.ui.address.AddressBookActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.aura.pc.ui.address.AddressEditActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity android:name="com.aura.pc.CheckoutActivity" android:exported="true" />
     </application>
 

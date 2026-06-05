@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/checkout_bg"
+    android:orientation="vertical">
+
+    <!-- Header -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/white"
+        android:paddingHorizontal="16dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/address_back"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:id="@+id/tvHeaderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="sans-serif-bold"
+            android:text="@string/address_add_title"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/checkout_border" />
+    </RelativeLayout>
+
+    <!-- Form -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Loại địa chỉ -->
+            <TextView style="@style/AddrFieldLabel" android:text="@string/address_field_label" />
+
+            <Spinner
+                android:id="@+id/spinnerLabel"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_auth_figma_input"
+                android:paddingHorizontal="14dp"
+                android:popupBackground="@color/white" />
+
+            <!-- Họ và tên -->
+            <TextView style="@style/AddrFieldLabel" android:text="@string/address_field_fullname" />
+
+            <EditText
+                android:id="@+id/etFullName"
+                style="@style/AddrFieldInput"
+                android:hint="@string/address_hint_fullname"
+                android:inputType="textPersonName" />
+
+            <TextView android:id="@+id/errFullName" style="@style/AddrFieldError" />
+
+            <!-- Số điện thoại -->
+            <TextView style="@style/AddrFieldLabel" android:text="@string/address_field_phone" />
+
+            <EditText
+                android:id="@+id/etPhone"
+                style="@style/AddrFieldInput"
+                android:hint="@string/address_hint_phone"
+                android:inputType="phone"
+                android:maxLength="11" />
+
+            <TextView android:id="@+id/errPhone" style="@style/AddrFieldError" />
+
+            <!-- Tỉnh / Thành phố -->
+            <TextView style="@style/AddrFieldLabel" android:text="@string/address_field_city" />
+
+            <Spinner
+                android:id="@+id/spinnerCity"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_auth_figma_input"
+                android:paddingHorizontal="14dp"
+                android:popupBackground="@color/white" />
+
+            <TextView android:id="@+id/errCity" style="@style/AddrFieldError" />
+
+            <!-- Quận / Huyện -->
+            <TextView style="@style/AddrFieldLabel" android:text="@string/address_field_district" />
+
+            <Spinner
+                android:id="@+id/spinnerDistrict"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_auth_figma_input"
+                android:paddingHorizontal="14dp"
+                android:popupBackground="@color/white" />
+
+            <TextView android:id="@+id/errDistrict" style="@style/AddrFieldError" />
+
+            <!-- Phường / Xã -->
+            <TextView style="@style/AddrFieldLabel" android:text="@string/address_field_ward" />
+
+            <Spinner
+                android:id="@+id/spinnerWard"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_auth_figma_input"
+                android:paddingHorizontal="14dp"
+                android:popupBackground="@color/white" />
+
+            <TextView android:id="@+id/errWard" style="@style/AddrFieldError" />
+
+            <!-- Địa chỉ cụ thể -->
+            <TextView style="@style/AddrFieldLabel" android:text="@string/address_field_detail" />
+
+            <EditText
+                android:id="@+id/etAddress"
+                style="@style/AddrFieldInput"
+                android:hint="@string/address_hint_detail"
+                android:inputType="textPostalAddress" />
+
+            <TextView android:id="@+id/errAddress" style="@style/AddrFieldError" />
+
+            <!-- Default toggle -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_auth_figma_input"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="10dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/address_set_default_toggle"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchDefault"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:thumbTint="@color/white"
+                    app:trackTint="@color/switch_track" />
+            </LinearLayout>
+
+            <!-- Delete (edit mode only) -->
+            <TextView
+                android:id="@+id/btnDeleteAddress"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_delete_outline"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="@string/address_delete_this"
+                android:textColor="@color/discount_text"
+                android:textSize="14sp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Save button -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="12dp"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="@drawable/bg_checkout_button"
+            android:fontFamily="sans-serif-bold"
+            android:gravity="center"
+            android:text="@string/address_save_add"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </FrameLayout>
+</LinearLayout>

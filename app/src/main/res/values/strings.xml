@@ -88,6 +88,13 @@
     <string name="product_old_price_acer_nitro_v16s">28.990.000đ</string>
     <string name="product_price_acer_nitro_v16s">24.590.000đ</string>
     <string name="product_discount_15">-15%</string>
+    <string name="product_list_discount_label">Giảm</string>
+    <string name="product_list_discount_rate">18%</string>
+    <string name="product_list_installment_label">Trả góp</string>
+    <string name="product_list_installment_rate">0%</string>
+    <string name="product_old_price_list"><strike>28.990.000đ</strike></string>
+    <string name="product_list_load_more">Xem thêm %1$d sản phẩm</string>
+    <string name="product_list_load_more_initial">Xem thêm sản phẩm</string>
 
     <!-- Cart Screen -->
     <string name="cart_title">Giỏ hàng của bạn</string>
@@ -237,6 +244,74 @@
     <string name="home_product_mouse_price">2.490.000đ</string>
     <string name="home_product_rating_one">4.8 (124)</string>
     <string name="home_product_rating_two">5.0 (89)</string>
+
+    <!-- ===================== Sổ địa chỉ (Address Book) ===================== -->
+    <string name="address_back">Quay lại</string>
+    <string name="address_book_title">Sổ địa chỉ</string>
+    <string name="address_empty_title">Bạn chưa có địa chỉ nào</string>
+    <string name="address_empty_subtitle">Thêm địa chỉ giao hàng để thanh toán nhanh hơn</string>
+    <string name="address_add_new">Thêm địa chỉ mới</string>
+    <string name="address_default">Mặc định</string>
+    <string name="address_set_default">Đặt mặc định</string>
+    <string name="address_set_default_done">Đã đặt làm địa chỉ mặc định</string>
+    <string name="address_edit">Sửa</string>
+    <string name="address_delete">Xóa</string>
+
+    <string name="address_add_title">Thêm địa chỉ mới</string>
+    <string name="address_edit_title">Sửa địa chỉ</string>
+    <string name="address_field_label">Loại địa chỉ</string>
+    <string name="address_field_fullname">Họ và tên *</string>
+    <string name="address_field_phone">Số điện thoại *</string>
+    <string name="address_field_city">Tỉnh / Thành phố *</string>
+    <string name="address_field_district">Quận / Huyện *</string>
+    <string name="address_field_ward">Phường / Xã *</string>
+    <string name="address_field_detail">Địa chỉ cụ thể *</string>
+    <string name="address_hint_fullname">Nhập họ tên người nhận</string>
+    <string name="address_hint_phone">Nhập số điện thoại</string>
+    <string name="address_hint_detail">Số nhà, tên đường…</string>
+    <string name="address_select_city">Chọn Tỉnh / Thành phố</string>
+    <string name="address_select_district">Chọn Quận / Huyện</string>
+    <string name="address_select_ward">Chọn Phường / Xã</string>
+    <string name="address_set_default_toggle">Đặt làm địa chỉ mặc định</string>
+    <string name="address_delete_this">Xóa địa chỉ</string>
+    <string name="address_save_add">Thêm</string>
+    <string name="address_save_update">Cập nhật</string>
+    <string name="address_cancel">Hủy</string>
+
+    <string name="address_delete_confirm_title">Xác nhận xóa</string>
+    <string name="address_delete_confirm_msg">Bạn có chắc chắn muốn xóa địa chỉ này khỏi sổ địa chỉ không?</string>
+
+    <string name="address_err_fullname">Vui lòng nhập họ tên.</string>
+    <string name="address_err_phone_empty">Vui lòng nhập số điện thoại.</string>
+    <string name="address_err_phone_invalid">Số điện thoại không hợp lệ (VD: 0912345678).</string>
+    <string name="address_err_city">Vui lòng chọn Tỉnh / Thành phố.</string>
+    <string name="address_err_district">Vui lòng chọn Quận / Huyện.</string>
+    <string name="address_err_ward">Vui lòng chọn Phường / Xã.</string>
+    <string name="address_err_detail">Vui lòng nhập địa chỉ cụ thể.</string>
+    <string name="address_location_error">Không tải được danh sách Tỉnh/Thành. Kiểm tra mạng.</string>
+
+    <string name="address_added">Đã thêm địa chỉ</string>
+    <string name="address_updated">Đã cập nhật địa chỉ</string>
+    <string name="address_deleted">Đã xóa địa chỉ</string>
+
+    <string-array name="address_label_options">
+        <item>Nhà riêng</item>
+        <item>Công ty</item>
+        <item>Khác</item>
+    </string-array>
+
+    <!-- Trang Cá nhân -->
+    <string name="profile_greeting">Xin chào 👋</string>
+    <string name="profile_section_account">Tài khoản của tôi</string>
+    <string name="profile_menu_info">Thông tin tài khoản</string>
+    <string name="profile_menu_info_sub">Họ tên, số điện thoại, email</string>
+    <string name="profile_menu_address">Quản lý sổ địa chỉ</string>
+    <string name="profile_menu_address_sub">Địa chỉ giao hàng của bạn</string>
+    <string name="profile_menu_orders">Đơn hàng của tôi</string>
+    <string name="profile_menu_orders_sub">Theo dõi &amp; lịch sử mua hàng</string>
+    <string name="profile_menu_wishlist">Sản phẩm yêu thích</string>
+    <string name="profile_menu_wishlist_sub">Danh sách đã lưu</string>
+    <string name="profile_logout">Đăng xuất</string>
 </resources>
 
 

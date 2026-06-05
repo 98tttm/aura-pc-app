@@ -235,4 +235,71 @@
     <string name="home_product_mouse_price">2,490,000đ</string>
     <string name="home_product_rating_one">4.8 (124)</string>
     <string name="home_product_rating_two">5.0 (89)</string>
+
+    <!-- ===================== Address Book ===================== -->
+    <string name="address_back">Back</string>
+    <string name="address_book_title">Address Book</string>
+    <string name="address_empty_title">You have no addresses yet</string>
+    <string name="address_empty_subtitle">Add a shipping address to check out faster</string>
+    <string name="address_add_new">Add new address</string>
+    <string name="address_default">Default</string>
+    <string name="address_set_default">Set as default</string>
+    <string name="address_set_default_done">Set as default address</string>
+    <string name="address_edit">Edit</string>
+    <string name="address_delete">Delete</string>
+
+    <string name="address_add_title">Add new address</string>
+    <string name="address_edit_title">Edit address</string>
+    <string name="address_field_label">Address type</string>
+    <string name="address_field_fullname">Full name *</string>
+    <string name="address_field_phone">Phone number *</string>
+    <string name="address_field_city">Province / City *</string>
+    <string name="address_field_district">District *</string>
+    <string name="address_field_ward">Ward *</string>
+    <string name="address_field_detail">Detailed address *</string>
+    <string name="address_hint_fullname">Enter recipient name</string>
+    <string name="address_hint_phone">Enter phone number</string>
+    <string name="address_hint_detail">House number, street…</string>
+    <string name="address_select_city">Select Province / City</string>
+    <string name="address_select_district">Select District</string>
+    <string name="address_select_ward">Select Ward</string>
+    <string name="address_set_default_toggle">Set as default address</string>
+    <string name="address_delete_this">Delete address</string>
+    <string name="address_save_add">Add</string>
+    <string name="address_save_update">Update</string>
+    <string name="address_cancel">Cancel</string>
+
+    <string name="address_delete_confirm_title">Confirm deletion</string>
+    <string name="address_delete_confirm_msg">Are you sure you want to remove this address from your address book?</string>
+
+    <string name="address_err_fullname">Please enter a name.</string>
+    <string name="address_err_phone_empty">Please enter a phone number.</string>
+    <string name="address_err_phone_invalid">Invalid phone number (e.g. 0912345678).</string>
+    <string name="address_err_city">Please select a Province / City.</string>
+    <string name="address_err_district">Please select a District.</string>
+    <string name="address_err_ward">Please select a Ward.</string>
+    <string name="address_err_detail">Please enter a detailed address.</string>
+    <string name="address_location_error">Could not load location list. Check your network.</string>
+
+    <string name="address_added">Address added</string>
+    <string name="address_updated">Address updated</string>
+    <string name="address_deleted">Address deleted</string>
+
+    <string-array name="address_label_options">
+        <item>Home</item>
+        <item>Office</item>
+        <item>Other</item>
+    </string-array>
+
+    <string name="profile_greeting">Hello 👋</string>
+    <string name="profile_section_account">My Account</string>
+    <string name="profile_menu_info">Account information</string>
+    <string name="profile_menu_info_sub">Name, phone, email</string>
+    <string name="profile_menu_address">Manage address book</string>
+    <string name="profile_menu_address_sub">Your shipping addresses</string>
+    <string name="profile_menu_orders">My orders</string>
+    <string name="profile_menu_orders_sub">Tracking &amp; purchase history</string>
+    <string name="profile_menu_wishlist">Wishlist</string>
+    <string name="profile_menu_wishlist_sub">Your saved items</string>
+    <string name="profile_logout">Log out</string>
 </resources>

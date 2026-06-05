@@ -14,65 +14,91 @@
         <LinearLayout
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:background="@color/aura_white"
-            android:elevation="2dp"
+            android:layout_height="72dp"
+            android:background="@color/aura_orange"
+            android:elevation="4dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="20dp"
             android:paddingEnd="20dp">
 
-            <ImageButton
-                android:id="@+id/topMenuButton"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/cd_open_menu"
-                android:padding="8dp"
-                android:src="@drawable/ic_menu" />
+            <ImageView
+                android:layout_width="42dp"
+                android:layout_height="40dp"
+                android:contentDescription="@string/cd_aurapc_logo"
+                android:padding="2dp"
+                android:src="@drawable/figma_home_logo" />
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_height="28dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:fontFamily="sans-serif-black"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:includeFontPadding="false"
                 android:text="@string/app_name"
-                android:textColor="@color/aura_black"
-                android:textSize="20sp" />
-
-            <ImageButton
-                android:id="@+id/topSearchButton"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/cd_search"
-                android:padding="8dp"
-                android:src="@drawable/ic_search" />
+                android:textColor="@color/aura_white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <FrameLayout
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:layout_marginStart="16dp">
+                android:layout_width="38dp"
+                android:layout_height="38dp">
 
                 <ImageButton
                     android:id="@+id/topNotificationsButton"
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/cd_notifications"
-                    android:padding="8dp"
+                    android:padding="7dp"
                     android:src="@drawable/ic_figma_bell_bold"
-                    app:tint="@color/aura_black" />
+                    app:tint="@color/aura_white" />
 
-                <View
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
+                <TextView
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
                     android:layout_gravity="top|end"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/bg_notify_dot" />
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="3dp"
+                    android:background="@drawable/bg_header_badge_red"
+                    android:fontFamily="sans-serif-bold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/home_badge_count"
+                    android:textColor="@color/aura_white"
+                    android:textSize="6sp" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="8dp">
+
+                <ImageButton
+                    android:id="@+id/topCartButton"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/home_open_cart"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_figma_cart_large_bold"
+                    app:tint="@color/aura_white" />
+
+                <TextView
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="1dp"
+                    android:background="@drawable/bg_header_badge_red"
+                    android:fontFamily="sans-serif-bold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/home_badge_count"
+                    android:textColor="@color/aura_white"
+                    android:textSize="6sp" />
             </FrameLayout>
         </LinearLayout>
 
@@ -80,6 +106,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:clipChildren="false"
             android:clipToPadding="false"
             android:fillViewport="false"
             android:overScrollMode="never"
@@ -89,10 +116,12 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:orientation="vertical"
-                android:paddingStart="12dp"
+                android:paddingStart="20dp"
                 android:paddingTop="16dp"
-                android:paddingEnd="12dp">
+                android:paddingEnd="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -183,8 +212,10 @@
                     android:id="@+id/productGrid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="32dp"
                     android:alignmentMode="alignBounds"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
                     android:columnCount="2"
                     android:columnOrderPreserved="false"
                     android:gravity="center_horizontal"
@@ -192,52 +223,59 @@
                     android:useDefaultMargins="false">
 
                     <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_aura_product_card" />
+                        <include layout="@layout/item_product_list_card" />
                     </FrameLayout>
 
                     <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_aura_product_card" />
+                        <include layout="@layout/item_product_list_card" />
                     </FrameLayout>
 
                     <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_aura_product_card" />
+                        <include layout="@layout/item_product_list_card" />
                     </FrameLayout>
 
                     <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_aura_product_card" />
+                        <include layout="@layout/item_product_list_card" />
                     </FrameLayout>
 
                     <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_aura_product_card" />
+                        <include layout="@layout/item_product_list_card" />
                     </FrameLayout>
 
                     <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_aura_product_card" />
+                        <include layout="@layout/item_product_list_card" />
                     </FrameLayout>
 
                     <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_aura_product_card" />
+                        <include layout="@layout/item_product_list_card" />
                     </FrameLayout>
 
                     <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_aura_product_card" />
+                        <include layout="@layout/item_product_list_card" />
                     </FrameLayout>
                 </GridLayout>
 
-                <FrameLayout
+                <Button
+                    android:id="@+id/loadMoreProductsButton"
                     android:layout_width="match_parent"
-                    android:layout_height="116dp"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="11dp"
                     android:layout_marginTop="2dp"
-                    android:layout_marginBottom="18dp">
-
-                    <ProgressBar
-                        android:id="@+id/loadingProgress"
-                        android:layout_width="32dp"
-                        android:layout_height="35dp"
-                        android:layout_gravity="center"
-                        android:indeterminate="true"
-                        android:indeterminateTint="@color/aura_orange" />
-                </FrameLayout>
+                    android:layout_marginEnd="11dp"
+                    android:layout_marginBottom="30dp"
+                    android:background="@drawable/bg_product_load_more_button"
+                    android:backgroundTint="@null"
+                    android:fontFamily="sans-serif-bold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="18dp"
+                    android:text="@string/product_list_load_more_initial"
+                    android:textAllCaps="false"
+                    android:textColor="@color/aura_white"
+                    android:textSize="20sp" />
 
             </LinearLayout>
         </ScrollView>

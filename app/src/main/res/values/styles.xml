@@ -11,4 +11,101 @@
         <item name="android:textSize">24sp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <!-- ===== Address book form styles ===== -->
+    <style name="AddrFieldLabel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="AddrFieldInput">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:background">@drawable/bg_auth_figma_input</item>
+        <item name="android:paddingHorizontal">14dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">@color/gray_text</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="AddrFieldError">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:textColor">@color/discount_text</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <!-- ===== Profile menu rows ===== -->
+    <style name="ProfileMenuRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:paddingHorizontal">16dp</item>
+        <item name="android:paddingVertical">14dp</item>
+    </style>
+
+    <style name="ProfileMenuIconWrap">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:background">@drawable/bg_category_icon_soft</item>
+    </style>
+
+    <style name="ProfileMenuIcon">
+        <item name="android:layout_width">22dp</item>
+        <item name="android:layout_height">22dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:contentDescription">@null</item>
+        <item name="android:tint">@color/orange_primary</item>
+    </style>
+
+    <style name="ProfileMenuText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginStart">14dp</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="ProfileMenuTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="ProfileMenuSub">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:textColor">@color/checkout_gray</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="ProfileMenuChevron">
+        <item name="android:layout_width">18dp</item>
+        <item name="android:layout_height">18dp</item>
+        <item name="android:src">@drawable/ic_arrow_forward_rounded</item>
+        <item name="android:contentDescription">@null</item>
+        <item name="android:tint">@color/gray_text</item>
+    </style>
+
+    <style name="ProfileMenuDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginStart">70dp</item>
+        <item name="android:background">@color/divider</item>
+    </style>
 </resources>
