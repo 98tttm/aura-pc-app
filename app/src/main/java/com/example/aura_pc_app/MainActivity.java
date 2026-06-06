@@ -1,6 +1,7 @@
 package com.example.aura_pc_app;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -16,6 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.aura.pc.CheckoutActivity;
+import com.aura.pc.ui.blog.BlogActivity;
+import com.aura.pc.ui.cart.CartActivity;
 import com.example.aura_pc_app.adapter.ProductImageAdapter;
 import com.example.aura_pc_app.adapter.RelatedProductAdapter;
 import com.example.aura_pc_app.adapter.SpecAdapter;
@@ -25,6 +29,7 @@ import com.example.aura_pc_app.domain.repository.mock.MockData;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.domain.model.Product;
 import com.example.aura_pc_app.domain.model.ProductSpec;
+import com.example.aura_pc_app.utils.AuthGate;
 import com.example.aura_pc_app.utils.LocaleManager;
 
 import java.util.List;
@@ -58,10 +63,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         initViews();
+        setupPrimaryNavigationOverrides();
         loadData();
         
         // Initialize Bottom Navigation
         BottomNavigationHelper.setup(this, BottomNavigationHelper.TAB_HOME);
+        BottomNavigationHelper.setupHeader(this);
     }
 
     private void initViews() {
@@ -136,6 +143,29 @@ public class MainActivity extends AppCompatActivity {
         if (bottomNavCard != null) {
             bottomNavCard.setOnClickListener(v -> {
                 android.widget.Toast.makeText(this, "Chức năng thanh điều hướng đang phát triển", android.widget.Toast.LENGTH_SHORT).show();
+            });
+        }
+    }
+
+    private void setupPrimaryNavigationOverrides() {
+        if (btnConsult != null) {
+            btnConsult.setOnClickListener(v -> startActivity(new Intent(this, BlogActivity.class)));
+        }
+        if (btnAddToCart != null) {
+            btnAddToCart.setOnClickListener(v -> {
+                if (!AuthGate.requireLogin(this, CartActivity.class)) {
+                    return;
+                }
+                android.widget.Toast.makeText(this, "Added to cart", android.widget.Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, CartActivity.class));
+            });
+        }
+        if (btnBuyNow != null) {
+            btnBuyNow.setOnClickListener(v -> {
+                if (!AuthGate.requireLogin(this, CheckoutActivity.class)) {
+                    return;
+                }
+                startActivity(new Intent(this, CheckoutActivity.class));
             });
         }
     }

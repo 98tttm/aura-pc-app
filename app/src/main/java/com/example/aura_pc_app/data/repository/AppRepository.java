@@ -45,6 +45,10 @@ public class AppRepository {
         return productDao.getAllProductsLive();
     }
 
+    public LiveData<List<CartItemEntity>> getCartItems() {
+        return cartDao.getAllCartItemsLive();
+    }
+
     private void refreshProductsFromNetwork() {
         // Sử dụng tên hàm mới getProductsPaginated đã thống nhất với ApiService
         apiService.getProductsPaginated(1, 50).enqueue(new Callback<ProductResponse>() {

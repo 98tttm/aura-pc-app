@@ -104,6 +104,11 @@ jacocoTestReport/
 .omc/
 SKILL.md
 
+# Local AI agent context
+.codex/
+AGENTS.md
+Agents.md
+
 # Temporary files
 *.tmp
 *.bak

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import com.example.aura_pc_app.R;
 
@@ -36,25 +36,46 @@ public class BottomNavigationHelper {
         profile.setOnClickListener(v -> navigate(activity, TAB_PROFILE));
     }
 
+    public static void setupHeader(final Activity activity) {
+        View logo = activity.findViewById(R.id.logoText);
+        View cart = activity.findViewById(R.id.cartContainer);
+        View search = activity.findViewById(R.id.searchIcon);
+        View menu = activity.findViewById(R.id.menuIcon);
+
+        if (logo != null) {
+            logo.setOnClickListener(v -> navigate(activity, TAB_HOME));
+        }
+        if (cart != null) {
+            cart.setOnClickListener(v -> navigate(activity, TAB_CART));
+        }
+        if (search != null) {
+            search.setOnClickListener(v -> navigate(activity, TAB_CATEGORIES));
+        }
+        if (menu != null) {
+            menu.setOnClickListener(v ->
+                    Toast.makeText(activity, "Menu is coming soon", Toast.LENGTH_SHORT).show());
+        }
+    }
+
     private static void setActiveTab(Activity activity, String activeTab) {
         resetTabs(activity);
         int activeColor = ContextCompat.getColor(activity, R.color.premium_nav_active);
         
         switch (activeTab) {
             case TAB_HOME:
-                highlightTab(activity, R.id.nav_home_icon, R.id.nav_home_text, R.id.nav_home_indicator, activeColor);
+                highlightTab(activity, R.id.nav_home_icon, R.id.nav_home_indicator, activeColor);
                 break;
             case TAB_CATEGORIES:
-                highlightTab(activity, R.id.nav_categories_icon, R.id.nav_categories_text, R.id.nav_categories_indicator, activeColor);
+                highlightTab(activity, R.id.nav_categories_icon, R.id.nav_categories_indicator, activeColor);
                 break;
             case TAB_CART:
-                highlightTab(activity, R.id.nav_cart_icon, R.id.nav_cart_text, R.id.nav_cart_indicator, activeColor);
+                highlightTab(activity, R.id.nav_cart_icon, R.id.nav_cart_indicator, activeColor);
                 break;
             case TAB_BLOG:
-                highlightTab(activity, R.id.nav_blog_icon, R.id.nav_blog_text, R.id.nav_blog_indicator, activeColor);
+                highlightTab(activity, R.id.nav_blog_icon, R.id.nav_blog_indicator, activeColor);
                 break;
             case TAB_PROFILE:
-                highlightTab(activity, R.id.nav_profile_icon, R.id.nav_profile_text, R.id.nav_profile_indicator, activeColor);
+                highlightTab(activity, R.id.nav_profile_icon, R.id.nav_profile_indicator, activeColor);
                 break;
         }
     }
@@ -62,25 +83,20 @@ public class BottomNavigationHelper {
     private static void resetTabs(Activity activity) {
         int inactiveColor = ContextCompat.getColor(activity, R.color.premium_nav_inactive);
         int[] icons = {R.id.nav_home_icon, R.id.nav_categories_icon, R.id.nav_cart_icon, R.id.nav_blog_icon, R.id.nav_profile_icon};
-        int[] texts = {R.id.nav_home_text, R.id.nav_categories_text, R.id.nav_cart_text, R.id.nav_blog_text, R.id.nav_profile_text};
         int[] indicators = {R.id.nav_home_indicator, R.id.nav_categories_indicator, R.id.nav_cart_indicator, R.id.nav_blog_indicator, R.id.nav_profile_indicator};
 
         for (int i = 0; i < icons.length; i++) {
             ImageView icon = activity.findViewById(icons[i]);
-            TextView text = activity.findViewById(texts[i]);
             View indicator = activity.findViewById(indicators[i]);
             if (icon != null) icon.setColorFilter(inactiveColor);
-            if (text != null) text.setTextColor(inactiveColor);
             if (indicator != null) indicator.setVisibility(View.INVISIBLE);
         }
     }
 
-    private static void highlightTab(Activity activity, int iconId, int textId, int indicatorId, int color) {
+    private static void highlightTab(Activity activity, int iconId, int indicatorId, int color) {
         ImageView icon = activity.findViewById(iconId);
-        TextView text = activity.findViewById(textId);
         View indicator = activity.findViewById(indicatorId);
         if (icon != null) icon.setColorFilter(color);
-        if (text != null) text.setTextColor(color);
         if (indicator != null) indicator.setVisibility(View.VISIBLE);
     }
 

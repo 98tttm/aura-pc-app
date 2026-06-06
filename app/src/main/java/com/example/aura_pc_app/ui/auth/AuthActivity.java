@@ -12,6 +12,7 @@ import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.databinding.ActivityAuthBinding;
 import com.example.aura_pc_app.ui.base.BaseActivity;
 import com.example.aura_pc_app.ui.home.HomeActivity;
+import com.example.aura_pc_app.utils.AuthGate;
 import com.example.aura_pc_app.utils.LocaleManager;
 import java.util.Map;
 
@@ -135,10 +136,27 @@ public class AuthActivity extends BaseActivity<ActivityAuthBinding> {
     }
 
     public void navigateToHome() {
-        Intent intent = new Intent(this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent intent = createPostLoginIntent();
         startActivity(intent);
         finish();
+    }
+
+    private Intent createPostLoginIntent() {
+        String redirectClassName = getIntent().getStringExtra(AuthGate.EXTRA_REDIRECT_CLASS_NAME);
+        if (redirectClassName != null && !redirectClassName.isEmpty()) {
+            try {
+                Class<?> redirectClass = Class.forName(redirectClassName);
+                Intent redirectIntent = new Intent(this, redirectClass);
+                redirectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                return redirectIntent;
+            } catch (ClassNotFoundException ignored) {
+                // Fall back to home if a stale redirect target is passed.
+            }
+        }
+
+        Intent homeIntent = new Intent(this, HomeActivity.class);
+        homeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return homeIntent;
     }
 
     @Override

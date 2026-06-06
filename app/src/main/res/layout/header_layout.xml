@@ -54,7 +54,7 @@
             android:id="@+id/cartIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_cart_header"
+            android:src="@drawable/ic_figma_cart_large_bold"
             app:tint="@color/black" />
 
         <View

@@ -6,9 +6,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.R;
+import com.example.aura_pc_app.utils.AuthGate;
 import com.example.aura_pc_app.utils.LocaleManager;
 
 public class CheckoutActivity extends AppCompatActivity {
@@ -24,6 +26,11 @@ public class CheckoutActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!AuthGate.requireLogin(this, CheckoutActivity.class)) {
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_checkout);
 
         initViews();
@@ -31,6 +38,17 @@ public class CheckoutActivity extends AppCompatActivity {
         
         // Initialize Bottom Navigation
         BottomNavigationHelper.setup(this, BottomNavigationHelper.TAB_CART);
+
+        View back = findViewById(R.id.btnBack);
+        if (back != null) {
+            back.setOnClickListener(v -> finish());
+        }
+
+        View confirmOrder = findViewById(R.id.btnConfirmOrder);
+        if (confirmOrder != null) {
+            confirmOrder.setOnClickListener(v ->
+                    Toast.makeText(this, "Order confirmed", Toast.LENGTH_SHORT).show());
+        }
     }
 
     private void initViews() {
