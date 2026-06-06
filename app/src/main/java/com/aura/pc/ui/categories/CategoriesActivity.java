@@ -14,8 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.aura.pc.ui.cart.CartActivity;
+import com.aura.pc.ui.products.ProductListActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
-import com.example.aura_pc_app.MainActivity;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.utils.LocaleManager;
 
@@ -157,7 +157,7 @@ public class CategoriesActivity extends AppCompatActivity {
     }
 
     private void openProductList() {
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, ProductListActivity.class));
     }
 
     @Override

@@ -1,15 +1,18 @@
 package com.example.aura_pc_app.data.api;
 
+import com.aura.pc.ui.address.AddressListResponse;
+
 import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.PATCH;
 import retrofit2.http.Path;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
 import retrofit2.http.PUT;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @POST("auth/login")
@@ -23,6 +26,12 @@ public interface ApiService {
 
     @GET("products")
     Call<Map<String, Object>> getProducts();
+
+    @GET("products")
+    Call<Map<String, Object>> getProductsPaginatedMap(
+            @Query("page") int page,
+            @Query("limit") int limit
+    );
 
     @GET("users/{id}")
     Call<Map<String, Object>> getUserById(@Path("id") int id);
@@ -44,4 +53,28 @@ public interface ApiService {
 
     @POST("cart/sync")
     Call<CartResponse> syncCartToServer(@Body SyncCartRequest request);
+
+    @GET("auth/addresses/{userId}")
+    Call<AddressListResponse> getAddresses(@Path("userId") String userId);
+
+    @POST("auth/addresses")
+    Call<AddressListResponse> addAddress(@Body Map<String, Object> body);
+
+    @PUT("auth/addresses/{addressId}")
+    Call<AddressListResponse> updateAddress(
+            @Path("addressId") String addressId,
+            @Body Map<String, Object> body
+    );
+
+    @HTTP(method = "DELETE", path = "auth/addresses/{addressId}", hasBody = true)
+    Call<AddressListResponse> deleteAddress(
+            @Path("addressId") String addressId,
+            @Body Map<String, Object> body
+    );
+
+    @PUT("auth/addresses/{addressId}/default")
+    Call<AddressListResponse> setDefaultAddress(
+            @Path("addressId") String addressId,
+            @Body Map<String, Object> body
+    );
 }

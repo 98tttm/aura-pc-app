@@ -68,8 +68,22 @@
     <color name="checkout_blue">#FF6B00</color>
 
     <!-- Missing resources for build fix -->
-    <color name="aura_placeholder">#E0E0E0</color>
-    <color name="aura_review">#FFD700</color>
+    <color name="aura_placeholder">#805A4136</color>
+    <color name="aura_badge_red">#FFBA1A1A</color>
+    <color name="aura_badge_orange">#FFFF7A00</color>
+    <color name="aura_review">#995A4136</color>
+
+    <!-- Home Page -->
+    <color name="home_bg">#FFFAF8F6</color>
+    <color name="home_hero_overlay_start">#CC261812</color>
+    <color name="home_hero_overlay_end">#00261812</color>
+    <color name="home_flash_bg">#FFFFF1EB</color>
+    <color name="home_flash_timer_bg">#FF261812</color>
+    <color name="home_video_overlay">#66000000</color>
+    <color name="home_promo_bg">#FF2B1A10</color>
+    <color name="home_news_date">#99261812</color>
+    <color name="home_tag_green">#FF2E7D32</color>
+    <color name="home_tag_red">#FFE53935</color>
 
     <!-- Tailwind Figma Colors -->
     <color name="surface">#F8F9FF</color>

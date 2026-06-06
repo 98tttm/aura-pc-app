@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.ui.categories.CategoriesActivity;
+import com.aura.pc.ui.products.ProductListActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.MainActivity;
 import com.example.aura_pc_app.R;
@@ -57,7 +58,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
                 startActivity(new Intent(this, CategoriesActivity.class)));
         binding.homeQuickBuilder.setOnClickListener(v ->
                 Toast.makeText(this, R.string.category_builder_pending, Toast.LENGTH_SHORT).show());
-        binding.homeViewAllProducts.setOnClickListener(v -> openProductDetail());
+        binding.homeViewAllProducts.setOnClickListener(v -> openProductList());
         setupCategoryStrip();
     }
 
@@ -124,6 +125,10 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
 
     private void openProductDetail() {
         startActivity(new Intent(this, MainActivity.class));
+    }
+
+    private void openProductList() {
+        startActivity(new Intent(this, ProductListActivity.class));
     }
 
     private void openCart() {
