@@ -32,6 +32,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.aura.pc.ui.profile.CheckingAccountActivity" />
+        <activity android:name="com.aura.pc.ui.profile.CompleteProfileActivity" />
         <activity android:name="com.aura.pc.ui.categories.CategoriesActivity" />
         <activity android:name="com.aura.pc.ui.cart.CartActivity" />
         <activity android:name="com.aura.pc.ui.blog.BlogActivity" />

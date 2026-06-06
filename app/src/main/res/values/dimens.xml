@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="profile_screen_padding_horizontal">22dp</dimen>
+    <dimen name="profile_screen_padding_top">38dp</dimen>
+    <dimen name="profile_logo_size">86dp</dimen>
+    <dimen name="profile_checking_logo_size">92dp</dimen>
+    <dimen name="profile_card_radius">28dp</dimen>
+    <dimen name="profile_card_padding">20dp</dimen>
+    <dimen name="profile_input_height">52dp</dimen>
+    <dimen name="profile_input_radius">18dp</dimen>
+    <dimen name="profile_field_gap">16dp</dimen>
+    <dimen name="profile_label_input_gap">8dp</dimen>
+    <dimen name="profile_submit_height">54dp</dimen>
+    <dimen name="profile_title_text_size">26sp</dimen>
+    <dimen name="profile_body_text_size">14sp</dimen>
+    <dimen name="profile_input_text_size">15sp</dimen>
+    <dimen name="profile_error_text_size">12sp</dimen>
+    <dimen name="checking_header_height">68dp</dimen>
+    <dimen name="checking_header_padding_horizontal">24dp</dimen>
+    <dimen name="checking_content_top_margin">120dp</dimen>
+    <dimen name="checking_logo_width">172dp</dimen>
+    <dimen name="checking_logo_height">142dp</dimen>
+    <dimen name="checking_title_top_margin">24dp</dimen>
+    <dimen name="checking_status_top_margin">18dp</dimen>
+    <dimen name="checking_subtitle_top_margin">20dp</dimen>
+    <dimen name="checking_spinner_top_margin">34dp</dimen>
+    <dimen name="checking_spinner_size">36dp</dimen>
+</resources>

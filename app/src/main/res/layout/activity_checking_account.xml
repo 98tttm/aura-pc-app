@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/checkingHeader"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/checking_header_height"
+        android:background="@color/premium_nav_active"
+        android:paddingStart="@dimen/checking_header_padding_horizontal"
+        android:paddingEnd="@dimen/checking_header_padding_horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="41dp"
+                android:layout_height="30dp"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/aura_logo_mark_white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:fontFamily="sans-serif-black"
+                android:text="AuraPC"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_bell"
+                app:tint="@color/white" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="20dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_cart_header"
+                app:tint="@color/white" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="@dimen/checking_logo_width"
+            android:layout_height="@dimen/checking_logo_height"
+            android:layout_marginTop="@dimen/checking_content_top_margin"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/aura_logo_mark" />
+
+        <TextView
+            android:id="@+id/tvCheckingTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/checking_title_top_margin"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:text="Xác minh thành công"
+            android:textColor="@color/text_primary_dark"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/tvCheckingHeadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/checking_status_top_margin"
+            android:fontFamily="sans-serif-bold"
+            android:gravity="center"
+            android:text="Đang kiểm tra tài khoản của bạn..."
+            android:textColor="@color/premium_nav_active"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvCheckingStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/checking_subtitle_top_margin"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="Vui lòng chờ trong giây lát"
+            android:textColor="@color/text_muted"
+            android:textSize="14sp" />
+
+        <ProgressBar
+            android:id="@+id/progressChecking"
+            android:layout_width="@dimen/checking_spinner_size"
+            android:layout_height="@dimen/checking_spinner_size"
+            android:layout_marginTop="@dimen/checking_spinner_top_margin"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/bg_loading_arc" />
+    </LinearLayout>
+</LinearLayout>
