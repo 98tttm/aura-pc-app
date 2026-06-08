@@ -1,15 +1,21 @@
 package com.example.aura_pc_app.adapter;
 
+import android.content.Context;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.db.entity.ProductEntity;
+
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +30,6 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     private final List<ProductEntity> products = new ArrayList<>();
     private final ProductClickListener listener;
     private final NumberFormat currencyFormat;
-    private final int[] productImages = {
-            R.drawable.figma_product_monitor,
-            R.drawable.figma_product_mouse,
-            R.drawable.figma_blog_laptop,
-            R.drawable.figma_blog_rtx
-    };
 
     public HomeProductAdapter(ProductClickListener listener) {
         this.listener = listener;
@@ -49,6 +49,14 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_aura_product_card, parent, false);
+        int parentWidth = parent.getMeasuredWidth();
+        if (parentWidth <= 0) {
+            parentWidth = parent.getResources().getDisplayMetrics().widthPixels
+                    - Math.round(44 * parent.getResources().getDisplayMetrics().density);
+        }
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        params.width = Math.max(1, (parentWidth - Math.round(8 * parent.getResources().getDisplayMetrics().density)) / 2);
+        view.setLayoutParams(params);
         return new ProductViewHolder(view);
     }
 
@@ -58,16 +66,28 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         holder.title.setText(product.name == null || product.name.isEmpty()
                 ? holder.itemView.getContext().getString(R.string.product_title_acer_nitro_v16s)
                 : product.name);
-        holder.price.setText(formatPrice(product.salePrice != null ? product.salePrice : product.price));
-        holder.image.setImageResource(productImages[position % productImages.length]);
-        holder.rating.setText(position % 2 == 0
-                ? R.string.home_product_rating_one
-                : R.string.home_product_rating_two);
-        if (product.salePrice != null && product.price > product.salePrice) {
-            holder.oldPrice.setVisibility(View.GONE);
-            holder.oldPrice.setText(formatPrice(product.price));
+
+        double currentPrice = currentPrice(product);
+        double oldPriceValue = oldPrice(product, currentPrice);
+        holder.price.setText(formatPrice(holder.itemView.getContext(), currentPrice));
+        bindImage(holder, product);
+        holder.rating.setText(R.string.home_product_rating_short);
+        holder.oldPrice.setVisibility(View.GONE);
+        holder.oldPrice.setText("");
+        holder.oldPrice.setPaintFlags(holder.oldPrice.getPaintFlags() & ~Paint.STRIKE_THRU_TEXT_FLAG);
+        holder.saleBadge.setVisibility(View.GONE);
+        holder.saleBadge.setText("");
+
+        if (oldPriceValue > 0 && oldPriceValue > currentPrice) {
+            holder.oldPrice.setVisibility(View.VISIBLE);
+            holder.oldPrice.setText(formatPrice(holder.itemView.getContext(), oldPriceValue));
+            holder.oldPrice.setPaintFlags(holder.oldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.saleBadge.setVisibility(View.VISIBLE);
+            holder.saleBadge.setText(discountLabel(oldPriceValue, currentPrice));
+            holder.saleBadge.bringToFront();
         } else {
             holder.oldPrice.setVisibility(View.GONE);
+            holder.saleBadge.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(v -> listener.onProductClick(product));
@@ -79,11 +99,45 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         return products.size();
     }
 
-    private String formatPrice(double price) {
-        if (price <= 0) {
-            return "Liên hệ";
+    private void bindImage(ProductViewHolder holder, ProductEntity product) {
+        if (product.imageUrl != null && !product.imageUrl.trim().isEmpty()) {
+            Glide.with(holder.image)
+                    .load(product.imageUrl)
+                    .placeholder(R.drawable.figma_sale_case)
+                    .error(R.drawable.figma_sale_case)
+                    .into(holder.image);
+        } else {
+            holder.image.setImageResource(R.drawable.figma_sale_case);
         }
-        return currencyFormat.format(price) + "đ";
+    }
+
+    private String formatPrice(Context context, double price) {
+        if (price <= 0) {
+            return context.getString(R.string.product_contact_price);
+        }
+        return currencyFormat.format(price) + "\u0111";
+    }
+
+    private double currentPrice(ProductEntity product) {
+        if (product.salePrice != null && product.salePrice > 0) {
+            return product.salePrice;
+        }
+        return product.price;
+    }
+
+    private double oldPrice(ProductEntity product, double currentPrice) {
+        if (product.oldPrice != null && product.oldPrice > currentPrice) {
+            return product.oldPrice;
+        }
+        if (product.salePrice != null && product.salePrice > 0 && product.price > product.salePrice) {
+            return product.price;
+        }
+        return 0;
+    }
+
+    private String discountLabel(double oldPrice, double currentPrice) {
+        int percent = Math.max(1, (int) Math.round((oldPrice - currentPrice) * 100d / oldPrice));
+        return "SALE -" + percent + "%";
     }
 
     static class ProductViewHolder extends RecyclerView.ViewHolder {
@@ -91,6 +145,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         final TextView oldPrice;
         final TextView price;
         final TextView rating;
+        final TextView saleBadge;
         final ImageView image;
         final ImageButton cartButton;
 
@@ -100,6 +155,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
             oldPrice = itemView.findViewById(R.id.oldPriceText);
             price = itemView.findViewById(R.id.productPriceText);
             rating = itemView.findViewById(R.id.productRatingText);
+            saleBadge = itemView.findViewById(R.id.productSaleBadge);
             image = itemView.findViewById(R.id.productImage);
             cartButton = itemView.findViewById(R.id.productBuyButton);
         }

@@ -16,6 +16,16 @@ public interface ApiService {
     @GET("products")
     Call<Map<String, Object>> getProducts();
 
+    @GET("categories")
+    Call<List<Map<String, Object>>> getCategories();
+
+    @GET("products")
+    Call<Map<String, Object>> getProductsByCategory(
+            @Query("category") String categoryId,
+            @Query("page") int page,
+            @Query("limit") int limit
+    );
+
     @GET("users/{id}")
     Call<Map<String, Object>> getUserById(@Path("id") int id);
 

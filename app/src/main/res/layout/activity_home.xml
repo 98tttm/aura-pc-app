@@ -8,130 +8,136 @@
     android:background="@color/aura_white"
     tools:context=".ui.home.HomeActivity">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/homeScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingBottom="92dp"
+        android:scrollbars="none">
 
         <LinearLayout
-            android:id="@+id/topAppBar"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:background="@color/aura_orange"
-            android:elevation="3dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp">
-
-            <ImageButton
-                android:id="@+id/topMenuButton"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/cd_aurapc_logo"
-                android:padding="2dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/figma_home_logo" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:fontFamily="sans-serif-black"
-                android:includeFontPadding="false"
-                android:text="@string/app_name"
-                android:textColor="@color/aura_white"
-                android:textSize="20sp" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="96dp">
 
             <FrameLayout
-                android:id="@+id/topNotificationsButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:contentDescription="@string/cd_notifications"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_figma_bell_bold"
-                    app:tint="@color/aura_white" />
-
-                <TextView
-                    android:layout_width="13dp"
-                    android:layout_height="13dp"
-                    android:layout_gravity="top|end"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="2dp"
-                    android:background="@drawable/bg_home_badge_red"
-                    android:fontFamily="sans-serif-bold"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text="@string/home_badge_count"
-                    android:textColor="@color/aura_white"
-                    android:textSize="6sp" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/topCartButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:contentDescription="@string/home_open_cart"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_figma_cart_large_bold"
-                    app:tint="@color/aura_white" />
-
-                <TextView
-                    android:layout_width="13dp"
-                    android:layout_height="13dp"
-                    android:layout_gravity="top|end"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="2dp"
-                    android:background="@drawable/bg_home_badge_red"
-                    android:fontFamily="sans-serif-bold"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text="@string/home_badge_count"
-                    android:textColor="@color/aura_white"
-                    android:textSize="6sp" />
-            </FrameLayout>
-        </LinearLayout>
-
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:overScrollMode="never"
-            android:paddingBottom="112dp"
-            android:scrollbars="none">
-
-            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="28dp">
+                android:layout_height="154dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="85dp"
+                    android:layout_marginTop="69dp"
+                    android:background="@drawable/bg_home_header_curve"
+                    android:elevation="3dp" />
+
+                <LinearLayout
+                    android:id="@+id/topAppBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:background="@color/aura_orange"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp">
+
+                    <ImageButton
+                        android:id="@+id/topMenuButton"
+                        android:layout_width="50dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/cd_aurapc_logo"
+                        android:padding="0dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/figma_home_logo" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="25dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="@string/app_name"
+                        android:textColor="@color/aura_white"
+                        android:textSize="18sp" />
+
+                    <FrameLayout
+                        android:id="@+id/topNotificationsButton"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:contentDescription="@string/cd_notifications"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_figma_bell_bold"
+                            app:tint="@color/aura_white" />
+
+                        <TextView
+                            android:layout_width="13dp"
+                            android:layout_height="13dp"
+                            android:layout_gravity="top|end"
+                            android:layout_marginTop="3dp"
+                            android:layout_marginEnd="2dp"
+                            android:background="@drawable/bg_home_badge_red"
+                            android:fontFamily="sans-serif-bold"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_badge_count"
+                            android:textColor="@color/aura_white"
+                            android:textSize="6sp" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/topCartButton"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="2dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:contentDescription="@string/home_open_cart"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_figma_cart_large_bold"
+                            app:tint="@color/aura_white" />
+
+                        <TextView
+                            android:layout_width="13dp"
+                            android:layout_height="13dp"
+                            android:layout_gravity="top|end"
+                            android:layout_marginTop="3dp"
+                            android:layout_marginEnd="2dp"
+                            android:background="@drawable/bg_home_badge_red"
+                            android:fontFamily="sans-serif-bold"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_badge_count"
+                            android:textColor="@color/aura_white"
+                            android:textSize="6sp" />
+                    </FrameLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="53dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="21dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginTop="89dp"
+                    android:layout_marginEnd="18dp"
                     android:background="@drawable/bg_search_pill"
-                    android:elevation="2dp"
+                    android:elevation="6dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="17dp"
@@ -166,649 +172,1256 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/cd_filter_products"
                         android:padding="5dp"
-                        android:src="@drawable/ic_search" />
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="7dp"
-                        android:layout_marginEnd="7dp"
-                        android:background="#80E2BFB0" />
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:contentDescription="@null"
-                        android:padding="4dp"
-                        android:src="@drawable/ic_filter" />
+                        android:src="@drawable/ic_filter"
+                        app:tint="@color/aura_muted" />
                 </LinearLayout>
+            </FrameLayout>
 
-                <FrameLayout
-                    android:id="@+id/homeHeroCard"
+            <FrameLayout
+                android:id="@+id/homeHeroCard"
+                android:layout_width="match_parent"
+                android:layout_height="202dp"
+                android:layout_marginStart="18dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="18dp"
+                android:background="@drawable/bg_home_banner_round"
+                android:clickable="true"
+                android:clipToOutline="true"
+                android:elevation="2dp"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
                     android:layout_width="match_parent"
-                    android:layout_height="450dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/home_figma_hero_title"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/figma_home_banner" />
+
+                <View
+                    android:id="@+id/homeHeroCta"
+                    android:layout_width="118dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginBottom="32dp"
+                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground">
+                    android:focusable="true" />
+            </FrameLayout>
 
-                    <ImageView
-                        android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="5dp"
+                    android:background="@drawable/bg_nav_active_dot" />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="5dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/dot_active"
+                    android:alpha="0.25" />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="5dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/dot_active"
+                    android:alpha="0.25" />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="5dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/dot_active"
+                    android:alpha="0.25" />
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="5dp"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/dot_active"
+                    android:alpha="0.25" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="122dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/figma_home_hero" />
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-bold"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_figma_categories"
+                        android:textColor="#FF111827"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/homeQuickCategories"
+                        android:layout_width="68dp"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_view_all_chevron"
+                        android:textColor="@color/aura_orange"
+                        android:textSize="8sp" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:id="@+id/homeCategoryScroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="76dp"
+                    android:layout_marginTop="8dp"
+                    android:clipToPadding="false"
+                    android:fillViewport="false"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/homeCategoryStrip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <include
+                            layout="@layout/item_home_category_chip"
+                            android:layout_width="76dp"
+                            android:layout_height="72dp"
+                            android:layout_marginEnd="18dp" />
+
+                        <include
+                            layout="@layout/item_home_category_chip"
+                            android:layout_width="76dp"
+                            android:layout_height="72dp"
+                            android:layout_marginEnd="18dp" />
+
+                        <include
+                            layout="@layout/item_home_category_chip"
+                            android:layout_width="76dp"
+                            android:layout_height="72dp"
+                            android:layout_marginEnd="18dp" />
+
+                        <include
+                            layout="@layout/item_home_category_chip"
+                            android:layout_width="76dp"
+                            android:layout_height="72dp"
+                            android:layout_marginEnd="18dp" />
+
+                        <include
+                            layout="@layout/item_home_category_chip"
+                            android:layout_width="76dp"
+                            android:layout_height="72dp"
+                            android:layout_marginEnd="18dp" />
+
+                        <include
+                            layout="@layout/item_home_category_chip"
+                            android:layout_width="76dp"
+                            android:layout_height="72dp"
+                            android:layout_marginEnd="18dp" />
+
+                        <include
+                            layout="@layout/item_home_category_chip"
+                            android:layout_width="76dp"
+                            android:layout_height="72dp" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <FrameLayout
+                    android:id="@+id/homeCategoryIndicatorTrack"
+                    android:layout_width="54dp"
+                    android:layout_height="3dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/bg_home_stock_track">
 
                     <View
-                        android:layout_width="match_parent"
+                        android:id="@+id/homeCategoryIndicatorThumb"
+                        android:layout_width="18dp"
                         android:layout_height="match_parent"
-                        android:background="@drawable/bg_home_hero_overlay" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="bottom"
-                        android:orientation="vertical"
-                        android:paddingStart="32dp"
-                        android:paddingEnd="32dp"
-                        android:paddingBottom="54dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="23dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="23dp"
-                                android:background="@drawable/bg_home_badge_orange"
-                                android:fontFamily="sans-serif"
-                                android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:paddingStart="12dp"
-                                android:paddingEnd="12dp"
-                                android:text="@string/home_figma_badge_new"
-                                android:textAllCaps="true"
-                                android:textColor="@color/aura_white"
-                                android:textSize="10sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="23dp"
-                                android:layout_marginStart="8dp"
-                                android:background="@drawable/bg_home_badge_glass"
-                                android:fontFamily="sans-serif"
-                                android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:paddingStart="12dp"
-                                android:paddingEnd="12dp"
-                                android:text="@string/home_figma_badge_limited"
-                                android:textAllCaps="true"
-                                android:textColor="@color/aura_white"
-                                android:textSize="10sp" />
-                        </LinearLayout>
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="70dp"
-                            android:fontFamily="sans-serif"
-                            android:lineSpacingExtra="0dp"
-                            android:text="@string/home_figma_hero_title"
-                            android:textColor="@color/aura_white"
-                            android:textSize="30sp" />
-
-                        <TextView
-                            android:layout_width="280dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:lineSpacingExtra="1dp"
-                            android:text="@string/home_figma_hero_subtitle"
-                            android:textColor="#B3FFFFFF"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/homeHeroCta"
-                            android:layout_width="wrap_content"
-                            android:layout_height="22dp"
-                            android:layout_marginTop="18dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:fontFamily="sans-serif-bold"
-                            android:gravity="center_vertical"
-                            android:includeFontPadding="false"
-                            android:text="@string/home_flash_see_more"
-                            android:textColor="@color/aura_white"
-                            android:textSize="12sp" />
-                    </LinearLayout>
+                        android:background="@drawable/bg_home_stock_fill" />
                 </FrameLayout>
+            </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="146dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="20dp"
-                    android:orientation="vertical">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="386dp"
+                android:layout_marginStart="17dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="17dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="24dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:fontFamily="sans-serif"
-                            android:text="@string/home_figma_categories"
-                            android:textColor="#FF111827"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/homeQuickCategories"
-                            android:layout_width="wrap_content"
-                            android:layout_height="32dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:fontFamily="sans-serif-bold"
-                            android:gravity="center"
-                            android:text="@string/home_figma_all"
-                            android:textColor="#FFFF7A00"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="106dp"
-                        android:layout_marginTop="16dp"
-                        android:overScrollMode="never"
-                        android:scrollbars="none">
-
-                        <LinearLayout
-                            android:id="@+id/homeCategoryStrip"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
-
-                            <include layout="@layout/item_home_category_chip" />
-                            <include layout="@layout/item_home_category_chip" />
-                            <include layout="@layout/item_home_category_chip" />
-                            <include layout="@layout/item_home_category_chip" />
-                            <include layout="@layout/item_home_category_chip" />
-                            <include layout="@layout/item_home_category_chip" />
-                        </LinearLayout>
-                    </HorizontalScrollView>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="310dp"
-                    android:layout_marginStart="17dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="17dp"
-                    android:background="@drawable/bg_home_soft_panel"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="24dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="20dp"
-                            android:background="@drawable/bg_home_badge_orange"
-                            android:fontFamily="sans-serif-bold"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="10dp"
-                            android:text="@string/home_flash_sale"
-                            android:textColor="@color/aura_white"
-                            android:textSize="10sp" />
-
-                        <Space
-                            android:layout_width="0dp"
-                            android:layout_height="1dp"
-                            android:layout_weight="1" />
-
-                        <TextView
-                            android:id="@+id/homeQuickBuilder"
-                            android:layout_width="wrap_content"
-                            android:layout_height="24dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:fontFamily="sans-serif-bold"
-                            android:gravity="center"
-                            android:text="@string/home_flash_see_more"
-                            android:textColor="@color/aura_muted"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_weight="1"
-                        android:overScrollMode="never"
-                        android:scrollbars="none">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
-
-                            <include
-                                layout="@layout/item_aura_product_card"
-                                android:layout_width="158dp"
-                                android:layout_height="252dp" />
-
-                            <include
-                                layout="@layout/item_aura_product_card"
-                                android:layout_width="158dp"
-                                android:layout_height="252dp" />
-                        </LinearLayout>
-                    </HorizontalScrollView>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="210dp"
-                    android:layout_marginStart="17dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="17dp"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="24dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-bold"
-                            android:text="@string/home_video_section"
-                            android:textColor="#FF261812"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:layout_width="28dp"
-                            android:layout_height="14dp"
-                            android:layout_marginStart="6dp"
-                            android:background="@drawable/bg_home_badge_red"
-                            android:fontFamily="sans-serif-bold"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/home_hot_badge"
-                            android:textColor="@color/aura_white"
-                            android:textSize="8sp" />
-                    </LinearLayout>
-
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="176dp"
-                        android:layout_marginTop="10dp"
-                        android:overScrollMode="never"
-                        android:scrollbars="none">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
-
-                            <FrameLayout
-                                android:layout_width="150dp"
-                                android:layout_height="176dp"
-                                android:layout_marginEnd="10dp"
-                                android:background="@drawable/bg_home_video_card">
-
-                                <ImageView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:scaleType="centerCrop"
-                                    android:src="@drawable/figma_home_hero" />
-
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:background="@drawable/bg_home_image_overlay" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="bottom"
-                                    android:fontFamily="sans-serif-bold"
-                                    android:lineSpacingExtra="1dp"
-                                    android:padding="12dp"
-                                    android:text="@string/home_video_card_one"
-                                    android:textColor="@color/aura_white"
-                                    android:textSize="11sp" />
-                            </FrameLayout>
-
-                            <FrameLayout
-                                android:layout_width="150dp"
-                                android:layout_height="176dp"
-                                android:layout_marginEnd="10dp"
-                                android:background="@drawable/bg_home_video_card">
-
-                                <ImageView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:scaleType="centerCrop"
-                                    android:src="@drawable/figma_blog_rtx" />
-
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:background="@drawable/bg_home_image_overlay" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="bottom"
-                                    android:fontFamily="sans-serif-bold"
-                                    android:lineSpacingExtra="1dp"
-                                    android:padding="12dp"
-                                    android:text="@string/home_video_card_two"
-                                    android:textColor="@color/aura_white"
-                                    android:textSize="11sp" />
-                            </FrameLayout>
-                        </LinearLayout>
-                    </HorizontalScrollView>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="320dp"
-                    android:layout_marginStart="17dp"
+                <View
+                    android:layout_width="320dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="top|center_horizontal"
                     android:layout_marginTop="18dp"
-                    android:layout_marginEnd="17dp"
-                    android:background="@drawable/bg_home_section_card"
-                    android:clipToOutline="true"
-                    android:elevation="2dp"
-                    android:orientation="vertical"
-                    android:padding="14dp">
+                    android:background="@drawable/bg_home_flash_banner_base" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="22dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="0dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:fontFamily="sans-serif"
-                            android:text="@string/home_daily_section"
-                            android:textColor="#FF261812"
-                            android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/homeSaleTabFlash"
+                        android:layout_width="76dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/bg_home_flash_tab"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_flash_sale"
+                        android:textColor="@color/aura_white"
+                        android:textSize="8sp" />
 
-                        <TextView
-                            android:layout_width="54dp"
-                            android:layout_height="22dp"
-                            android:background="@drawable/bg_home_badge_orange"
-                            android:fontFamily="sans-serif-bold"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/home_chip_featured"
-                            android:textColor="@color/aura_white"
-                            android:textSize="8sp" />
+                    <TextView
+                        android:id="@+id/homeSaleTabDeal"
+                        android:layout_width="76dp"
+                        android:layout_height="42dp"
+                        android:layout_marginStart="15dp"
+                        android:background="@drawable/bg_home_flash_tab"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_flash_deal"
+                        android:textColor="@color/aura_white"
+                        android:textSize="8sp" />
 
-                        <TextView
-                            android:layout_width="42dp"
-                            android:layout_height="22dp"
-                            android:layout_marginStart="6dp"
-                            android:background="@drawable/bg_chip_subtle"
-                            android:fontFamily="sans-serif-bold"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:text="@string/home_chip_deals"
-                            android:textColor="@color/aura_muted"
-                            android:textSize="8sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="12dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <include
-                            layout="@layout/item_aura_product_card"
-                            android:layout_width="0dp"
-                            android:layout_height="252dp"
-                            android:layout_weight="1" />
-
-                        <include
-                            layout="@layout/item_aura_product_card"
-                            android:layout_width="0dp"
-                            android:layout_height="252dp"
-                            android:layout_weight="1" />
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/homeSaleTabHot"
+                        android:layout_width="76dp"
+                        android:layout_height="42dp"
+                        android:layout_marginStart="15dp"
+                        android:background="@drawable/bg_home_flash_tab"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_flash_hot_sale"
+                        android:textColor="@color/aura_white"
+                        android:textSize="8sp" />
                 </LinearLayout>
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="219dp"
-                    android:layout_marginStart="17dp"
-                    android:layout_marginTop="28dp"
-                    android:layout_marginEnd="17dp"
-                    android:background="@drawable/bg_home_section_card"
+                    android:layout_height="325dp"
+                    android:layout_marginTop="58dp"
+                    android:background="@drawable/bg_home_flash_panel"
                     android:clipToOutline="true"
-                    android:elevation="2dp">
+                    android:paddingStart="8dp"
+                    android:paddingTop="13dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="12dp">
 
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/figma_featured_article" />
+                    <LinearLayout
+                        android:layout_width="272dp"
+                        android:layout_height="25dp"
+                        android:layout_gravity="top|center_horizontal"
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/bg_home_image_overlay" />
+                        <TextView
+                            android:id="@+id/homeSaleDateOne"
+                            android:layout_width="80dp"
+                            android:layout_height="25dp"
+                            android:background="@drawable/bg_home_date_selected"
+                            android:fontFamily="sans-serif-bold"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_flash_date_one"
+                            android:textColor="#FFFF1F1F"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/homeSaleDateTwo"
+                            android:layout_width="80dp"
+                            android:layout_height="25dp"
+                            android:layout_marginStart="16dp"
+                            android:background="@drawable/bg_home_date_outline"
+                            android:fontFamily="sans-serif-bold"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_flash_date_two"
+                            android:textColor="@color/aura_white"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:id="@+id/homeSaleDateThree"
+                            android:layout_width="80dp"
+                            android:layout_height="25dp"
+                            android:layout_marginStart="16dp"
+                            android:background="@drawable/bg_home_date_outline"
+                            android:fontFamily="sans-serif-bold"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_flash_date_three"
+                            android:textColor="@color/aura_white"
+                            android:textSize="11sp" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="bottom"
-                        android:orientation="vertical"
-                        android:padding="24dp">
+                        android:layout_height="24dp"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ellipsize="end"
+                            android:id="@+id/homeSaleCountdownLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="16dp"
                             android:fontFamily="sans-serif-black"
-                            android:maxLines="2"
-                            android:text="@string/home_article_title"
+                            android:gravity="center_vertical"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_flash_countdown_label"
                             android:textColor="@color/aura_white"
-                            android:textSize="20sp" />
+                            android:textSize="11sp" />
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:ellipsize="end"
-                            android:maxLines="2"
-                            android:text="@string/home_article_subtitle"
-                            android:textColor="#CCFFFFFF"
+                            android:id="@+id/homeSaleCountdownHour"
+                            android:layout_width="28dp"
+                            android:layout_height="20dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_home_count_box"
+                            android:fontFamily="sans-serif-black"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_flash_hour"
+                            android:textColor="#FF111827"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:layout_width="8dp"
+                            android:layout_height="20dp"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_colon"
+                            android:textColor="@color/aura_white"
                             android:textSize="13sp" />
 
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="26dp"
-                            android:layout_marginTop="8dp"
-                            android:fontFamily="sans-serif-bold"
-                            android:gravity="center_vertical"
-                            android:text="@string/home_read_more"
+                            android:id="@+id/homeSaleCountdownMinute"
+                            android:layout_width="28dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/bg_home_count_box"
+                            android:fontFamily="sans-serif-black"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_flash_minute"
+                            android:textColor="#FF111827"
+                            android:textSize="11sp" />
+
+                        <TextView
+                            android:layout_width="8dp"
+                            android:layout_height="20dp"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_colon"
                             android:textColor="@color/aura_white"
-                            android:textSize="12sp" />
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/homeSaleCountdownSecond"
+                            android:layout_width="28dp"
+                            android:layout_height="20dp"
+                            android:background="@drawable/bg_home_count_box"
+                            android:fontFamily="sans-serif-black"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_flash_second"
+                            android:textColor="#FF111827"
+                            android:textSize="11sp" />
                     </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/homeSaleRecyclerView"
+                        android:layout_width="287dp"
+                        android:layout_height="169dp"
+                        android:layout_gravity="top|center_horizontal"
+                        android:layout_marginTop="84dp"
+                        android:clipToPadding="false"
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"
+                        tools:itemCount="2"
+                        tools:listitem="@layout/item_home_sale_card" />
+
+                    <FrameLayout
+                        android:id="@+id/homeSaleIndicatorTrack"
+                        android:layout_width="56dp"
+                        android:layout_height="3dp"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="47dp"
+                        android:background="@drawable/bg_home_sale_indicator_track">
+
+                        <View
+                            android:id="@+id/homeSaleIndicatorThumb"
+                            android:layout_width="18dp"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_home_sale_indicator_thumb" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="239dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:fontFamily="sans-serif-bold"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:lineSpacingExtra="0dp"
+                        android:maxLines="2"
+                        android:text="@string/home_flash_terms"
+                        android:textColor="@color/aura_white"
+                        android:textSize="8sp" />
                 </FrameLayout>
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="83dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginEnd="27dp"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="328dp"
-                    android:layout_marginStart="17dp"
-                    android:layout_marginTop="28dp"
-                    android:layout_marginEnd="17dp"
-                    android:orientation="vertical">
+                    android:layout_height="32dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/homeProductTabLaptop"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_home_top_tab_active"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/category_laptop"
+                        android:textColor="#FF111827"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/homeProductTabPc"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_home_top_tab"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_category_pc"
+                        android:textColor="#FF111827"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/homeProductTabMonitor"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_home_top_tab"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/category_monitor"
+                        android:textColor="#FF111827"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/homeProductTabAccessory"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_home_top_tab"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_category_accessory"
+                        android:textColor="#FF111827"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginTop="6dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="24dp"
+                        android:id="@+id/homeBrandChipRow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:fontFamily="sans-serif"
-                            android:text="@string/home_blog_section"
-                            android:textColor="#FF261812"
-                            android:textSize="16sp" />
-
-                        <TextView
-                            android:id="@+id/homeViewAllProducts"
-                            android:layout_width="32dp"
+                        <ImageView
+                            android:layout_width="66dp"
                             android:layout_height="32dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:gravity="center"
-                            android:text="@string/home_arrow_next"
-                            android:textColor="@color/aura_muted"
-                            android:textSize="22sp" />
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/bg_home_brand_chip"
+                            android:contentDescription="@string/home_brand_asus"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/figma_brand_asus" />
+
+                        <ImageView
+                            android:layout_width="66dp"
+                            android:layout_height="32dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/bg_home_brand_chip"
+                            android:contentDescription="@string/home_brand_dell"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/figma_brand_dell" />
+
+                        <ImageView
+                            android:layout_width="66dp"
+                            android:layout_height="32dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/bg_home_brand_chip"
+                            android:contentDescription="@string/home_brand_msi"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/figma_brand_msi" />
+
+                        <ImageView
+                            android:layout_width="66dp"
+                            android:layout_height="32dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/bg_home_brand_chip"
+                            android:contentDescription="@string/home_brand_lenovo"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/figma_brand_lenovo" />
+
+                        <ImageView
+                            android:layout_width="66dp"
+                            android:layout_height="32dp"
+                            android:background="@drawable/bg_home_brand_chip"
+                            android:contentDescription="@string/home_brand_acer"
+                            android:paddingStart="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="3dp"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/figma_brand_acer" />
                     </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
 
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="272dp"
-                        android:layout_marginTop="16dp"
-                        android:overScrollMode="never"
-                        android:scrollbars="none">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/productRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="468dp"
+                android:layout_marginStart="22dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="22dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                tools:itemCount="4"
+                tools:listitem="@layout/item_aura_product_card" />
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:orientation="horizontal">
+            <FrameLayout
+                android:id="@+id/homeProductIndicatorTrack"
+                android:layout_width="54dp"
+                android:layout_height="3dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="7dp"
+                android:background="@drawable/bg_home_stock_track">
 
-                            <include layout="@layout/item_home_blog_card" />
-                            <include layout="@layout/item_home_blog_card_rtx" />
-                        </LinearLayout>
-                    </HorizontalScrollView>
+                <View
+                    android:id="@+id/homeProductIndicatorThumb"
+                    android:layout_width="18dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_home_stock_fill" />
+            </FrameLayout>
+
+            <ProgressBar
+                android:id="@+id/loadingProgress"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/aura_orange"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/homeComponentStrip"
+                android:layout_width="match_parent"
+                android:layout_height="230dp"
+                android:layout_marginTop="16dp"
+                android:background="#FFF6F6F6"
+                android:orientation="vertical"
+                android:paddingStart="18dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="18dp"
+                android:paddingBottom="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-bold"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_component_section"
+                        android:textColor="#FF111827"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="68dp"
+                        android:layout_height="match_parent"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_view_all_chevron"
+                        android:textColor="@color/aura_orange"
+                        android:textSize="9sp" />
                 </LinearLayout>
 
-                <FrameLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:layout_marginTop="0dp">
+                    android:layout_height="78dp"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
 
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/figma_blog_rtx" />
+                    <include
+                        layout="@layout/item_home_component_chip"
+                        android:layout_width="0dp"
+                        android:layout_height="78dp"
+                        android:layout_weight="1" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="#66000000" />
+                    <include
+                        layout="@layout/item_home_component_chip"
+                        android:layout_width="0dp"
+                        android:layout_height="78dp"
+                        android:layout_weight="1" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:orientation="vertical"
-                        android:paddingStart="32dp"
-                        android:paddingEnd="32dp">
+                    <include
+                        layout="@layout/item_home_component_chip"
+                        android:layout_width="0dp"
+                        android:layout_height="78dp"
+                        android:layout_weight="1" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-bold"
-                            android:text="@string/home_ad_title"
-                            android:textColor="@color/aura_white"
-                            android:textSize="24sp" />
+                    <include
+                        layout="@layout/item_home_component_chip"
+                        android:layout_width="0dp"
+                        android:layout_height="78dp"
+                        android:layout_weight="1" />
 
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/home_ad_subtitle"
-                            android:textColor="#CCFFFFFF"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-                </FrameLayout>
+                    <include
+                        layout="@layout/item_home_component_chip"
+                        android:layout_width="0dp"
+                        android:layout_height="78dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="78dp"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="5">
+
+                    <include
+                        layout="@layout/item_home_component_chip"
+                        android:layout_width="0dp"
+                        android:layout_height="78dp"
+                        android:layout_weight="1" />
+
+                    <include
+                        layout="@layout/item_home_component_chip"
+                        android:layout_width="0dp"
+                        android:layout_height="78dp"
+                        android:layout_weight="1" />
+
+                    <include
+                        layout="@layout/item_home_component_chip"
+                        android:layout_width="0dp"
+                        android:layout_height="78dp"
+                        android:layout_weight="1" />
+
+                    <include
+                        layout="@layout/item_home_component_chip"
+                        android:layout_width="0dp"
+                        android:layout_height="78dp"
+                        android:layout_weight="1" />
+
+                    <include
+                        layout="@layout/item_home_component_chip"
+                        android:layout_width="0dp"
+                        android:layout_height="78dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="328dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="17dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="21dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="19dp"
-                    android:fontFamily="sans-serif"
-                    android:text="@string/home_featured_products"
+                    android:layout_height="24dp"
+                    android:fontFamily="sans-serif-bold"
+                    android:gravity="center_vertical"
+                    android:includeFontPadding="false"
+                    android:text="@string/home_recently_viewed"
                     android:textColor="#FF261812"
-                    android:textSize="16sp" />
+                    android:textSize="14sp" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/productRecyclerView"
+                <HorizontalScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="15dp"
-                    android:clipToPadding="false"
-                    android:nestedScrollingEnabled="false"
-                    tools:itemCount="4"
-                    tools:listitem="@layout/item_aura_product_card" />
+                    android:layout_height="288dp"
+                    android:layout_marginTop="16dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
 
-                <ProgressBar
-                    android:id="@+id/loadingProgress"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="12dp"
-                    android:indeterminate="true"
-                    android:indeterminateTint="@color/aura_orange"
-                    android:visibility="gone" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <include layout="@layout/item_home_viewed_monitor" />
+                        <include layout="@layout/item_home_viewed_gpu" />
+                    </LinearLayout>
+                </HorizontalScrollView>
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="336dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginTop="27dp"
+                android:layout_marginEnd="17dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:fontFamily="sans-serif-bold"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_video_section"
+                        android:textColor="#FF261812"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:layout_width="37dp"
+                        android:layout_height="19dp"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/bg_home_badge_red"
+                        android:fontFamily="sans-serif-bold"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_live_badge"
+                        android:textColor="@color/aura_white"
+                        android:textSize="8sp" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:layout_width="28dp"
+                        android:layout_height="24dp"
+                        android:gravity="end|center_vertical"
+                        android:text="@string/home_arrow_next"
+                        android:textColor="#FF9CA3AF"
+                        android:textSize="22sp" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="296dp"
+                    android:layout_marginTop="16dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:layout_width="160dp"
+                            android:layout_height="280dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_home_video_card"
+                            android:clipToOutline="true">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/figma_product_monitor" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_home_image_overlay" />
+
+                            <TextView
+                                android:layout_width="58dp"
+                                android:layout_height="19dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_home_view_badge"
+                                android:fontFamily="sans-serif-bold"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:text="@string/home_video_views_one"
+                                android:textColor="@color/aura_white"
+                                android:textSize="8sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="64dp"
+                                android:layout_gravity="bottom"
+                                android:fontFamily="sans-serif-bold"
+                                android:lineSpacingExtra="1dp"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="12dp"
+                                android:text="@string/home_video_card_one"
+                                android:textColor="@color/aura_white"
+                                android:textSize="12sp" />
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:layout_width="160dp"
+                            android:layout_height="280dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/bg_home_video_card"
+                            android:clipToOutline="true">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/figma_blog_laptop" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_home_image_overlay" />
+
+                            <TextView
+                                android:layout_width="50dp"
+                                android:layout_height="19dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_home_view_badge"
+                                android:fontFamily="sans-serif-bold"
+                                android:gravity="center"
+                                android:includeFontPadding="false"
+                                android:text="@string/home_video_views_two"
+                                android:textColor="@color/aura_white"
+                                android:textSize="8sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="64dp"
+                                android:layout_gravity="bottom"
+                                android:fontFamily="sans-serif-bold"
+                                android:lineSpacingExtra="1dp"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="12dp"
+                                android:text="@string/home_video_card_two"
+                                android:textColor="@color/aura_white"
+                                android:textSize="12sp" />
+                        </FrameLayout>
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="219dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="22dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_home_video_card"
+                android:clipToOutline="true"
+                android:elevation="2dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/figma_featured_article" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_home_image_overlay" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="bottom"
+                    android:orientation="vertical"
+                    android:paddingStart="32dp"
+                    android:paddingEnd="32dp"
+                    android:paddingBottom="25dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-black"
+                        android:includeFontPadding="false"
+                        android:maxLines="2"
+                        android:text="@string/home_article_title"
+                        android:textColor="@color/aura_white"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:ellipsize="end"
+                        android:lineSpacingExtra="1dp"
+                        android:maxLines="2"
+                        android:text="@string/home_article_subtitle"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="77dp"
+                        android:layout_height="24dp"
+                        android:fontFamily="sans-serif-bold"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_read_more"
+                        android:textColor="@color/aura_white"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="328dp"
+                android:layout_marginStart="19dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="11dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="24dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-bold"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_blog_section"
+                        android:textColor="#FF261812"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/homeViewAllProducts"
+                        android:layout_width="28dp"
+                        android:layout_height="24dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="end|center_vertical"
+                        android:text="@string/home_arrow_next"
+                        android:textColor="#FF9CA3AF"
+                        android:textSize="22sp" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="272dp"
+                    android:layout_marginTop="16dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <include layout="@layout/item_home_blog_card" />
+                        <include layout="@layout/item_home_blog_card_rtx" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="132dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/figma_blog_rtx" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#66000000" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingStart="32dp"
+                    android:paddingEnd="32dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="28dp"
+                        android:fontFamily="sans-serif-bold"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_ad_title"
+                        android:textColor="@color/aura_white"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="17dp"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="@string/home_ad_subtitle"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/stickyCollapsedHeader"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:alpha="0"
+        android:background="@color/aura_orange"
+        android:elevation="18dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingEnd="16dp"
+        android:visibility="gone"
+        tools:alpha="1"
+        tools:visibility="visible">
+
+        <ImageButton
+            android:id="@+id/stickyTopMenuButton"
+            android:layout_width="40dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cd_aurapc_logo"
+            android:padding="0dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/figma_home_logo" />
+
+        <LinearLayout
+            android:id="@+id/stickySearchBox"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_search_pill"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingEnd="9dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_search_muted" />
+
+            <EditText
+                android:id="@+id/stickySearchInput"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="@string/home_figma_search_hint"
+                android:includeFontPadding="false"
+                android:inputType="text"
+                android:paddingStart="10dp"
+                android:paddingEnd="8dp"
+                android:singleLine="true"
+                android:textColor="@color/aura_ink"
+                android:textColorHint="#FFB8B8B8"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/stickySearchFilterButton"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_filter_products"
+                android:padding="5dp"
+                android:src="@drawable/ic_filter"
+                app:tint="@color/aura_muted" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/stickyNotificationsButton"
+            android:layout_width="34dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/cd_notifications"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_figma_bell_bold"
+                app:tint="@color/aura_white" />
+
+            <TextView
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="1dp"
+                android:background="@drawable/bg_home_badge_red"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="@string/home_badge_count"
+                android:textColor="@color/aura_white"
+                android:textSize="6sp" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/stickyCartButton"
+            android:layout_width="34dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/home_open_cart"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_figma_cart_large_bold"
+                app:tint="@color/aura_white" />
+
+            <TextView
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="1dp"
+                android:background="@drawable/bg_home_badge_red"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="@string/home_badge_count"
+                android:textColor="@color/aura_white"
+                android:textSize="6sp" />
+        </FrameLayout>
     </LinearLayout>
 
     <ImageButton
         android:id="@+id/contextualFab"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="84dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="70dp"
         android:background="@drawable/bg_chat_fab_orange"
         android:contentDescription="@string/cd_open_chat"
         android:elevation="14dp"
         android:padding="13dp"
-        android:src="@drawable/ic_chat" />
+        android:src="@drawable/ic_chat"
+        app:tint="@color/aura_white" />
 
     <include
         layout="@layout/view_bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="62dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp" />
+        android:layout_height="82dp"
+        android:layout_gravity="bottom" />
 </FrameLayout>

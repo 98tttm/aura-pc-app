@@ -376,7 +376,7 @@
             android:id="@+id/navOverlay"
             layout="@layout/view_bottom_navigation"
             android:layout_width="match_parent"
-            android:layout_height="62dp"
+            android:layout_height="82dp"
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <!-- Action Buttons Layer (Above Nav) -->
