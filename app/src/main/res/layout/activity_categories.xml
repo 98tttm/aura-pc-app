@@ -6,48 +6,87 @@
     android:layout_height="match_parent"
     android:background="@color/gray_bg">
 
-    <!-- Header Glassmorphism -->
+    <!-- Header -->
     <include
         android:id="@+id/header"
         layout="@layout/header_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Loading Indicator -->
+    <ProgressBar
+        android:id="@+id/progressBarCategories"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:visibility="gone"
+        android:indeterminateTint="@color/orange_primary"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toTopOf="@id/navBottomBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Error Message -->
+    <TextView
+        android:id="@+id/tvCategoriesError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="24dp"
+        android:textColor="@color/gray_text"
+        android:textSize="15sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toTopOf="@id/navBottomBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Không thể tải danh mục." />
+
+    <!-- Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/navBottomBar"
         app:layout_constraintTop_toBottomOf="@id/header">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingHorizontal="12dp"
+            android:paddingTop="20dp">
 
+            <!-- Tiêu đề -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
+                android:layout_marginStart="4dp"
                 android:text="Danh mục sản phẩm"
                 android:textColor="@color/black"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textSize="22sp"
+                android:fontFamily="sans-serif-black" />
 
+            <!-- Grid danh mục -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/categoriesRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="2"
-                tools:listitem="@layout/item_category" />
+                tools:listitem="@layout/item_category"
+                tools:visibility="visible" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Floating Bottom Navigation -->
+    <!-- Bottom Navigation -->
     <include
+        android:id="@+id/navBottomBar"
         layout="@layout/view_bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

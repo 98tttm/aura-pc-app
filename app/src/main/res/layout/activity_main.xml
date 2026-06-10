@@ -31,18 +31,16 @@
                     android:id="@+id/mainImageCard"
                     android:layout_width="match_parent"
                     android:layout_height="380dp"
-                    android:layout_marginHorizontal="20dp"
                     android:layout_marginTop="8dp"
                     app:cardBackgroundColor="@color/black"
-                    app:cardCornerRadius="32dp"
+                    app:cardCornerRadius="0dp"
                     app:cardElevation="8dp">
 
                     <ImageView
                         android:id="@+id/mainProductImage"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:padding="20dp"
-                        android:scaleType="centerInside"
+                        android:scaleType="centerCrop"
                         android:src="@drawable/product_case" />
                 </androidx.cardview.widget.CardView>
 
@@ -232,6 +230,7 @@
 
                 <!-- Technical Specs Section -->
                 <TextView
+                    android:id="@+id/specsTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
@@ -279,6 +278,7 @@
                     app:cardElevation="0dp">
 
                     <ImageView
+                        android:id="@+id/descProductImage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:adjustViewBounds="true"
@@ -325,6 +325,7 @@
 
             <!-- SECTION 2: SẢN PHẨM ĐÃ XEM -->
             <LinearLayout
+                android:id="@+id/viewedSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/section_viewed_bg"

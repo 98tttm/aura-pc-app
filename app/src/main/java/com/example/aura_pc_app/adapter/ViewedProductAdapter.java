@@ -12,12 +12,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.domain.model.Product;
 
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Map;
+
+import com.bumptech.glide.Glide;
 
 public class ViewedProductAdapter extends RecyclerView.Adapter<ViewedProductAdapter.ViewHolder> {
-    private List<Product> products;
+    private List<Map<String, Object>> products;
+    private OnProductClickListener listener;
 
-    public ViewedProductAdapter(List<Product> products) {
+    public interface OnProductClickListener {
+        void onProductClick(Map<String, Object> product);
+    }
+
+    public void setOnProductClickListener(OnProductClickListener listener) {
+        this.listener = listener;
+    }
+
+    public ViewedProductAdapter(List<Map<String, Object>> products) {
         this.products = products;
     }
 
@@ -30,20 +43,56 @@ public class ViewedProductAdapter extends RecyclerView.Adapter<ViewedProductAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Product product = products.get(position);
-        holder.name.setText(product.getName());
-        holder.price.setText(product.getCurrentPrice());
+        Map<String, Object> product = products.get(position);
 
-        if (product.getImages() != null && !product.getImages().isEmpty()) {
-            holder.image.setImageResource(product.getImages().get(0));
+        String name = getStr(product, "name");
+        holder.name.setText(name);
+
+        double price = getNumber(product, "price");
+        holder.price.setText(formatCurrency(price));
+
+        List<String> images = null;
+        try {
+            images = (List<String>) product.get("images");
+        } catch (Exception ignored) {}
+
+        if (images != null && !images.isEmpty()) {
+            Glide.with(holder.itemView.getContext())
+                 .load(images.get(0))
+                 .placeholder(R.drawable.aura_laptop)
+                 .into(holder.image);
         } else {
-            holder.image.setImageResource(android.R.drawable.ic_menu_gallery);
+            holder.image.setImageResource(R.drawable.aura_laptop);
         }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onProductClick(product);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return products != null ? products.size() : 0;
+    }
+
+    private String formatCurrency(double amount) {
+        DecimalFormat formatter = new DecimalFormat("#,###");
+        return formatter.format(amount).replace(",", ".") + "đ";
+    }
+
+    private String getStr(Map<String, Object> map, String key) {
+        Object val = map.get(key);
+        return val instanceof String ? (String) val : "";
+    }
+
+    private double getNumber(Map<String, Object> map, String key) {
+        Object val = map.get(key);
+        if (val instanceof Number) {
+            return ((Number) val).doubleValue();
+        }
+        return 0;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

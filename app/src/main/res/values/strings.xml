@@ -129,6 +129,14 @@
     <string name="cd_dropdown">Mở danh sách</string>
     <string name="cd_forward">Tiếp tục</string>
     <string name="cd_change_language">Chuyển ngôn ngữ</string>
+
+    <!-- Product List Screen -->
+    <string name="cd_back">Quay lại</string>
+    <string name="product_list_count">%1$d sản phẩm</string>
+    <string name="product_list_empty">Không tìm thấy sản phẩm nào trong danh mục này.</string>
+    <string name="product_list_retry">Thử lại</string>
+    <string name="product_list_error">Không thể tải danh sách sản phẩm.\nVui lòng thử lại.</string>
+    <string name="product_list_network_error">Lỗi kết nối mạng.\nVui lòng kiểm tra và thử lại.</string>
 </resources>
 
 
