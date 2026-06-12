@@ -57,6 +57,7 @@
                     app:tint="@color/aura_white" />
 
                 <TextView
+                    android:id="@+id/header_notification_badge"
                     android:layout_width="13dp"
                     android:layout_height="13dp"
                     android:layout_gravity="top|end"
@@ -87,6 +88,7 @@
                     app:tint="@color/aura_white" />
 
                 <TextView
+                    android:id="@+id/header_cart_badge"
                     android:layout_width="13dp"
                     android:layout_height="13dp"
                     android:layout_gravity="top|end"
@@ -96,9 +98,9 @@
                     android:fontFamily="sans-serif-bold"
                     android:gravity="center"
                     android:includeFontPadding="false"
-                    android:text="@string/home_badge_count"
                     android:textColor="@color/aura_white"
-                    android:textSize="6sp" />
+                    android:textSize="6sp"
+                    android:visibility="gone" />
             </FrameLayout>
         </LinearLayout>
 

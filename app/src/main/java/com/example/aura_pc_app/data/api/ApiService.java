@@ -54,6 +54,11 @@ public interface ApiService {
     @POST("cart/sync")
     Call<CartResponse> syncCartToServer(@Body SyncCartRequest request);
 
+    // MOB-017 requires a real authenticated server-cart fetch to restore cart on login
+    // and on another device. This endpoint must be confirmed with the backend contract.
+    @GET("cart")
+    Call<CartResponse> getCart();
+
     @GET("auth/addresses/{userId}")
     Call<AddressListResponse> getAddresses(@Path("userId") String userId);
 

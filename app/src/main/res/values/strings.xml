@@ -124,6 +124,11 @@
     <string name="cart_decrease_quantity">Giảm số lượng</string>
     <string name="cart_increase_quantity">Tăng số lượng</string>
     <string name="cart_default_quantity">1</string>
+    <string name="cart_empty_title">Giỏ hàng đang trống</string>
+    <string name="cart_empty_message">Thêm sản phẩm bạn thích để AuraPC lưu giỏ hàng cho lần mua tiếp theo.</string>
+    <string name="cart_empty_browse">Xem sản phẩm</string>
+    <string name="cart_item_specs_fallback">Sản phẩm AuraPC</string>
+    <string name="cart_added">Đã thêm vào giỏ hàng</string>
 
     <string name="add_to_cart">Thêm</string>
     <string name="buy_now">Mua ngay</string>

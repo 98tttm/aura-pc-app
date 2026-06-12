@@ -86,13 +86,20 @@
                     android:src="@drawable/ic_figma_cart_large_bold"
                     app:tint="@color/aura_black" />
 
-                <View
-                    android:layout_width="7dp"
-                    android:layout_height="7dp"
+                <TextView
+                    android:id="@+id/header_cart_badge"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_gravity="top|end"
-                    android:layout_marginTop="7dp"
-                    android:layout_marginEnd="7dp"
-                    android:background="@drawable/dot_active" />
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="3dp"
+                    android:background="@drawable/bg_home_badge_red"
+                    android:fontFamily="sans-serif-bold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/aura_white"
+                    android:textSize="8sp"
+                    android:visibility="gone" />
             </FrameLayout>
         </LinearLayout>
 

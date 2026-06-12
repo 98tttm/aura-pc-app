@@ -4,9 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
+
 import com.example.aura_pc_app.R;
+import com.example.aura_pc_app.data.db.AppDatabase;
 
 public class BottomNavigationHelper {
 
@@ -25,10 +30,9 @@ public class BottomNavigationHelper {
 
         if (home == null) return;
 
-        // Thiết lập trạng thái Active dựa trên Activity hiện tại
         setActiveTab(activity, activeTab);
+        setupCartBadge(activity);
 
-        // Gán sự kiện Click cho từng Tab
         home.setOnClickListener(v -> navigate(activity, TAB_HOME));
         categories.setOnClickListener(v -> navigate(activity, TAB_CATEGORIES));
         cart.setOnClickListener(v -> navigate(activity, TAB_CART));
@@ -55,12 +59,13 @@ public class BottomNavigationHelper {
             menu.setOnClickListener(v ->
                     Toast.makeText(activity, "Menu is coming soon", Toast.LENGTH_SHORT).show());
         }
+        setupCartBadge(activity);
     }
 
     private static void setActiveTab(Activity activity, String activeTab) {
         resetTabs(activity);
         int activeColor = ContextCompat.getColor(activity, R.color.premium_nav_active);
-        
+
         switch (activeTab) {
             case TAB_HOME:
                 highlightTab(activity, R.id.nav_home_icon, R.id.nav_home_indicator, activeColor);
@@ -100,6 +105,35 @@ public class BottomNavigationHelper {
         if (indicator != null) indicator.setVisibility(View.VISIBLE);
     }
 
+    private static void setupCartBadge(Activity activity) {
+        if (!(activity instanceof LifecycleOwner)) {
+            return;
+        }
+        TextView navBadge = activity.findViewById(R.id.nav_cart_badge);
+        TextView headerBadge = activity.findViewById(R.id.header_cart_badge);
+        if (navBadge == null && headerBadge == null) {
+            return;
+        }
+        AppDatabase.getInstance(activity)
+                .cartDao()
+                .getCartItemCountLive()
+                .observe((LifecycleOwner) activity, count -> {
+                    int safeCount = count == null ? 0 : count;
+                    updateBadge(navBadge, safeCount);
+                    updateBadge(headerBadge, safeCount);
+                });
+    }
+
+    private static void updateBadge(TextView badge, int count) {
+        if (badge == null) return;
+        if (count <= 0) {
+            badge.setVisibility(View.GONE);
+            return;
+        }
+        badge.setVisibility(View.VISIBLE);
+        badge.setText(count > 99 ? "99+" : String.valueOf(count));
+    }
+
     private static void navigate(Activity activity, String target) {
         Class<?> targetClass = null;
         try {
@@ -110,7 +144,9 @@ public class BottomNavigationHelper {
                 case TAB_BLOG: targetClass = Class.forName("com.aura.pc.ui.blog.BlogActivity"); break;
                 case TAB_PROFILE: targetClass = Class.forName("com.aura.pc.ui.profile.ProfileActivity"); break;
             }
-        } catch (ClassNotFoundException e) { return; }
+        } catch (ClassNotFoundException e) {
+            return;
+        }
 
         if (targetClass != null && !activity.getClass().equals(targetClass)) {
             Intent intent = new Intent(activity, targetClass);

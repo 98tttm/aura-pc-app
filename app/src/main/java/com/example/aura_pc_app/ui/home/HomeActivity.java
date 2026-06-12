@@ -6,9 +6,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+
 import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.ui.categories.CategoriesActivity;
 import com.aura.pc.ui.products.ProductListActivity;
@@ -19,9 +21,6 @@ import com.example.aura_pc_app.adapter.HomeProductAdapter;
 import com.example.aura_pc_app.data.db.entity.ProductEntity;
 import com.example.aura_pc_app.databinding.ActivityHomeBinding;
 import com.example.aura_pc_app.ui.base.BaseActivity;
-import com.example.aura_pc_app.utils.AuthGate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
     private HomeProductAdapter productAdapter;
@@ -71,7 +70,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
 
             @Override
             public void onCartClick(ProductEntity product) {
-                addProductToCart();
+                addProductToCart(product);
             }
         });
         binding.productRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -82,11 +81,19 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
     private void observeProducts() {
         binding.loadingProgress.setVisibility(View.VISIBLE);
         viewModel.getProducts().observe(this, products -> {
-            List<ProductEntity> displayProducts = products == null || products.isEmpty()
-                    ? createFallbackProducts()
-                    : products;
-            productAdapter.setProducts(displayProducts);
+            productAdapter.setProducts(products);
             binding.loadingProgress.setVisibility(View.GONE);
+        });
+        viewModel.getProductAdded().observe(this, added -> {
+            if (Boolean.TRUE.equals(added)) {
+                Toast.makeText(this, R.string.cart_added, Toast.LENGTH_SHORT).show();
+                viewModel.clearProductAdded();
+            }
+        });
+        viewModel.errorMessage.observe(this, message -> {
+            if (message != null && !message.isEmpty()) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -135,31 +142,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         startActivity(new Intent(this, CartActivity.class));
     }
 
-    private void addProductToCart() {
-        if (!AuthGate.requireLogin(this, CartActivity.class)) {
-            return;
-        }
-        openCart();
-    }
-
-    private List<ProductEntity> createFallbackProducts() {
-        List<ProductEntity> products = new ArrayList<>();
-        addFallback(products, "fallback-acer-nitro", "Laptop Gaming Acer Nitro V 16S", 28990000, 24590000);
-        addFallback(products, "fallback-aura-obsidian", "Aura Obsidian Pro X", 100500000, 85000000);
-        addFallback(products, "fallback-pc-ai", "Aura PC AI Creator", 52990000, 48990000);
-        addFallback(products, "fallback-monitor", "Màn hình Gaming 27 inch", 7990000, 6490000);
-        addFallback(products, "fallback-keyboard", "Bàn phím cơ Aura RGB", 1890000, 1490000);
-        addFallback(products, "fallback-ssd", "SSD NVMe Gen4 1TB", 2490000, 1990000);
-        return products;
-    }
-
-    private void addFallback(List<ProductEntity> products, String id, String name, double price, double salePrice) {
-        ProductEntity product = new ProductEntity();
-        product._id = id;
-        product.name = name;
-        product.price = price;
-        product.salePrice = salePrice;
-        product.active = true;
-        products.add(product);
+    private void addProductToCart(ProductEntity product) {
+        viewModel.addProductToCart(product);
     }
 }

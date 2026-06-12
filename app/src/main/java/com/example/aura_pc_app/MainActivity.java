@@ -25,10 +25,13 @@ import com.example.aura_pc_app.adapter.RelatedProductAdapter;
 import com.example.aura_pc_app.adapter.SpecAdapter;
 import com.example.aura_pc_app.adapter.ViewedProductAdapter;
 import com.example.aura_pc_app.data.api.ApiClient;
+import com.example.aura_pc_app.data.cart.CartRepositoryImpl;
+import com.example.aura_pc_app.data.db.entity.ProductEntity;
 import com.example.aura_pc_app.domain.repository.mock.MockData;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.domain.model.Product;
 import com.example.aura_pc_app.domain.model.ProductSpec;
+import com.example.aura_pc_app.domain.cart.CartRepository;
 import com.example.aura_pc_app.utils.AuthGate;
 import com.example.aura_pc_app.utils.LocaleManager;
 
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mainProductImage, btnFavorite;
     private android.view.View btnConsult, btnAddToCart, btnBuyNow;
     private boolean isFavorite = false;
+    private CartRepository cartRepository;
+    private ProductEntity currentProduct;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -55,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        cartRepository = new CartRepositoryImpl(this);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -153,11 +159,21 @@ public class MainActivity extends AppCompatActivity {
         }
         if (btnAddToCart != null) {
             btnAddToCart.setOnClickListener(v -> {
-                if (!AuthGate.requireLogin(this, CartActivity.class)) {
+                if (currentProduct == null || currentProduct._id == null || currentProduct._id.isEmpty()) {
+                    android.widget.Toast.makeText(this, "Chưa có dữ liệu sản phẩm để thêm vào giỏ", android.widget.Toast.LENGTH_SHORT).show();
                     return;
                 }
-                android.widget.Toast.makeText(this, "Added to cart", android.widget.Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, CartActivity.class));
+                cartRepository.addProduct(currentProduct, 1, new CartRepository.CartCallback() {
+                    @Override
+                    public void onSuccess() {
+                        android.widget.Toast.makeText(MainActivity.this, R.string.cart_added, android.widget.Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        android.widget.Toast.makeText(MainActivity.this, message, android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
             });
         }
         if (btnBuyNow != null) {
@@ -201,6 +217,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindRealProductData(Map<String, Object> productData) {
         String name = (String) productData.get("name");
+        currentProduct = toProductEntity(productData);
         String desc = (String) productData.get("description");
         if (desc == null || desc.trim().isEmpty()) {
             desc = "Laptop Gaming thế hệ mới với hiệu năng cực đỉnh, được trang bị card đồ họa Blackwell tiên tiến và vi xử lý AI mạnh mẽ giúp bạn thống trị mọi chiến trường AAA.";
@@ -320,6 +337,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadMockData() {
+        currentProduct = null;
         Product product = MockData.getDetailProduct();
         if (productName != null) productName.setText(product.getName());
         if (productDescription != null) productDescription.setText(product.getDescription());
@@ -365,6 +383,40 @@ public class MainActivity extends AppCompatActivity {
             viewedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             viewedRecyclerView.setAdapter(new ViewedProductAdapter(MockData.getViewedProducts()));
         }
+    }
+
+    private ProductEntity toProductEntity(Map<String, Object> productData) {
+        ProductEntity product = new ProductEntity();
+        Object id = productData.get("_id");
+        if (id == null) {
+            id = productData.get("id");
+        }
+        product._id = id == null ? "" : String.valueOf(id);
+        product.name = (String) productData.get("name");
+        product.specs = productData.get("specs") == null ? null : String.valueOf(productData.get("specs"));
+        product.images = productData.get("images") == null ? null : String.valueOf(productData.get("images"));
+        product.price = getDouble(productData.get("price"));
+        double salePrice = getDouble(productData.get("salePrice"));
+        if (salePrice <= 0) {
+            salePrice = getDouble(productData.get("sale_price"));
+        }
+        product.salePrice = salePrice > 0 ? salePrice : null;
+        product.active = true;
+        return product;
+    }
+
+    private double getDouble(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+        if (value instanceof String) {
+            try {
+                return Double.parseDouble((String) value);
+            } catch (NumberFormatException ignored) {
+                return 0;
+            }
+        }
+        return 0;
     }
 
     private String formatSoldCount(int count) {
