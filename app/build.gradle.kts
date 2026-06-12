@@ -82,6 +82,8 @@ dependencies {
     // Glide for image loading from URL
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
+    implementation(libs.viewpager2)
+    implementation(libs.photoview)
 
     // Firebase FCM — add google-services.json and apply plugin first:
     // plugins { id("com.google.gms.google-services") }

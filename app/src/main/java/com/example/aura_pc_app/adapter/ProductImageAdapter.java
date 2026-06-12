@@ -31,6 +31,16 @@ public class ProductImageAdapter extends RecyclerView.Adapter<ProductImageAdapte
         this.listener = listener;
     }
 
+    public void setSelectedPosition(int position) {
+        if (position < 0 || position >= getItemCount() || position == selectedPosition) {
+            return;
+        }
+        int previousSelected = selectedPosition;
+        selectedPosition = position;
+        notifyItemChanged(previousSelected);
+        notifyItemChanged(selectedPosition);
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -55,8 +65,11 @@ public class ProductImageAdapter extends RecyclerView.Adapter<ProductImageAdapte
         }
 
         holder.itemView.setOnClickListener(v -> {
+            if (holder.getBindingAdapterPosition() == RecyclerView.NO_POSITION) {
+                return;
+            }
             int previousSelected = selectedPosition;
-            selectedPosition = holder.getAdapterPosition();
+            selectedPosition = holder.getBindingAdapterPosition();
             notifyItemChanged(previousSelected);
             notifyItemChanged(selectedPosition);
             

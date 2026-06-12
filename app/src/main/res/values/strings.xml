@@ -312,6 +312,18 @@
     <string name="profile_menu_wishlist">Sản phẩm yêu thích</string>
     <string name="profile_menu_wishlist_sub">Danh sách đã lưu</string>
     <string name="profile_logout">Đăng xuất</string>
+    <!-- MOB-013 Product Detail -->
+    <string name="cd_share_product">Chia sẻ sản phẩm</string>
+    <string name="cd_product_gallery_image">Ảnh sản phẩm, chạm để phóng to</string>
+    <string name="tab_specs">Thông số kỹ thuật</string>
+    <string name="tab_description">Mô tả</string>
+    <string name="tab_reviews">Đánh giá</string>
+    <string name="product_reviews_placeholder">Chưa có đánh giá. Tính năng đánh giá sẽ được triển khai ở MOB-016.</string>
+    <string name="product_description_missing">Thông tin mô tả chi tiết đang được cập nhật.</string>
+    <string name="product_stock_format">Còn hàng (%1$d sản phẩm)</string>
+    <string name="product_out_of_stock">Tạm hết hàng</string>
+    <string name="product_added_to_cart">Đã thêm vào giỏ hàng</string>
+    <string name="product_share_chooser">Chia sẻ sản phẩm qua</string>
 </resources>
 
 

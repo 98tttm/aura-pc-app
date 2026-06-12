@@ -66,7 +66,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         productAdapter = new HomeProductAdapter(new HomeProductAdapter.ProductClickListener() {
             @Override
             public void onProductClick(ProductEntity product) {
-                openProductDetail();
+                openProductDetail(product);
             }
 
             @Override
@@ -125,6 +125,14 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
 
     private void openProductDetail() {
         startActivity(new Intent(this, MainActivity.class));
+    }
+
+    private void openProductDetail(ProductEntity product) {
+        Intent intent = new Intent(this, MainActivity.class);
+        if (product != null && product._id != null && !product._id.isEmpty()) {
+            intent.putExtra(MainActivity.EXTRA_PRODUCT_ID, product._id);
+        }
+        startActivity(intent);
     }
 
     private void openProductList() {

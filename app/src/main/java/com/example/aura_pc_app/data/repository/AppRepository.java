@@ -49,6 +49,18 @@ public class AppRepository {
         return cartDao.getAllCartItemsLive();
     }
 
+    public void addToCart(String productId, int quantity) {
+        if (productId == null || productId.trim().isEmpty()) {
+            return;
+        }
+        executor.execute(() -> {
+            CartItemEntity item = new CartItemEntity();
+            item.productId = productId;
+            item.quantity = Math.max(1, quantity);
+            cartDao.insertCartItem(item);
+        });
+    }
+
     private void refreshProductsFromNetwork() {
         // Sử dụng tên hàm mới getProductsPaginated đã thống nhất với ApiService
         apiService.getProductsPaginated(1, 50).enqueue(new Callback<ProductResponse>() {

@@ -51,7 +51,8 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
         visibleProductCount = binding.productGrid.getChildCount();
         for (int i = 0; i < visibleProductCount; i++) {
             View card = binding.productGrid.getChildAt(i);
-            card.setOnClickListener(v -> openProductDetail());
+            int productIndex = i;
+            card.setOnClickListener(v -> openProductDetail(productIndex));
             bindCartButtons(card);
         }
     }
@@ -131,7 +132,9 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
         }
     }
 
-    private void openProductDetail() {
-        startActivity(new Intent(this, MainActivity.class));
+    private void openProductDetail(int productIndex) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(MainActivity.EXTRA_PRODUCT_INDEX, productIndex);
+        startActivity(intent);
     }
 }
