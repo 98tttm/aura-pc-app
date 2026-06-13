@@ -83,6 +83,9 @@ dependencies {
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
 
+    // Paging 3
+    implementation(libs.paging.runtime)
+
     // Firebase FCM — add google-services.json and apply plugin first:
     // plugins { id("com.google.gms.google-services") }
     // implementation(platform(libs.firebase.bom))

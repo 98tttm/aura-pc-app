@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.ui.products.ProductListActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
+import com.aura.pc.utils.CategoryMapping;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.utils.LocaleManager;
 
@@ -59,7 +60,7 @@ public class CategoriesActivity extends AppCompatActivity {
                     Toast.makeText(this, R.string.msg_menu_pending, Toast.LENGTH_SHORT).show());
         }
         if (search != null) {
-            search.setOnClickListener(v -> openProductList());
+            search.setOnClickListener(v -> openProductList(null));
         }
         if (filter != null) {
             filter.setOnClickListener(v ->
@@ -132,7 +133,10 @@ public class CategoriesActivity extends AppCompatActivity {
             if (title != null) title.setText(item);
             if (subtitle != null) subtitle.setText(R.string.category_item_cta);
             if (icon != null) icon.setImageResource(getGroupIcon(selectedGroupIndex));
-            tile.setOnClickListener(v -> openProductList());
+            
+            String slug = generateSlug(item);
+            final String finalSlug = slug;
+            tile.setOnClickListener(v -> openProductList(finalSlug));
             grid.addView(tile);
         }
     }
@@ -156,8 +160,28 @@ public class CategoriesActivity extends AppCompatActivity {
         }
     }
 
-    private void openProductList() {
-        startActivity(new Intent(this, ProductListActivity.class));
+    private String generateSlug(String text) {
+        if (text == null) return "";
+        String slug = CategoryMapping.getSlug(text);
+        if (slug != null) {
+            return slug;
+        }
+        
+        // Fallback generator
+        slug = text.toLowerCase();
+        slug = java.text.Normalizer.normalize(slug, java.text.Normalizer.Form.NFD);
+        slug = slug.replaceAll("\\p{M}", "");
+        slug = slug.replaceAll("[^a-z0-9\\s-]", "");
+        slug = slug.trim().replaceAll("\\s+", "-");
+        return slug;
+    }
+
+    private void openProductList(String category) {
+        Intent intent = new Intent(this, ProductListActivity.class);
+        if (category != null) {
+            intent.putExtra("category", category);
+        }
+        startActivity(intent);
     }
 
     @Override

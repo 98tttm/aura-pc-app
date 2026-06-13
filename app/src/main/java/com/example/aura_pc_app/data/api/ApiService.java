@@ -27,10 +27,26 @@ public interface ApiService {
     @GET("products")
     Call<Map<String, Object>> getProducts();
 
+    @GET("products/{id}")
+    Call<Map<String, Object>> getProductById(@Path("id") String id);
+
     @GET("products")
     Call<Map<String, Object>> getProductsPaginatedMap(
             @Query("page") int page,
             @Query("limit") int limit
+    );
+
+    @GET("products")
+    Call<Map<String, Object>> getProductsFiltered(
+            @Query("page") int page,
+            @Query("limit") int limit,
+            @Query("category") String category,
+            @Query("brand") String brand,
+            @Query("min_price") Double minPrice,
+            @Query("max_price") Double maxPrice,
+            @Query("min_rating") Double minRating,
+            @Query("in_stock") Boolean inStock,
+            @Query("sort") String sort
     );
 
     @GET("users/{id}")

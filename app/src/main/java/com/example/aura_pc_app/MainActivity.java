@@ -2,6 +2,7 @@ package com.example.aura_pc_app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -31,7 +32,10 @@ import com.example.aura_pc_app.domain.model.Product;
 import com.example.aura_pc_app.domain.model.ProductSpec;
 import com.example.aura_pc_app.utils.AuthGate;
 import com.example.aura_pc_app.utils.LocaleManager;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -41,9 +45,11 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView thumbnailRecyclerView, specsRecyclerView, relatedRecyclerView, viewedRecyclerView;
     private TextView productName, ratingText, soldCount, reviewCount, currentPrice, oldPrice, discountBadge, productDescription;
-    private ImageView mainProductImage, btnFavorite;
+    private ImageView mainProductImage, btnFavorite, descriptionImage;
     private android.view.View btnConsult, btnAddToCart, btnBuyNow;
     private boolean isFavorite = false;
+    
+    private String currentProductId;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -64,6 +70,12 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         setupPrimaryNavigationOverrides();
+        
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("product_id")) {
+            currentProductId = intent.getStringExtra("product_id");
+        }
+        
         loadData();
         
         // Initialize Bottom Navigation
@@ -81,9 +93,9 @@ public class MainActivity extends AppCompatActivity {
         oldPrice = findViewById(R.id.oldPrice);
         discountBadge = findViewById(R.id.discountBadge);
         productDescription = findViewById(R.id.productDescription);
+        descriptionImage = findViewById(R.id.descriptionImage);
         btnFavorite = findViewById(R.id.btnFavorite);
 
-        // Find views inside included overlays to avoid ID overrides returning null
         android.view.View actionOverlay = findViewById(R.id.actionOverlay);
         if (actionOverlay != null) {
             btnConsult = actionOverlay.findViewById(R.id.btnConsult);
@@ -95,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
             btnBuyNow = findViewById(R.id.btnBuyNow);
         }
 
-        // navOverlay overrides the root ID of view_bottom_navigation
         android.view.View bottomNavCard = findViewById(R.id.navOverlay);
         if (bottomNavCard == null) {
             bottomNavCard = findViewById(R.id.bottomNavCard);
@@ -106,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
         relatedRecyclerView = findViewById(R.id.relatedRecyclerView);
         viewedRecyclerView = findViewById(R.id.viewedRecyclerView);
 
-        // Apply strikethrough to the old price with safety check
         if (oldPrice != null) {
             oldPrice.setPaintFlags(oldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
@@ -171,32 +181,48 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        // Enqueue API call using the secure ApiClient singleton to fetch products from backend
-        ApiClient.getInstance(this).getApiService().getProducts().enqueue(new retrofit2.Callback<Map<String, Object>>() {
-            @Override
-            public void onResponse(retrofit2.Call<Map<String, Object>> call, retrofit2.Response<Map<String, Object>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    try {
-                        Map<String, Object> body = response.body();
-                        List<Map<String, Object>> items = (List<Map<String, Object>>) body.get("items");
-                        if (items != null && !items.isEmpty()) {
-                            // First product is the Lenovo Legion 5 laptop from backend!
-                            bindRealProductData(items.get(0));
-                            return;
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+        if (currentProductId != null && !currentProductId.isEmpty()) {
+            ApiClient.getInstance(this).getApiService().getProductById(currentProductId).enqueue(new retrofit2.Callback<Map<String, Object>>() {
+                @Override
+                public void onResponse(retrofit2.Call<Map<String, Object>> call, retrofit2.Response<Map<String, Object>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        bindRealProductData(response.body());
+                    } else {
+                        loadMockData();
                     }
                 }
-                loadMockData();
-            }
 
-            @Override
-            public void onFailure(retrofit2.Call<Map<String, Object>> call, Throwable t) {
-                t.printStackTrace();
-                loadMockData();
-            }
-        });
+                @Override
+                public void onFailure(retrofit2.Call<Map<String, Object>> call, Throwable t) {
+                    loadMockData();
+                }
+            });
+        } else {
+            // Fallback load default product list if no ID is passed
+            ApiClient.getInstance(this).getApiService().getProducts().enqueue(new retrofit2.Callback<Map<String, Object>>() {
+                @Override
+                public void onResponse(retrofit2.Call<Map<String, Object>> call, retrofit2.Response<Map<String, Object>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        try {
+                            Map<String, Object> body = response.body();
+                            List<Map<String, Object>> items = (List<Map<String, Object>>) body.get("items");
+                            if (items != null && !items.isEmpty()) {
+                                bindRealProductData(items.get(0));
+                                return;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    loadMockData();
+                }
+
+                @Override
+                public void onFailure(retrofit2.Call<Map<String, Object>> call, Throwable t) {
+                    loadMockData();
+                }
+            });
+        }
     }
 
     private void bindRealProductData(Map<String, Object> productData) {
@@ -205,6 +231,9 @@ public class MainActivity extends AppCompatActivity {
         if (desc == null || desc.trim().isEmpty()) {
             desc = "Laptop Gaming thế hệ mới với hiệu năng cực đỉnh, được trang bị card đồ họa Blackwell tiên tiến và vi xử lý AI mạnh mẽ giúp bạn thống trị mọi chiến trường AAA.";
         }
+
+        // Save to viewed products
+        saveToViewedProducts(productData);
 
         // Format Prices
         Double priceVal = 0.0;
@@ -238,7 +267,12 @@ public class MainActivity extends AppCompatActivity {
         if (currentPrice != null) currentPrice.setText(curPriceStr);
         if (oldPrice != null) oldPrice.setText(oldPriceStr);
         if (discountBadge != null) {
-            discountBadge.setText("-" + discountPct + "%");
+            if (discountPct > 0) {
+                discountBadge.setVisibility(android.view.View.VISIBLE);
+                discountBadge.setText("-" + discountPct + "%");
+            } else {
+                discountBadge.setVisibility(android.view.View.GONE);
+            }
         }
         if (ratingText != null) ratingText.setText("4.9");
         if (soldCount != null) soldCount.setText(getString(R.string.sold_count_format, "850"));
@@ -248,8 +282,20 @@ public class MainActivity extends AppCompatActivity {
         if (mainProductImage != null && !imageUrls.isEmpty()) {
             Glide.with(this)
                     .load(imageUrls.get(0))
-                    .placeholder(R.drawable.product_case)
+                    .placeholder(R.drawable.aura_laptop)
                     .into(mainProductImage);
+                    
+            if (descriptionImage != null) {
+                Glide.with(this)
+                        .load(imageUrls.get(0))
+                        .placeholder(R.drawable.product_case)
+                        .into(descriptionImage);
+            }
+        } else if (mainProductImage != null) {
+            mainProductImage.setImageResource(R.drawable.aura_laptop);
+            if (descriptionImage != null) {
+                descriptionImage.setImageResource(R.drawable.product_case);
+            }
         }
 
         // Setup horizontal thumbnail carousel
@@ -261,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
                     mainProductImage.setAlpha(0f);
                     Glide.with(this)
                             .load(imageUrl)
-                            .placeholder(R.drawable.product_case)
+                            .placeholder(R.drawable.aura_laptop)
                             .into(mainProductImage);
                     mainProductImage.animate().alpha(1f).setDuration(300).start();
                 }
@@ -272,7 +318,11 @@ public class MainActivity extends AppCompatActivity {
         // Setup specifications from backend dynamically
         if (specsRecyclerView != null) {
             List<ProductSpec> specList = new ArrayList<>();
-            Map<String, String> specsMap = (Map<String, String>) productData.get("specs");
+            Map<String, String> specsMap = null;
+            try {
+                specsMap = (Map<String, String>) productData.get("specs");
+            } catch (Exception ignored) {}
+            
             if (specsMap != null) {
                 for (Map.Entry<String, String> entry : specsMap.entrySet()) {
                     String key = entry.getKey();
@@ -303,15 +353,84 @@ public class MainActivity extends AppCompatActivity {
             specsRecyclerView.setAdapter(new SpecAdapter(specList));
         }
 
-        // Setup related & viewed products
+        String categorySlug = null;
+        try {
+            Map<String, Object> categoryMap = (Map<String, Object>) productData.get("category");
+            if (categoryMap != null) {
+                categorySlug = (String) categoryMap.get("slug");
+            }
+        } catch (Exception ignored) {}
+
+        loadRelatedProducts(categorySlug);
+        loadViewedProducts();
+    }
+
+    private void loadRelatedProducts(String categorySlug) {
         if (relatedRecyclerView != null) {
-            relatedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            relatedRecyclerView.setAdapter(new RelatedProductAdapter(MockData.getRelatedProducts()));
+            ApiClient.getInstance(this).getApiService().getProductsFiltered(1, 10, categorySlug, null, null, null, null, null, null).enqueue(new retrofit2.Callback<Map<String, Object>>() {
+                @Override
+                public void onResponse(retrofit2.Call<Map<String, Object>> call, retrofit2.Response<Map<String, Object>> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<Map<String, Object>> items = (List<Map<String, Object>>) response.body().get("items");
+                        if (items != null) {
+                            relatedRecyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                            RelatedProductAdapter adapter = new RelatedProductAdapter(items);
+                            adapter.setOnProductClickListener(MainActivity.this::openProductDetail);
+                            relatedRecyclerView.setAdapter(adapter);
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(retrofit2.Call<Map<String, Object>> call, Throwable t) {}
+            });
         }
+    }
+
+    private void saveToViewedProducts(Map<String, Object> product) {
+        SharedPreferences prefs = getSharedPreferences("aura_prefs", MODE_PRIVATE);
+        String json = prefs.getString("viewed_products", "[]");
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
+        List<Map<String, Object>> viewedList = gson.fromJson(json, type);
+        if (viewedList == null) viewedList = new ArrayList<>();
+
+        // Remove if already exists to put it at the top
+        String newId = (String) product.get("_id");
+        viewedList.removeIf(p -> {
+            String id = (String) p.get("_id");
+            return id != null && id.equals(newId);
+        });
+
+        viewedList.add(0, product);
+        if (viewedList.size() > 10) {
+            viewedList = viewedList.subList(0, 10);
+        }
+
+        prefs.edit().putString("viewed_products", gson.toJson(viewedList)).apply();
+    }
+
+    private void loadViewedProducts() {
         if (viewedRecyclerView != null) {
-            viewedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            viewedRecyclerView.setAdapter(new ViewedProductAdapter(MockData.getViewedProducts()));
+            SharedPreferences prefs = getSharedPreferences("aura_prefs", MODE_PRIVATE);
+            String json = prefs.getString("viewed_products", "[]");
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
+            List<Map<String, Object>> viewedList = gson.fromJson(json, type);
+
+            if (viewedList != null && !viewedList.isEmpty()) {
+                viewedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+                ViewedProductAdapter adapter = new ViewedProductAdapter(viewedList);
+                adapter.setOnProductClickListener(this::openProductDetail);
+                viewedRecyclerView.setAdapter(adapter);
+            }
         }
+    }
+
+    private void openProductDetail(Map<String, Object> product) {
+        Intent intent = new Intent(this, MainActivity.class);
+        String productId = (String) product.get("_id");
+        intent.putExtra("product_id", productId);
+        startActivity(intent);
     }
 
     private String formatCurrency(double amount) {
@@ -344,7 +463,7 @@ public class MainActivity extends AppCompatActivity {
             imageAdapter.setOnImageClickListener(imageUrl -> {
                 if (mainProductImage != null) {
                     mainProductImage.setAlpha(0f);
-                    Glide.with(this).load(imageUrl).placeholder(R.drawable.product_case).into(mainProductImage);
+                    Glide.with(this).load(imageUrl).placeholder(R.drawable.aura_laptop).into(mainProductImage);
                     mainProductImage.animate().alpha(1f).setDuration(300).start();
                 }
             });
@@ -354,16 +473,6 @@ public class MainActivity extends AppCompatActivity {
         if (specsRecyclerView != null) {
             specsRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
             specsRecyclerView.setAdapter(new SpecAdapter(product.getSpecs()));
-        }
-
-        if (relatedRecyclerView != null) {
-            relatedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            relatedRecyclerView.setAdapter(new RelatedProductAdapter(MockData.getRelatedProducts()));
-        }
-
-        if (viewedRecyclerView != null) {
-            viewedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            viewedRecyclerView.setAdapter(new ViewedProductAdapter(MockData.getViewedProducts()));
         }
     }
 
