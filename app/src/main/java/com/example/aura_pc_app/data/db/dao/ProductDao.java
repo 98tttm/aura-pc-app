@@ -17,4 +17,7 @@ public interface ProductDao {
 
     @Query("SELECT * FROM products")
     LiveData<List<ProductEntity>> getAllProductsLive();
+
+    @Query("DELETE FROM products WHERE _id LIKE 'fallback-%' OR _id LIKE 'static-%'")
+    void deleteGeneratedProductFixtures();
 }
