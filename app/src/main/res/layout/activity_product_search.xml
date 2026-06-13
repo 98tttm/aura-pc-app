@@ -110,7 +110,8 @@
                     android:fontFamily="sans-serif-black"
                     android:text="@string/search_suggestion_title"
                     android:textColor="@color/aura_ink"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:visibility="gone" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/searchSuggestionList"

@@ -13,6 +13,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -21,6 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.api.ApiClient;
+import com.example.aura_pc_app.data.api.ApiService;
+import com.example.aura_pc_app.data.api.ProductResponse;
 import com.example.aura_pc_app.data.db.AppDatabase;
 import com.example.aura_pc_app.data.db.dao.SearchHistoryDao;
 import com.example.aura_pc_app.data.db.entity.ProductEntity;
@@ -33,17 +36,22 @@ import com.example.aura_pc_app.utils.ProductSearchUtils;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProductSearchActivity extends AppCompatActivity {
     public static final String EXTRA_SOURCE = "extra_source";
     public static final String SOURCE_HOME = "home";
     public static final String SOURCE_CATEGORIES = "categories";
+    public static final String SOURCE_PRODUCT_LIST = "product_list";
 
     private static final int HISTORY_LIMIT = 5;
+    private static final int SUGGESTION_LIMIT = 8;
     private static final long SEARCH_DEBOUNCE_MS = 300L;
 
     private final Handler searchHandler = new Handler(Looper.getMainLooper());
@@ -52,6 +60,7 @@ public class ProductSearchActivity extends AppCompatActivity {
     private final List<String> recentSearches = new ArrayList<>();
     private final List<SearchTrendAdapter.TrendItem> trendItems = new ArrayList<>();
 
+    private ApiService apiService;
     private SearchView searchView;
     private View trendSection;
     private View suggestionSection;
@@ -59,6 +68,7 @@ public class ProductSearchActivity extends AppCompatActivity {
     private SearchSuggestionAdapter suggestionAdapter;
     private SearchHistoryDao searchHistoryDao;
     private Runnable pendingSearchRunnable;
+    private Call<ProductResponse> activeSearchCall;
     private String activeQuery = "";
 
     @Override
@@ -72,6 +82,7 @@ public class ProductSearchActivity extends AppCompatActivity {
         getWindow().setStatusBarColor(getColor(R.color.aura_orange));
         setContentView(R.layout.activity_product_search);
 
+        apiService = ApiClient.getInstance(this).getApiService();
         searchHistoryDao = AppDatabase.getInstance(this).searchHistoryDao();
         allProducts.addAll(buildFallbackProducts());
         trendItems.addAll(buildCategoryTrends());
@@ -161,10 +172,7 @@ public class ProductSearchActivity extends AppCompatActivity {
     }
 
     private void observeProducts() {
-        AppRepository repository = new AppRepository(
-                getApplication(),
-                ApiClient.getInstance(this).getApiService()
-        );
+        AppRepository repository = new AppRepository(getApplication(), apiService);
         repository.getProducts().observe(this, products -> {
             if (products == null || products.isEmpty()) {
                 return;
@@ -205,59 +213,76 @@ public class ProductSearchActivity extends AppCompatActivity {
     private void updateSearchState(String rawQuery) {
         activeQuery = ProductSearchUtils.sanitizeKeyword(rawQuery);
         if (activeQuery.isEmpty()) {
+            cancelActiveSearch();
             showTrends();
             return;
         }
-        showSuggestions(activeQuery);
+        // Hiện ngay section gợi ý với kết quả khớp từ cache để không bị "nhấp nháy",
+        // sau đó gọi backend lấy kết quả đầy đủ theo keyword.
+        trendSection.setVisibility(View.GONE);
+        suggestionSection.setVisibility(View.VISIBLE);
+        suggestionAdapter.submitList(buildLocalSuggestions(activeQuery), activeQuery);
+        searchProductsLive(activeQuery);
     }
 
     private void showTrends() {
         trendSection.setVisibility(View.VISIBLE);
         suggestionSection.setVisibility(View.GONE);
-        suggestionAdapter.submitList(new ArrayList<>(), "");
+        suggestionAdapter.submitList(new ArrayList<ProductEntity>(), "");
     }
 
-    private void showSuggestions(String query) {
-        List<String> suggestions = buildKeywordSuggestions(query);
-        trendSection.setVisibility(View.GONE);
-        suggestionSection.setVisibility(View.VISIBLE);
-        suggestionAdapter.submitList(suggestions, query);
-    }
-
-    private List<String> buildKeywordSuggestions(String query) {
-        Set<String> suggestions = new LinkedHashSet<>();
-
-        for (String recent : recentSearches) {
-            if (ProductSearchUtils.contains(recent, query)) {
-                suggestions.add(recent);
-            }
-        }
-
-        for (ProductEntity product : allProducts) {
-            if (ProductSearchUtils.matches(product, query)) {
-                String name = product.name == null ? "" : product.name.trim();
-                if (!name.isEmpty()) {
-                    suggestions.add(name);
+    /**
+     * Gọi backend lấy sản phẩm khớp keyword (kèm ảnh + giá thật).
+     * Bỏ qua response cũ nếu người dùng đã gõ tiếp; lỗi/rỗng thì fallback về cache cục bộ.
+     */
+    private void searchProductsLive(String query) {
+        cancelActiveSearch();
+        // Backend phân biệt dấu -> khôi phục dấu cho keyword trước khi gửi.
+        String backendQuery = ProductSearchUtils.restoreDiacritics(query);
+        activeSearchCall = apiService.searchProducts(backendQuery, SUGGESTION_LIMIT);
+        activeSearchCall.enqueue(new Callback<ProductResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ProductResponse> call,
+                                   @NonNull Response<ProductResponse> response) {
+                if (!query.equals(activeQuery)) {
+                    return; // Response đã cũ, người dùng gõ keyword khác.
+                }
+                List<ProductEntity> items = response.isSuccessful() && response.body() != null
+                        ? response.body().items
+                        : null;
+                if (items != null && !items.isEmpty()) {
+                    suggestionAdapter.submitList(items, query);
+                } else {
+                    suggestionAdapter.submitList(buildLocalSuggestions(query), query);
                 }
             }
-            if (suggestions.size() >= 8) {
-                break;
-            }
-        }
 
-        for (SearchTrendAdapter.TrendItem item : trendItems) {
-            if (ProductSearchUtils.contains(item.title, query)) {
-                suggestions.add(item.title);
+            @Override
+            public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
+                if (call.isCanceled() || !query.equals(activeQuery)) {
+                    return;
+                }
+                suggestionAdapter.submitList(buildLocalSuggestions(query), query);
             }
-            if (suggestions.size() >= 8) {
-                break;
-            }
-        }
+        });
+    }
 
-        if (suggestions.isEmpty()) {
-            suggestions.add(query);
+    private void cancelActiveSearch() {
+        if (activeSearchCall != null) {
+            activeSearchCall.cancel();
+            activeSearchCall = null;
         }
-        return new ArrayList<>(suggestions);
+    }
+
+    private List<ProductEntity> buildLocalSuggestions(String query) {
+        List<ProductEntity> results = new ArrayList<>();
+        for (ProductEntity product : allProducts) {
+            if (ProductSearchUtils.matches(product, query)) {
+                results.add(product);
+            }
+            if (results.size() >= SUGGESTION_LIMIT) break;
+        }
+        return results;
     }
 
     private void selectSuggestion(String keyword) {
@@ -271,13 +296,17 @@ public class ProductSearchActivity extends AppCompatActivity {
      */
     private void launchCategory(String categoryName) {
         String name = ProductSearchUtils.sanitizeKeyword(categoryName);
-        if (name.isEmpty()) {
-            return;
-        }
+        if (name.isEmpty()) return;
         String slug = CategoryMapping.getSlug(categoryName);
         if (slug == null) {
-            // Không có mapping danh mục -> coi như tìm theo keyword.
             launchKeywordSearch(categoryName);
+            return;
+        }
+        if (SOURCE_PRODUCT_LIST.equals(getIntent().getStringExtra(EXTRA_SOURCE))) {
+            Intent result = new Intent();
+            result.putExtra("category", slug);
+            setResult(RESULT_OK, result);
+            finish();
             return;
         }
         Intent intent = new Intent(this, ProductListActivity.class);
@@ -286,16 +315,17 @@ public class ProductSearchActivity extends AppCompatActivity {
         finish();
     }
 
-    /**
-     * Tìm kiếm theo keyword (gõ vào ô "Bạn muốn mua gì hôm nay" hoặc chọn gợi ý):
-     * mở danh sách sản phẩm với tham số search keyword.
-     */
     private void launchKeywordSearch(String rawQuery) {
         String keyword = ProductSearchUtils.sanitizeKeyword(rawQuery);
-        if (keyword.isEmpty()) {
+        if (keyword.isEmpty()) return;
+        saveSearchQuery(keyword);
+        if (SOURCE_PRODUCT_LIST.equals(getIntent().getStringExtra(EXTRA_SOURCE))) {
+            Intent result = new Intent();
+            result.putExtra("query", keyword);
+            setResult(RESULT_OK, result);
+            finish();
             return;
         }
-        saveSearchQuery(keyword);
         Intent intent = new Intent(this, ProductListActivity.class);
         intent.putExtra("query", keyword);
         startActivity(intent);
@@ -428,6 +458,7 @@ public class ProductSearchActivity extends AppCompatActivity {
         if (pendingSearchRunnable != null) {
             searchHandler.removeCallbacks(pendingSearchRunnable);
         }
+        cancelActiveSearch();
         historyExecutor.shutdownNow();
         super.onDestroy();
     }

@@ -4,14 +4,63 @@ import com.example.aura_pc_app.data.db.entity.ProductEntity;
 
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 public final class ProductSearchUtils {
     private static final Pattern DIACRITICS = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+
+    /**
+     * Backend tìm kiếm phân biệt dấu tiếng Việt (search=chuot -> 0, search=chuột -> 66).
+     * Bảng này khôi phục dấu cho các token tiếng Việt phổ biến trong cửa hàng máy tính,
+     * giúp người dùng gõ không dấu vẫn ra kết quả. Token brand/english (asus, rtx, hp...)
+     * không có trong bảng nên được giữ nguyên — không trùng với từ vựng tiếng Việt ở đây.
+     */
+    private static final Map<String, String> DIACRITIC_RESTORE = new HashMap<>();
+    static {
+        DIACRITIC_RESTORE.put("ban", "bàn");
+        DIACRITIC_RESTORE.put("ghe", "ghế");
+        DIACRITIC_RESTORE.put("cong", "công");
+        DIACRITIC_RESTORE.put("thai", "thái");
+        DIACRITIC_RESTORE.put("hoc", "học");
+        DIACRITIC_RESTORE.put("gia", "giá");
+        DIACRITIC_RESTORE.put("tot", "tốt");
+        DIACRITIC_RESTORE.put("phim", "phím");
+        DIACRITIC_RESTORE.put("chuot", "chuột");
+        DIACRITIC_RESTORE.put("lot", "lót");
+        DIACRITIC_RESTORE.put("cam", "cầm");
+        DIACRITIC_RESTORE.put("dia", "đĩa");
+        DIACRITIC_RESTORE.put("choi", "chơi");
+        DIACRITIC_RESTORE.put("may", "máy");
+        DIACRITIC_RESTORE.put("tinh", "tính");
+        DIACRITIC_RESTORE.put("nguon", "nguồn");
+        DIACRITIC_RESTORE.put("quat", "quạt");
+        DIACRITIC_RESTORE.put("tan", "tản");
+        DIACRITIC_RESTORE.put("nhiet", "nhiệt");
+        DIACRITIC_RESTORE.put("man", "màn");
+        DIACRITIC_RESTORE.put("hinh", "hình");
+        DIACRITIC_RESTORE.put("dong", "động");
+        DIACRITIC_RESTORE.put("do", "đồ");
+        DIACRITIC_RESTORE.put("hoa", "họa");
+        DIACRITIC_RESTORE.put("van", "văn");
+        DIACRITIC_RESTORE.put("phong", "phòng");
+        DIACRITIC_RESTORE.put("phu", "phụ");
+        DIACRITIC_RESTORE.put("kien", "kiện");
+        DIACRITIC_RESTORE.put("thiet", "thiết");
+        DIACRITIC_RESTORE.put("mang", "mạng");
+        DIACRITIC_RESTORE.put("vien", "viên");
+        DIACRITIC_RESTORE.put("o", "ổ");
+        DIACRITIC_RESTORE.put("cung", "cứng");
+        DIACRITIC_RESTORE.put("vo", "vỏ");
+        DIACRITIC_RESTORE.put("day", "dây");
+        DIACRITIC_RESTORE.put("khong", "không");
+        DIACRITIC_RESTORE.put("co", "cơ");
+    }
 
     private ProductSearchUtils() {
     }
@@ -21,6 +70,27 @@ public final class ProductSearchUtils {
             return "";
         }
         return rawQuery.trim().replaceAll("\\s+", " ");
+    }
+
+    /**
+     * Khôi phục dấu tiếng Việt cho từng token để gửi lên backend (vốn phân biệt dấu).
+     * Token không nằm trong bảng (brand, spec, english, hoặc đã có dấu sẵn) được giữ nguyên.
+     */
+    public static String restoreDiacritics(String rawQuery) {
+        String query = sanitizeKeyword(rawQuery);
+        if (query.isEmpty()) {
+            return query;
+        }
+        String[] tokens = query.split("\\s+");
+        StringBuilder builder = new StringBuilder();
+        for (String token : tokens) {
+            String restored = DIACRITIC_RESTORE.get(normalize(token));
+            if (builder.length() > 0) {
+                builder.append(' ');
+            }
+            builder.append(restored != null ? restored : token);
+        }
+        return builder.toString();
     }
 
     public static String normalize(String value) {

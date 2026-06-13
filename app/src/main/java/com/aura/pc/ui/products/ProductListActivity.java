@@ -1,9 +1,9 @@
 package com.aura.pc.ui.products;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,6 +24,7 @@ import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.api.ApiClient;
 import com.example.aura_pc_app.databinding.ActivityAuraProductsBinding;
 import com.example.aura_pc_app.ui.base.BaseActivity;
+import com.example.aura_pc_app.utils.ProductSearchUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.ChipGroup;
@@ -38,6 +39,8 @@ import java.util.Map;
  * và Category Chips chuyển đổi nhanh.
  */
 public class ProductListActivity extends BaseActivity<ActivityAuraProductsBinding> {
+
+    private static final int REQUEST_SEARCH = 1001;
 
     private ProductListViewModel viewModel;
     private ProductPagingAdapter adapter;
@@ -100,36 +103,46 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
         }
     }
 
-    // ===== Search input (keyword) =====
+    // ===== Search input (tap → open ProductSearchActivity) =====
     private void initSearchInput() {
-        binding.searchInput.setOnEditorActionListener((v, actionId, event) -> {
-            boolean isSearchAction = actionId == EditorInfo.IME_ACTION_SEARCH
-                    || actionId == EditorInfo.IME_ACTION_DONE
-                    || actionId == EditorInfo.IME_ACTION_GO;
-            if (isSearchAction) {
-                runKeywordSearch(binding.searchInput.getText().toString());
-                return true;
-            }
-            return false;
-        });
+        binding.searchInput.setFocusable(false);
+        binding.searchInput.setFocusableInTouchMode(false);
+        binding.searchInput.setOnClickListener(v -> openProductSearch());
+    }
+
+    @SuppressWarnings("deprecation")
+    private void openProductSearch() {
+        Intent intent = new Intent(this, ProductSearchActivity.class);
+        intent.putExtra(ProductSearchActivity.EXTRA_SOURCE, ProductSearchActivity.SOURCE_PRODUCT_LIST);
+        startActivityForResult(intent, REQUEST_SEARCH);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != REQUEST_SEARCH || resultCode != Activity.RESULT_OK || data == null) return;
+        String keyword = data.getStringExtra("query");
+        String category = data.getStringExtra("category");
+        if (keyword != null && !keyword.isEmpty()) {
+            binding.searchInput.setText(keyword);
+            runKeywordSearch(keyword);
+        } else if (category != null && !category.isEmpty()) {
+            clearKeyword();
+            selectCategoryChip(category);
+        }
     }
 
     private void runKeywordSearch(String keyword) {
         String kw = keyword == null ? "" : keyword.trim();
-        // Tìm theo keyword là tìm trên toàn bộ sản phẩm → bỏ lọc danh mục đang chọn.
         viewModel.setCategory(null);
         isProgrammaticChange = true;
         binding.chipGroupCategory.clearCheck();
         binding.chipAll.setChecked(true);
         isProgrammaticChange = false;
-        viewModel.setSearch(kw);
+        // Backend phân biệt dấu -> khôi phục dấu cho keyword trước khi gửi.
+        viewModel.setSearch(ProductSearchUtils.restoreDiacritics(kw));
         viewModel.applyFilters();
-
-        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(binding.searchInput.getWindowToken(), 0);
-        }
-        binding.searchInput.clearFocus();
     }
 
     private void clearKeyword() {
