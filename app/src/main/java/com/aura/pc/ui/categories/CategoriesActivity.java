@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.ui.products.ProductListActivity;
+import com.aura.pc.ui.products.ProductSearchActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.utils.LocaleManager;
@@ -59,7 +60,7 @@ public class CategoriesActivity extends AppCompatActivity {
                     Toast.makeText(this, R.string.msg_menu_pending, Toast.LENGTH_SHORT).show());
         }
         if (search != null) {
-            search.setOnClickListener(v -> openProductList());
+            search.setOnClickListener(v -> openProductSearch());
         }
         if (filter != null) {
             filter.setOnClickListener(v ->
@@ -132,7 +133,7 @@ public class CategoriesActivity extends AppCompatActivity {
             if (title != null) title.setText(item);
             if (subtitle != null) subtitle.setText(R.string.category_item_cta);
             if (icon != null) icon.setImageResource(getGroupIcon(selectedGroupIndex));
-            tile.setOnClickListener(v -> openProductList());
+            tile.setOnClickListener(v -> openProductList(item));
             grid.addView(tile);
         }
     }
@@ -158,6 +159,19 @@ public class CategoriesActivity extends AppCompatActivity {
 
     private void openProductList() {
         startActivity(new Intent(this, ProductListActivity.class));
+    }
+
+    private void openProductList(String initialQuery) {
+        Intent intent = new Intent(this, ProductListActivity.class);
+        intent.putExtra(ProductListActivity.EXTRA_INITIAL_QUERY, initialQuery);
+        intent.putExtra(ProductListActivity.EXTRA_FROM_SEARCH, true);
+        startActivity(intent);
+    }
+
+    private void openProductSearch() {
+        Intent intent = new Intent(this, ProductSearchActivity.class);
+        intent.putExtra(ProductSearchActivity.EXTRA_SOURCE, ProductSearchActivity.SOURCE_CATEGORIES);
+        startActivity(intent);
     }
 
     @Override

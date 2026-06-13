@@ -125,8 +125,9 @@
                 android:paddingBottom="28dp">
 
                 <LinearLayout
+                    android:id="@+id/homeSearchContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="53dp"
+                    android:layout_height="56dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="21dp"
                     android:layout_marginEnd="20dp"
@@ -134,53 +135,72 @@
                     android:elevation="2dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingStart="17dp"
-                    android:paddingEnd="14dp">
+                    android:paddingStart="8dp"
+                    android:paddingEnd="10dp">
 
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_search_muted" />
-
-                    <EditText
-                        android:id="@+id/searchInput"
+                    <androidx.appcompat.widget.SearchView
+                        android:id="@+id/homeProductSearchView"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:hint="@string/home_figma_search_hint"
-                        android:includeFontPadding="false"
-                        android:inputType="text"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:singleLine="true"
-                        android:textColor="@color/aura_ink"
-                        android:textColorHint="#FF6B7280"
-                        android:textSize="14sp" />
+                        android:contentDescription="@string/cd_search"
+                        app:iconifiedByDefault="false"
+                        app:queryHint="@string/home_figma_search_hint" />
 
                     <ImageButton
                         android:id="@+id/searchFilterButton"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="@string/cd_filter_products"
-                        android:padding="5dp"
-                        android:src="@drawable/ic_search" />
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="7dp"
-                        android:layout_marginEnd="7dp"
-                        android:background="#80E2BFB0" />
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:contentDescription="@null"
                         android:padding="4dp"
                         android:src="@drawable/ic_filter" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/homeSearchResultsSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginEnd="15dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/homeSearchResultsTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginEnd="6dp"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="@string/home_search_results_title"
+                        android:textColor="@color/aura_ink"
+                        android:textSize="16sp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/homeSearchResultsRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:clipToPadding="false"
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"
+                        tools:itemCount="2"
+                        tools:listitem="@layout/item_aura_product_card" />
+
+                    <TextView
+                        android:id="@+id/homeSearchEmptyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="72dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/search_no_results"
+                        android:textColor="@color/aura_muted"
+                        android:textSize="15sp"
+                        android:visibility="gone" />
                 </LinearLayout>
 
                 <FrameLayout
@@ -788,6 +808,43 @@
                     android:visibility="gone" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/homeSearchSuggestionPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="159dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/bg_home_section_card"
+        android:clickable="true"
+        android:elevation="18dp"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="10dp"
+        android:translationZ="18dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/homeSearchSuggestionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-bold"
+            android:includeFontPadding="false"
+            android:text="@string/search_popular_title"
+            android:textColor="@color/aura_ink"
+            android:textSize="14sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/homeSearchSuggestionList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never" />
     </LinearLayout>
 
     <ImageButton

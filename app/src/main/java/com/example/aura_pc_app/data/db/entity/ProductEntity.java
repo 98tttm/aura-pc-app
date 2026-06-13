@@ -3,6 +3,10 @@ package com.example.aura_pc_app.data.db.entity;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.example.aura_pc_app.data.api.RawJsonStringDeserializer;
+import com.google.gson.annotations.JsonAdapter;
+
 import java.util.List;
 
 @Entity(tableName = "products")
@@ -19,8 +23,13 @@ public class ProductEntity {
     public String category_id;
     public List<String> category_ids;
 
-    // Các trường Mixed của MongoDB sẽ lưu dưới dạng JSON String
+    // Các trường Mixed của MongoDB sẽ lưu dưới dạng JSON String.
+    // API trả "images" là mảng và "specs" là object -> dùng RawJsonStringDeserializer
+    // để Gson chuyển về chuỗi JSON thay vì ném lỗi và làm hỏng toàn bộ danh sách.
+    @JsonAdapter(RawJsonStringDeserializer.class)
     public String images;
+
+    @JsonAdapter(RawJsonStringDeserializer.class)
     public String specs;
 
     public String brand;

@@ -124,35 +124,24 @@
                 android:paddingEnd="20dp">
 
                 <LinearLayout
+                    android:id="@+id/productSearchContainer"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:background="@drawable/bg_search_pill"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingStart="17dp"
+                    android:paddingStart="8dp"
                     android:paddingEnd="8dp">
 
-                    <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_search_muted" />
-
-                    <EditText
-                        android:id="@+id/searchInput"
+                    <androidx.appcompat.widget.SearchView
+                        android:id="@+id/productSearchView"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:hint="@string/search_hint"
-                        android:includeFontPadding="false"
-                        android:inputType="text"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:singleLine="true"
-                        android:textColor="@color/aura_ink"
-                        android:textColorHint="@color/aura_placeholder"
-                        android:textSize="16sp" />
+                        android:contentDescription="@string/cd_search"
+                        app:iconifiedByDefault="false"
+                        app:queryHint="@string/search_hint" />
 
                     <ImageButton
                         android:id="@+id/searchFilterButton"
@@ -164,6 +153,39 @@
                         android:padding="10dp"
                         android:src="@drawable/filter"
                         android:translationZ="2dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/searchSuggestionPanel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_home_section_card"
+                    android:elevation="2dp"
+                    android:orientation="vertical"
+                    android:paddingStart="16dp"
+                    android:paddingTop="14dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="10dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/searchSuggestionTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-bold"
+                        android:includeFontPadding="false"
+                        android:text="@string/search_popular_title"
+                        android:textColor="@color/aura_ink"
+                        android:textSize="14sp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/searchSuggestionList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never" />
                 </LinearLayout>
 
                 <HorizontalScrollView
@@ -208,52 +230,28 @@
                     </LinearLayout>
                 </HorizontalScrollView>
 
-                <GridLayout
-                    android:id="@+id/productGrid"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/productRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
-                    android:alignmentMode="alignBounds"
                     android:clipChildren="false"
                     android:clipToPadding="false"
-                    android:columnCount="2"
-                    android:columnOrderPreserved="false"
-                    android:gravity="center_horizontal"
-                    android:rowCount="4"
-                    android:useDefaultMargins="false">
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never" />
 
-                    <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-                </GridLayout>
+                <TextView
+                    android:id="@+id/productEmptyText"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/search_no_results"
+                    android:textColor="@color/aura_muted"
+                    android:textSize="15sp"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/loadMoreProductsButton"
