@@ -433,13 +433,8 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
     }
 
     private void setupCategoryStrip() {
-        int[] titles = {
-                R.string.category_laptop,
-                R.string.home_category_gaming_pc,
-                R.string.category_monitor,
-                R.string.home_category_keyboard,
-                R.string.home_category_mouse,
-                R.string.home_category_audio
+        String[] titles = {
+                "Laptop", "PC", "Màn hình", "Linh kiện", "Khác", "Xem tất cả"
         };
         int[] icons = {
                 R.drawable.figma_cat_laptop,
@@ -461,7 +456,22 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
             if (icon != null) {
                 icon.setImageResource(icons[i]);
             }
-            item.setOnClickListener(v -> startActivity(new Intent(this, CategoriesActivity.class)));
+            String slug = null;
+            if (i == 0) slug = "laptop";
+            else if (i == 1) slug = "pc";
+            else if (i == 2) slug = "man-hinh";
+            else if (i == 3) slug = "linh-kien";
+
+            final String finalSlug = slug;
+            item.setOnClickListener(v -> {
+                if (finalSlug == null) {
+                    startActivity(new Intent(this, CategoriesActivity.class));
+                } else {
+                    Intent intent = new Intent(this, ProductListActivity.class);
+                    intent.putExtra("category", finalSlug);
+                    startActivity(intent);
+                }
+            });
         }
     }
 

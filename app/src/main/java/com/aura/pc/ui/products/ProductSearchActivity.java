@@ -25,6 +25,7 @@ import com.example.aura_pc_app.data.db.AppDatabase;
 import com.example.aura_pc_app.data.db.dao.SearchHistoryDao;
 import com.example.aura_pc_app.data.db.entity.ProductEntity;
 import com.example.aura_pc_app.data.db.entity.SearchHistoryEntity;
+import com.aura.pc.utils.CategoryMapping;
 import com.example.aura_pc_app.data.repository.AppRepository;
 import com.example.aura_pc_app.utils.LocaleManager;
 import com.example.aura_pc_app.utils.ProductSearchUtils;
@@ -89,7 +90,7 @@ public class ProductSearchActivity extends AppCompatActivity {
 
         findViewById(R.id.searchBackButton).setOnClickListener(v -> finish());
 
-        trendAdapter = new SearchTrendAdapter(item -> launchProductList(item.title));
+        trendAdapter = new SearchTrendAdapter(item -> launchCategory(item.title));
         androidx.recyclerview.widget.RecyclerView trendRecycler = findViewById(R.id.trendRecyclerView);
         trendRecycler.setLayoutManager(new GridLayoutManager(this, 2));
         trendRecycler.setAdapter(trendAdapter);
@@ -109,7 +110,7 @@ public class ProductSearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                launchProductList(query);
+                launchKeywordSearch(query);
                 return true;
             }
 
@@ -260,18 +261,43 @@ public class ProductSearchActivity extends AppCompatActivity {
     }
 
     private void selectSuggestion(String keyword) {
-        launchProductList(keyword);
+        launchKeywordSearch(keyword);
     }
 
-    private void launchProductList(String rawQuery) {
+    /**
+     * Bấm vào một danh mục/thương hiệu trong "Xu hướng tìm kiếm":
+     * lọc theo category_id thật của backend (qua {@link CategoryMapping}),
+     * KHÔNG tìm theo keyword. Nếu chưa có mapping thì fallback sang tìm keyword.
+     */
+    private void launchCategory(String categoryName) {
+        String name = ProductSearchUtils.sanitizeKeyword(categoryName);
+        if (name.isEmpty()) {
+            return;
+        }
+        String slug = CategoryMapping.getSlug(categoryName);
+        if (slug == null) {
+            // Không có mapping danh mục -> coi như tìm theo keyword.
+            launchKeywordSearch(categoryName);
+            return;
+        }
+        Intent intent = new Intent(this, ProductListActivity.class);
+        intent.putExtra("category", slug);
+        startActivity(intent);
+        finish();
+    }
+
+    /**
+     * Tìm kiếm theo keyword (gõ vào ô "Bạn muốn mua gì hôm nay" hoặc chọn gợi ý):
+     * mở danh sách sản phẩm với tham số search keyword.
+     */
+    private void launchKeywordSearch(String rawQuery) {
         String keyword = ProductSearchUtils.sanitizeKeyword(rawQuery);
         if (keyword.isEmpty()) {
             return;
         }
         saveSearchQuery(keyword);
         Intent intent = new Intent(this, ProductListActivity.class);
-        intent.putExtra(ProductListActivity.EXTRA_INITIAL_QUERY, keyword);
-        intent.putExtra(ProductListActivity.EXTRA_FROM_SEARCH, true);
+        intent.putExtra("query", keyword);
         startActivity(intent);
         finish();
     }

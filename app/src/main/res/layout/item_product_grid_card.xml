@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="3dp"
+    app:cardBackgroundColor="@color/aura_white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Discount Badge -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/productImage"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:scaleType="centerInside"
+                android:padding="12dp"
+                android:contentDescription="@string/cd_product_image_acer_nitro_v16s" />
+
+            <TextView
+                android:id="@+id/discountBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:layout_gravity="top|start"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_discount_badge"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textColor="@color/aura_white"
+                android:textSize="11sp"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="12dp">
+
+            <!-- Rating -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_star"
+                    app:tint="@color/aura_orange" />
+
+                <TextView
+                    android:id="@+id/productRating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false"
+                    android:text="4.9"
+                    android:textColor="@color/aura_ink"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <!-- Product Name -->
+            <TextView
+                android:id="@+id/productName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="2dp"
+                android:maxLines="2"
+                android:minLines="2"
+                android:textColor="@color/aura_ink"
+                android:textSize="14sp" />
+
+            <!-- Old Price -->
+            <TextView
+                android:id="@+id/productOldPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="sans-serif"
+                android:includeFontPadding="false"
+                android:textColor="#805A4136"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <!-- Price + Cart button -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp">
+
+                <TextView
+                    android:id="@+id/productPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:fontFamily="sans-serif-black"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/aura_orange"
+                    android:textSize="16sp" />
+
+                <ImageButton
+                    android:id="@+id/btnAddToCart"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:background="@drawable/bg_dark_circle"
+                    android:contentDescription="@string/cd_add_to_cart"
+                    android:padding="8dp"
+                    android:scaleType="center"
+                    android:src="@drawable/ic_cart_plus"
+                    app:tint="@color/aura_white" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

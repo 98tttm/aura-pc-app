@@ -17,6 +17,7 @@ import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.ui.products.ProductListActivity;
 import com.aura.pc.ui.products.ProductSearchActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
+import com.aura.pc.utils.CategoryMapping;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.utils.LocaleManager;
 
@@ -133,7 +134,10 @@ public class CategoriesActivity extends AppCompatActivity {
             if (title != null) title.setText(item);
             if (subtitle != null) subtitle.setText(R.string.category_item_cta);
             if (icon != null) icon.setImageResource(getGroupIcon(selectedGroupIndex));
-            tile.setOnClickListener(v -> openProductList(item));
+            
+            String slug = generateSlug(item);
+            final String finalSlug = slug;
+            tile.setOnClickListener(v -> openProductList(finalSlug));
             grid.addView(tile);
         }
     }
@@ -157,14 +161,27 @@ public class CategoriesActivity extends AppCompatActivity {
         }
     }
 
-    private void openProductList() {
-        startActivity(new Intent(this, ProductListActivity.class));
+    private String generateSlug(String text) {
+        if (text == null) return "";
+        String slug = CategoryMapping.getSlug(text);
+        if (slug != null) {
+            return slug;
+        }
+        
+        // Fallback generator
+        slug = text.toLowerCase();
+        slug = java.text.Normalizer.normalize(slug, java.text.Normalizer.Form.NFD);
+        slug = slug.replaceAll("\\p{M}", "");
+        slug = slug.replaceAll("[^a-z0-9\\s-]", "");
+        slug = slug.trim().replaceAll("\\s+", "-");
+        return slug;
     }
 
-    private void openProductList(String initialQuery) {
+    private void openProductList(String category) {
         Intent intent = new Intent(this, ProductListActivity.class);
-        intent.putExtra(ProductListActivity.EXTRA_INITIAL_QUERY, initialQuery);
-        intent.putExtra(ProductListActivity.EXTRA_FROM_SEARCH, true);
+        if (category != null) {
+            intent.putExtra("category", category);
+        }
         startActivity(intent);
     }
 

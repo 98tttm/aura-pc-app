@@ -35,11 +35,11 @@
             android:layout_height="56dp"
             android:layout_marginStart="10dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_search_page_input"
+            android:background="@drawable/bg_search_pill"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp">
+            android:paddingStart="8dp"
+            android:paddingEnd="10dp">
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/fullProductSearchView"
