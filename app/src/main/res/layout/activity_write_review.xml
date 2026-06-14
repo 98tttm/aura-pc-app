@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/writeReviewRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+        <ImageButton
+            android:id="@+id/writeReviewBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/cd_back"
+            android:padding="10dp"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:id="@+id/writeReviewTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:text="@string/review_write_header"
+            android:textColor="@color/black"
+            android:textSize="21sp" />
+
+        <TextView
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:gravity="center"
+            android:text="?"
+            android:textColor="@color/black"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="28dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#FFFFDED2"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/bg_review_reward_icon"
+                        android:gravity="center"
+                        android:text="★"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-bold"
+                            android:lineSpacingExtra="-2dp"
+                            android:text="@string/review_write_reward_title"
+                            android:textColor="@color/black"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="@string/review_write_reward_subtitle"
+                            android:textColor="@color/black"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_orange_gradient_pill"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="8dp"
+                        android:text="@string/review_write_reward_badge"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:id="@+id/writeReviewSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/border_light"
+                    app:strokeWidth="1dp">
+
+                    <ImageView
+                        android:id="@+id/writeReviewProductImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/review_product_image_description"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/product_case" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/writeReviewProductName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-bold"
+                        android:maxLines="2"
+                        android:text="@string/product_name_placeholder"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/writeReviewProductSpecs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="@string/review_mock_variant"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/writeReviewRatingPrompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="34dp"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="center"
+                android:text="@string/review_rating_prompt"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:id="@+id/writeReviewStars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/writeReviewStar1"
+                    style="@style/WriteReviewStar" />
+
+                <TextView
+                    android:id="@+id/writeReviewStar2"
+                    style="@style/WriteReviewStar" />
+
+                <TextView
+                    android:id="@+id/writeReviewStar3"
+                    style="@style/WriteReviewStar" />
+
+                <TextView
+                    android:id="@+id/writeReviewStar4"
+                    style="@style/WriteReviewStar" />
+
+                <TextView
+                    android:id="@+id/writeReviewStar5"
+                    style="@style/WriteReviewStar" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/writeReviewRatingLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/review_rating_helper"
+                android:textColor="#FFFFB638"
+                android:textSize="14sp" />
+
+            <FrameLayout
+                android:id="@+id/btnChooseReviewImages"
+                android:layout_width="match_parent"
+                android:layout_height="128dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/bg_review_upload"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_review_camera"
+                        app:tint="@color/text_gray_label" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/review_upload_prompt"
+                        android:textColor="@color/text_gray_label"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="8dp"
+                    android:background="@drawable/bg_orange_gradient_pill"
+                    android:paddingHorizontal="9dp"
+                    android:paddingVertical="4dp"
+                    android:text="@string/review_upload_reward"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/writeReviewImagesRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="112dp"
+                android:layout_marginTop="10dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:orientation="horizontal"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="@string/review_content_label_figma"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/writeReviewCounter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/review_content_counter_zero"
+                    android:textColor="@color/text_gray_label"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/writeReviewContent"
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_review_content_input"
+                android:gravity="top|start"
+                android:hint="@string/review_content_sample"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLength="500"
+                android:padding="16dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/black"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/writeReviewTagsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/review_tags_title"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="4dp"
+                app:singleSelection="false">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/writeReviewTagOne"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/review_tag_performance"
+                    android:textColor="@color/review_chip_text"
+                    app:chipBackgroundColor="@color/review_chip_background"
+                    app:chipStrokeColor="@color/orange_primary"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/writeReviewTagTwo"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/review_tag_accurate"
+                    android:textColor="@color/review_chip_text"
+                    app:chipBackgroundColor="@color/review_chip_background"
+                    app:chipStrokeColor="@color/orange_primary"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/writeReviewTagThree"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/review_tag_value"
+                    android:textColor="@color/review_chip_text"
+                    app:chipBackgroundColor="@color/review_chip_background"
+                    app:chipStrokeColor="@color/orange_primary"
+                    app:chipStrokeWidth="1dp" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/writeReviewTagFour"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/review_tag_delivery"
+                    android:textColor="@color/review_chip_text"
+                    app:chipBackgroundColor="@color/review_chip_background"
+                    app:chipStrokeColor="@color/orange_primary"
+                    app:chipStrokeWidth="1dp" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmitReview"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/bg_orange_gradient_pill"
+                android:fontFamily="sans-serif-bold"
+                android:text="@string/review_submit_figma"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:backgroundTint="@null"
+                app:cornerRadius="29dp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
