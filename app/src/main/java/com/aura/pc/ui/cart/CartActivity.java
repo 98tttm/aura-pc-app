@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,12 +22,15 @@ import com.example.aura_pc_app.utils.AuthGate;
 import com.example.aura_pc_app.utils.LocaleManager;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class CartActivity extends AppCompatActivity {
     private CartItemAdapter cartItemAdapter;
     private CartViewModel viewModel;
+    private CheckBox selectAllCheckbox;
+    private List<CartItemEntity> latestItems;
     private final NumberFormat currencyFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
 
     @Override
@@ -45,13 +49,21 @@ public class CartActivity extends AppCompatActivity {
         setupCartList();
         observeCartItems();
         observeActions();
+        setupSelectAll();
 
         findViewById(R.id.cartBackButton).setOnClickListener(v -> finish());
         findViewById(R.id.btnCheckout).setOnClickListener(v -> {
+            ArrayList<String> selectedKeys = cartItemAdapter.getSelectedKeys();
+            if (selectedKeys.isEmpty()) {
+                Toast.makeText(this, "Vui lòng chọn ít nhất một sản phẩm", Toast.LENGTH_SHORT).show();
+                return;
+            }
             if (!AuthGate.requireLogin(this, CheckoutActivity.class)) {
                 return;
             }
-            startActivity(new Intent(this, CheckoutActivity.class));
+            Intent intent = new Intent(this, CheckoutActivity.class);
+            intent.putStringArrayListExtra(CheckoutActivity.EXTRA_SELECTED_CART_KEYS, selectedKeys);
+            startActivity(intent);
         });
         View browse = findViewById(R.id.btnBrowseProducts);
         if (browse != null) {
@@ -75,6 +87,12 @@ public class CartActivity extends AppCompatActivity {
             public void onRemove(CartItemEntity item) {
                 viewModel.remove(item);
             }
+
+            @Override
+            public void onSelectionChanged() {
+                updateCartSummary(cartItemAdapter.getSelectedItems(), latestItems == null || latestItems.isEmpty());
+                syncSelectAllState();
+            }
         });
         RecyclerView cartList = findViewById(R.id.rvCartItems);
         cartList.setLayoutManager(new LinearLayoutManager(this));
@@ -84,9 +102,18 @@ public class CartActivity extends AppCompatActivity {
 
     private void observeCartItems() {
         viewModel.getCartItems().observe(this, items -> {
+            latestItems = items;
             cartItemAdapter.setItems(items);
-            updateCartSummary(items);
+            updateCartSummary(cartItemAdapter.getSelectedItems(), items == null || items.isEmpty());
+            syncSelectAllState();
         });
+    }
+
+    private void setupSelectAll() {
+        selectAllCheckbox = findViewById(R.id.cbSelectAll);
+        if (selectAllCheckbox == null) return;
+        selectAllCheckbox.setOnCheckedChangeListener((buttonView, isChecked) ->
+                cartItemAdapter.setAllSelected(isChecked));
     }
 
     private void observeActions() {
@@ -97,7 +124,7 @@ public class CartActivity extends AppCompatActivity {
         });
     }
 
-    private void updateCartSummary(List<CartItemEntity> items) {
+    private void updateCartSummary(List<CartItemEntity> items, boolean cartEmpty) {
         int count = 0;
         double subtotal = 0;
         if (items != null) {
@@ -121,11 +148,19 @@ public class CartActivity extends AppCompatActivity {
             totalText.setText(formatPrice(subtotal));
         }
 
-        boolean empty = count == 0;
+        boolean empty = cartEmpty;
         setVisibility(R.id.emptyCartState, empty);
         setVisibility(R.id.rvCartItems, !empty);
         setVisibility(R.id.promoCodeRow, !empty);
         setVisibility(R.id.orderSummaryCard, !empty);
+    }
+
+    private void syncSelectAllState() {
+        if (selectAllCheckbox == null) return;
+        selectAllCheckbox.setOnCheckedChangeListener(null);
+        selectAllCheckbox.setChecked(cartItemAdapter.areAllItemsSelected());
+        selectAllCheckbox.setOnCheckedChangeListener((buttonView, isChecked) ->
+                cartItemAdapter.setAllSelected(isChecked));
     }
 
     private void setVisibility(int id, boolean visible) {

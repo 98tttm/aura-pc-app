@@ -15,17 +15,21 @@ import com.example.aura_pc_app.data.db.entity.CartItemEntity;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartItemViewHolder> {
     public interface Listener {
         void onIncrease(CartItemEntity item);
         void onDecrease(CartItemEntity item);
         void onRemove(CartItemEntity item);
+        void onSelectionChanged();
     }
 
     private final List<CartItemEntity> items = new ArrayList<>();
+    private final Set<String> selectedKeys = new HashSet<>();
     private final NumberFormat currencyFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
     private final Listener listener;
 
@@ -34,11 +38,49 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
     }
 
     public void setItems(List<CartItemEntity> newItems) {
+        Set<String> incomingKeys = new HashSet<>();
         items.clear();
         if (newItems != null) {
             items.addAll(newItems);
+            for (CartItemEntity item : newItems) {
+                String key = cartKey(item);
+                incomingKeys.add(key);
+                if (!selectedKeys.contains(key)) {
+                    selectedKeys.add(key);
+                }
+            }
+        }
+        selectedKeys.retainAll(incomingKeys);
+        notifyDataSetChanged();
+    }
+
+    public void setAllSelected(boolean selected) {
+        selectedKeys.clear();
+        if (selected) {
+            for (CartItemEntity item : items) {
+                selectedKeys.add(cartKey(item));
+            }
         }
         notifyDataSetChanged();
+        listener.onSelectionChanged();
+    }
+
+    public List<CartItemEntity> getSelectedItems() {
+        List<CartItemEntity> selected = new ArrayList<>();
+        for (CartItemEntity item : items) {
+            if (selectedKeys.contains(cartKey(item))) {
+                selected.add(item);
+            }
+        }
+        return selected;
+    }
+
+    public ArrayList<String> getSelectedKeys() {
+        return new ArrayList<>(selectedKeys);
+    }
+
+    public boolean areAllItemsSelected() {
+        return !items.isEmpty() && selectedKeys.size() == items.size();
     }
 
     @NonNull
@@ -57,6 +99,10 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
         holder.specs.setText(firstNonEmpty(item.specs, holder.itemView.getContext().getString(R.string.cart_item_specs_fallback)));
         holder.price.setText(formatPrice(item.unitPrice));
         holder.quantity.setText(String.valueOf(quantity));
+        boolean selected = selectedKeys.contains(cartKey(item));
+        holder.checkbox.setImageResource(selected
+                ? R.drawable.ic_cart_checkbox_selected
+                : R.drawable.ic_figma_checkbox);
 
         if (item.imageUrl != null && !item.imageUrl.trim().isEmpty()) {
             Glide.with(holder.itemView)
@@ -69,7 +115,21 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
 
         holder.plus.setOnClickListener(v -> listener.onIncrease(item));
         holder.minus.setOnClickListener(v -> listener.onDecrease(item));
-        holder.remove.setOnClickListener(v -> listener.onRemove(item));
+        holder.checkbox.setOnClickListener(v -> {
+            String key = cartKey(item);
+            if (selectedKeys.contains(key)) {
+                selectedKeys.remove(key);
+            } else {
+                selectedKeys.add(key);
+            }
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                notifyItemChanged(adapterPosition);
+            } else {
+                notifyDataSetChanged();
+            }
+            listener.onSelectionChanged();
+        });
     }
 
     @Override
@@ -101,6 +161,12 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
         return value.replace("\"", "").trim();
     }
 
+    public static String cartKey(CartItemEntity item) {
+        String productId = item == null || item.productId == null ? "" : item.productId;
+        String variantId = item == null || item.variantId == null ? "" : item.variantId;
+        return productId + "\n" + variantId;
+    }
+
     static class CartItemViewHolder extends RecyclerView.ViewHolder {
         final TextView name;
         final TextView specs;
@@ -109,7 +175,7 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
         final ImageView image;
         final View minus;
         final View plus;
-        final View remove;
+        final ImageView checkbox;
 
         CartItemViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -120,7 +186,7 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
             image = itemView.findViewById(R.id.productImage);
             minus = itemView.findViewById(R.id.btnMinus);
             plus = itemView.findViewById(R.id.btnPlus);
-            remove = itemView.findViewById(R.id.cartItemCheckbox);
+            checkbox = itemView.findViewById(R.id.cartItemCheckbox);
         }
     }
 }

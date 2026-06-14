@@ -35,7 +35,8 @@ public class BottomNavigationHelper {
 
         home.setOnClickListener(v -> navigate(activity, TAB_HOME));
         categories.setOnClickListener(v -> navigate(activity, TAB_CATEGORIES));
-        cart.setOnClickListener(v -> navigate(activity, TAB_CART));
+        cart.setOnClickListener(v ->
+                Toast.makeText(activity, "Dùng biểu tượng giỏ hàng ở header", Toast.LENGTH_SHORT).show());
         blog.setOnClickListener(v -> navigate(activity, TAB_BLOG));
         profile.setOnClickListener(v -> navigate(activity, TAB_PROFILE));
     }
@@ -109,9 +110,8 @@ public class BottomNavigationHelper {
         if (!(activity instanceof LifecycleOwner)) {
             return;
         }
-        TextView navBadge = activity.findViewById(R.id.nav_cart_badge);
         TextView headerBadge = activity.findViewById(R.id.header_cart_badge);
-        if (navBadge == null && headerBadge == null) {
+        if (headerBadge == null) {
             return;
         }
         AppDatabase.getInstance(activity)
@@ -119,7 +119,6 @@ public class BottomNavigationHelper {
                 .getCartItemCountLive()
                 .observe((LifecycleOwner) activity, count -> {
                     int safeCount = count == null ? 0 : count;
-                    updateBadge(navBadge, safeCount);
                     updateBadge(headerBadge, safeCount);
                 });
     }
