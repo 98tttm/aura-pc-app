@@ -13,7 +13,7 @@ import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.ui.categories.CategoriesActivity;
 import com.aura.pc.ui.products.ProductListActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
-import com.example.aura_pc_app.MainActivity;
+import com.aura.pc.ui.productdetail.ProductDetailActivity;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.adapter.HomeProductAdapter;
 import com.example.aura_pc_app.data.db.entity.ProductEntity;
@@ -134,7 +134,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
     }
 
     private void openProductDetail() {
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, ProductDetailActivity.class));
     }
 
     private void openProductList() {

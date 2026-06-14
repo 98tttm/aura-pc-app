@@ -110,7 +110,7 @@ public class CheckingAccountActivity extends AppCompatActivity {
 
     private void goHome(long delayMillis) {
         if (statusText != null) {
-            statusText.setText("Dang chuyen ban toi Trang chu...");
+            statusText.setText(getString(R.string.label_redirecting_home));
         }
         handler.postDelayed(() -> {
             startActivity(createPostProfileIntent());

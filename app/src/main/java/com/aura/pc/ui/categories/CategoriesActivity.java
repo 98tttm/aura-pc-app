@@ -60,7 +60,7 @@ public class CategoriesActivity extends AppCompatActivity {
                     Toast.makeText(this, R.string.msg_menu_pending, Toast.LENGTH_SHORT).show());
         }
         if (search != null) {
-            search.setOnClickListener(v -> openProductList(null));
+            search.setOnClickListener(v -> openProductList(null, null));
         }
         if (filter != null) {
             filter.setOnClickListener(v ->
@@ -136,7 +136,8 @@ public class CategoriesActivity extends AppCompatActivity {
             
             String slug = generateSlug(item);
             final String finalSlug = slug;
-            tile.setOnClickListener(v -> openProductList(finalSlug));
+            final String finalName = item;
+            tile.setOnClickListener(v -> openProductList(finalSlug, finalName));
             grid.addView(tile);
         }
     }
@@ -176,10 +177,11 @@ public class CategoriesActivity extends AppCompatActivity {
         return slug;
     }
 
-    private void openProductList(String category) {
+    private void openProductList(String category, String categoryName) {
         Intent intent = new Intent(this, ProductListActivity.class);
         if (category != null) {
             intent.putExtra("category", category);
+            intent.putExtra("categoryName", categoryName);
         }
         startActivity(intent);
     }

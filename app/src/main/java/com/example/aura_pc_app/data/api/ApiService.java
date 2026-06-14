@@ -24,6 +24,9 @@ public interface ApiService {
     @POST("auth/verify-otp")
     Call<Map<String, Object>> verifyOtp(@Body Map<String, String> body);
 
+    @GET("categories")
+    Call<java.util.List<Map<String, Object>>> getCategories();
+
     @GET("products")
     Call<Map<String, Object>> getProducts();
 
@@ -42,10 +45,10 @@ public interface ApiService {
             @Query("limit") int limit,
             @Query("category") String category,
             @Query("brand") String brand,
-            @Query("min_price") Double minPrice,
-            @Query("max_price") Double maxPrice,
-            @Query("min_rating") Double minRating,
-            @Query("in_stock") Boolean inStock,
+            @Query("minPrice") Double minPrice,
+            @Query("maxPrice") Double maxPrice,
+            @Query("minRating") Double minRating,
+            @Query("inStock") Boolean inStock,
             @Query("sort") String sort
     );
 

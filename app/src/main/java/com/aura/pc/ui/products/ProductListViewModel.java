@@ -44,6 +44,12 @@ public class ProductListViewModel extends ViewModel {
     private final MutableLiveData<Boolean> isEmpty = new MutableLiveData<>(false);
     private final MutableLiveData<String> error = new MutableLiveData<>(null);
     private final MutableLiveData<Boolean> hasMore = new MutableLiveData<>(false);
+    private final MutableLiveData<List<Map<String, Object>>> subCategories = new MutableLiveData<>(new ArrayList<>());
+    private final MutableLiveData<String> resolvedParentCategory = new MutableLiveData<>(null);
+    private final MutableLiveData<String> resolvedParentName = new MutableLiveData<>(null);
+    
+    // Store the main parent category slug
+    private String parentCategorySlug = null;
 
     public void init(ApiService apiService) {
         this.apiService = apiService;
@@ -55,6 +61,13 @@ public class ProductListViewModel extends ViewModel {
     public LiveData<Boolean> getIsEmpty() { return isEmpty; }
     public LiveData<String> getError() { return error; }
     public LiveData<Boolean> getHasMore() { return hasMore; }
+    public LiveData<List<Map<String, Object>>> getSubCategories() { return subCategories; }
+    public LiveData<String> getResolvedParentCategory() { return resolvedParentCategory; }
+    public LiveData<String> getResolvedParentName() { return resolvedParentName; }
+
+    public void setParentCategorySlug(String parentCategorySlug) {
+        this.parentCategorySlug = parentCategorySlug;
+    }
 
     /**
      * Load trang đầu tiên (reset dữ liệu cũ).
@@ -176,13 +189,75 @@ public class ProductListViewModel extends ViewModel {
      * Xóa tất cả bộ lọc → load lại.
      */
     public void clearFilters() {
-        this.category = null;
+        // Không clear category để giữ nguyên danh mục hiện tại (VD: đang ở ghế công thái học thì reset xong vẫn ở đó)
         this.brand = null;
         this.minPrice = null;
         this.maxPrice = null;
         this.minRating = null;
         this.inStock = null;
+        // Có thể cân nhắc giữ lại `sort` nếu muốn, hoặc reset sort về mặc định. Ở đây reset sort.
         this.sort = null;
         loadFirstPage();
+    }
+
+    public void fetchSubCategories() {
+        if (parentCategorySlug == null || parentCategorySlug.isEmpty()) return;
+        
+        apiService.getCategories().enqueue(new Callback<List<Map<String, Object>>>() {
+            @Override
+            public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Map<String, Object>> allCategories = response.body();
+                    
+                    // 1. Find the target category by initial parentCategorySlug
+                    Map<String, Object> targetCategory = null;
+                    for (Map<String, Object> cat : allCategories) {
+                        if (parentCategorySlug.equals(cat.get("slug"))) {
+                            targetCategory = cat;
+                            break;
+                        }
+                    }
+                    
+                    String actualParentSlug = parentCategorySlug;
+                    String actualParentName = null;
+                    
+                    // 2. If it has a parent_id, it is already a subcategory!
+                    // So we must use its parent's ID to fetch sibling subcategories.
+                    if (targetCategory != null && targetCategory.get("parent_id") != null) {
+                        actualParentSlug = targetCategory.get("parent_id").toString();
+                        // Find the parent's name
+                        for (Map<String, Object> cat : allCategories) {
+                            if (actualParentSlug.equals(cat.get("slug"))) {
+                                actualParentName = (String) cat.get("name");
+                                break;
+                            }
+                        }
+                    } else if (targetCategory != null) {
+                        // This is the parent category itself
+                        actualParentName = (String) targetCategory.get("name");
+                    }
+                    
+                    // 3. Find subcategories of the actual parent
+                    List<Map<String, Object>> subs = new ArrayList<>();
+                    for (Map<String, Object> cat : allCategories) {
+                        Object parentIdObj = cat.get("parent_id");
+                        if (parentIdObj != null && actualParentSlug.equals(parentIdObj.toString())) {
+                            subs.add(cat);
+                        }
+                    }
+                    
+                    resolvedParentCategory.postValue(actualParentSlug);
+                    if (actualParentName != null) {
+                        resolvedParentName.postValue(actualParentName);
+                    }
+                    subCategories.postValue(subs);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+                // Ignore or handle error
+            }
+        });
     }
 }

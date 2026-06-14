@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.aura.pc.ui.address.AddressBookActivity;
+import com.aura.pc.ui.wishlist.WishlistActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.utils.AuthGate;
@@ -43,7 +44,13 @@ public class ProfileActivity extends AppCompatActivity {
         // Các mục khác (sẽ phát triển sau) — hiện thông báo nhẹ để không gây nhầm
         setComingSoon(R.id.menuInfo);
         setComingSoon(R.id.menuOrders);
-        setComingSoon(R.id.menuWishlist);
+
+        // Mở "Sản phẩm yêu thích"
+        View menuWishlist = findViewById(R.id.menuWishlist);
+        if (menuWishlist != null) {
+            menuWishlist.setOnClickListener(v ->
+                    startActivity(new Intent(this, WishlistActivity.class)));
+        }
 
         View logout = findViewById(R.id.btnLogout);
         if (logout != null) {
@@ -56,7 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
         View v = findViewById(id);
         if (v != null) {
             v.setOnClickListener(view ->
-                    Toast.makeText(this, "Sắp ra mắt", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(this, getString(R.string.toast_coming_soon), Toast.LENGTH_SHORT).show());
         }
     }
 }

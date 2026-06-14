@@ -58,7 +58,7 @@ public class ProductLoadStateAdapter extends LoadStateAdapter<ProductLoadStateAd
             } else if (loadState instanceof LoadState.Error) {
                 progressBar.setVisibility(View.GONE);
                 tvError.setVisibility(View.VISIBLE);
-                tvError.setText("Lỗi tải dữ liệu");
+                tvError.setText(itemView.getContext().getString(R.string.error_load_data));
                 btnRetry.setVisibility(View.VISIBLE);
                 btnRetry.setOnClickListener(v -> {
                     if (retryCallback != null) retryCallback.run();

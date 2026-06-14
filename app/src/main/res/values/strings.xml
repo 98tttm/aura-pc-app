@@ -312,6 +312,33 @@
     <string name="profile_menu_wishlist">Sản phẩm yêu thích</string>
     <string name="profile_menu_wishlist_sub">Danh sách đã lưu</string>
     <string name="profile_logout">Đăng xuất</string>
+
+    <!-- MOB-018 — Wishlist -->
+    <string name="wishlist_title">Sản phẩm yêu thích</string>
+    <string name="wishlist_added">Đã thêm vào yêu thích</string>
+    <string name="wishlist_removed">Đã xoá khỏi yêu thích</string>
+    <string name="wishlist_empty_title">Chưa có sản phẩm yêu thích</string>
+    <string name="wishlist_empty_subtitle">Hãy khám phá và lưu lại những sản phẩm bạn quan tâm nhé!</string>
+    <string name="wishlist_explore">Khám phá sản phẩm</string>
+    <string name="wishlist_add_to_cart">Thêm vào giỏ</string>
+    <string name="wishlist_remove">Xoá</string>
+    <string name="cd_toggle_favorite">Yêu thích</string>
+
+    <!-- Hardcode cleanup — Toast / UI messages -->
+    <string name="toast_added_to_cart">Đã thêm vào giỏ hàng</string>
+    <string name="toast_coming_soon">Sắp ra mắt</string>
+    <string name="toast_connecting_consultant">Đang kết nối với tư vấn viên…</string>
+    <string name="toast_navigating_checkout">Đang chuyển đến trang thanh toán</string>
+    <string name="toast_nav_developing">Chức năng thanh điều hướng đang phát triển</string>
+    <string name="toast_order_confirmed">Đã xác nhận đơn hàng</string>
+    <string name="toast_menu_coming_soon">Tính năng sắp ra mắt</string>
+    <string name="error_load_data">Lỗi tải dữ liệu</string>
+    <string name="label_saving">Đang lưu…</string>
+    <string name="error_future_birthday">Ngày sinh không được là ngày trong tương lai</string>
+    <string name="label_redirecting_home">Đang chuyển bạn tới Trang chủ…</string>
+    <string name="label_default_rating">4.9</string>
 </resources>
+
+
 
 

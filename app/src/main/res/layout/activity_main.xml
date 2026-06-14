@@ -231,6 +231,7 @@
 
                 <!-- Technical Specs Section -->
                 <TextView
+                    android:id="@+id/specsTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
@@ -251,6 +252,7 @@
 
                 <!-- Description Title -->
                 <TextView
+                    android:id="@+id/descriptionTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
@@ -268,6 +270,13 @@
                     android:text="@string/product_description_placeholder"
                     android:textColor="@color/black"
                     android:textSize="15sp" />
+
+                <WebView
+                    android:id="@+id/productDescriptionWebView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:visibility="gone" />
 
                 <!-- Description Image -->
                 <androidx.cardview.widget.CardView

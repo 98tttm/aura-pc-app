@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
-import com.example.aura_pc_app.MainActivity;
+import com.aura.pc.ui.productdetail.ProductDetailActivity;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.api.ApiClient;
 import com.example.aura_pc_app.databinding.ActivityAuraProductsBinding;
@@ -30,6 +30,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Map;
+import java.util.List;
 
 /**
  * Màn hình danh sách sản phẩm với manual Paging, Filter (BottomSheet), Sort (Spinner),
@@ -49,13 +50,8 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
             "newest", "price_asc", "price_desc", "best_selling", "top_rated"
     };
 
-    // Category chip mapping
-    private static final int[] CHIP_IDS = {
-            R.id.chipAll, R.id.chipPC, R.id.chipLaptop, R.id.chipMonitor, R.id.chipAccessories
-    };
-    private static final String[] CHIP_SLUGS = {
-            null, "pc", "laptop", "man-hinh", "linh-kien"
-    };
+    // The currently active category chip slug to prevent loops
+    private String activeChipSlug = null;
     
     private boolean isProgrammaticChange = false;
 
@@ -80,12 +76,28 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
         
         // Handle incoming category from Intent
         String initialCategory = getIntent().getStringExtra("category");
+        String categoryName = getIntent().getStringExtra("categoryName");
+        
         if (initialCategory != null) {
-            selectCategoryChip(initialCategory);
-        } else {
-            viewModel.loadFirstPage();
-            observeData();
+            viewModel.setParentCategorySlug(initialCategory);
+            viewModel.setCategory(initialCategory);
+            activeChipSlug = initialCategory;
         }
+        
+        if (categoryName != null && !categoryName.isEmpty()) {
+            binding.categoryTitle.setText(categoryName);
+        } else if (initialCategory != null) {
+            // Fallback to titlecase slug
+            String title = initialCategory.replace("-", " ");
+            title = title.substring(0, 1).toUpperCase() + title.substring(1);
+            binding.categoryTitle.setText(title);
+        } else {
+            binding.categoryTitle.setText("Sản phẩm");
+        }
+
+        viewModel.fetchSubCategories();
+        viewModel.loadFirstPage();
+        observeData();
     }
 
     // ===== ViewModel =====
@@ -103,8 +115,9 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
         adapter = new ProductPagingAdapter();
         adapter.setOnProductClickListener(this::openProductDetail);
         adapter.setOnAddToCartListener(product ->
-                Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.toast_added_to_cart), Toast.LENGTH_SHORT).show()
         );
+        adapter.loadFavoriteIds(this);
         rv.setAdapter(adapter);
 
         // Detect scroll to bottom → load next page (infinite scroll)
@@ -163,6 +176,28 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
                 Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Dynamic Subcategories
+        viewModel.getResolvedParentCategory().observe(this, parentSlug -> {
+            // We use parentSlug for "Tất cả" chip
+            if (parentSlug != null && viewModel.getSubCategories().getValue() != null) {
+                populateCategoryChips(parentSlug, viewModel.getSubCategories().getValue());
+            }
+        });
+        
+        // Update Title to match parent category name
+        viewModel.getResolvedParentName().observe(this, parentName -> {
+            if (parentName != null && !parentName.isEmpty()) {
+                binding.categoryTitle.setText(parentName);
+            }
+        });
+        
+        viewModel.getSubCategories().observe(this, subCategories -> {
+            String parentSlug = viewModel.getResolvedParentCategory().getValue();
+            if (parentSlug != null) {
+                populateCategoryChips(parentSlug, subCategories);
+            }
+        });
     }
 
     // ===== Sort Spinner =====
@@ -193,51 +228,78 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
 
     // ===== Category Chips =====
     private void initCategoryChips() {
+        // Handled dynamically via observer
+    }
+
+    private void populateCategoryChips(String resolvedParentSlug, List<Map<String, Object>> subCategories) {
         ChipGroup chipGroup = binding.chipGroupCategory;
+        chipGroup.removeAllViews();
+        chipGroup.setOnCheckedStateChangeListener(null);
+
+        // Add "Tất cả" chip
+        com.google.android.material.chip.Chip chipAll = new com.google.android.material.chip.Chip(this);
+        chipAll.setText("Tất cả");
+        chipAll.setCheckable(true);
+        chipAll.setCheckedIconVisible(false);
+        chipAll.setChipBackgroundColorResource(R.color.chip_category_bg);
+        chipAll.setTextColor(getColor(R.color.chip_category_text));
+        chipAll.setChipStrokeColorResource(R.color.aura_orange);
+        chipAll.setChipStrokeWidth(getResources().getDisplayMetrics().density * 1);
+        
+        // Tag for "Tất cả" is the resolved parent category
+        chipAll.setTag(resolvedParentSlug); 
+        
+        chipGroup.addView(chipAll);
+
+        if (resolvedParentSlug != null && resolvedParentSlug.equals(activeChipSlug)) {
+            chipAll.setChecked(true);
+        }
+
+        // Add subcategory chips
+        if (subCategories != null) {
+            for (Map<String, Object> cat : subCategories) {
+                com.google.android.material.chip.Chip chip = new com.google.android.material.chip.Chip(this);
+                chip.setText((String) cat.get("name"));
+                chip.setCheckable(true);
+                chip.setCheckedIconVisible(false);
+                chip.setChipBackgroundColorResource(R.color.chip_category_bg);
+                chip.setTextColor(getColor(R.color.chip_category_text));
+                chip.setChipStrokeColorResource(R.color.aura_orange);
+                chip.setChipStrokeWidth(getResources().getDisplayMetrics().density * 1);
+                
+                String slug = (String) cat.get("slug");
+                chip.setTag(slug);
+                chipGroup.addView(chip);
+
+                if (slug != null && slug.equals(activeChipSlug)) {
+                    chip.setChecked(true);
+                }
+            }
+        }
+
         chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (isProgrammaticChange) return;
 
             if (checkedIds.isEmpty()) {
                 isProgrammaticChange = true;
-                binding.chipAll.setChecked(true);
+                chipAll.setChecked(true);
                 isProgrammaticChange = false;
                 
-                viewModel.setCategory(null);
+                activeChipSlug = resolvedParentSlug;
+                viewModel.setCategory(resolvedParentSlug);
                 viewModel.applyFilters();
                 return;
             }
 
             int checkedId = checkedIds.get(0);
-            for (int i = 0; i < CHIP_IDS.length; i++) {
-                if (CHIP_IDS[i] == checkedId) {
-                    viewModel.setCategory(CHIP_SLUGS[i]);
-                    viewModel.applyFilters();
-                    break;
-                }
+            com.google.android.material.chip.Chip checkedChip = group.findViewById(checkedId);
+            if (checkedChip != null && checkedChip.getTag() != null) {
+                String slug = checkedChip.getTag().toString();
+                activeChipSlug = slug;
+                viewModel.setCategory(slug);
+                viewModel.applyFilters();
             }
         });
-    }
-
-    private void selectCategoryChip(String categorySlug) {
-        viewModel.setCategory(categorySlug);
-        
-        isProgrammaticChange = true;
-        boolean found = false;
-        for (int i = 0; i < CHIP_SLUGS.length; i++) {
-            if (categorySlug.equals(CHIP_SLUGS[i])) {
-                binding.chipGroupCategory.check(CHIP_IDS[i]);
-                found = true;
-                break;
-            }
-        }
-        
-        if (!found) {
-            binding.chipGroupCategory.clearCheck();
-        }
-        isProgrammaticChange = false;
-        
-        viewModel.loadFirstPage();
-        observeData();
     }
 
     // ===== Action Buttons =====
@@ -310,7 +372,7 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
 
     // ===== Product Detail =====
     private void openProductDetail(Map<String, Object> product) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ProductDetailActivity.class);
         String productId = "";
         Object idObj = product.get("_id");
         if (idObj instanceof String) {

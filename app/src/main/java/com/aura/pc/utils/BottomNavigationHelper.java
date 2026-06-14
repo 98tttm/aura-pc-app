@@ -53,7 +53,7 @@ public class BottomNavigationHelper {
         }
         if (menu != null) {
             menu.setOnClickListener(v ->
-                    Toast.makeText(activity, "Menu is coming soon", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(activity, activity.getString(R.string.toast_menu_coming_soon), Toast.LENGTH_SHORT).show());
         }
     }
 

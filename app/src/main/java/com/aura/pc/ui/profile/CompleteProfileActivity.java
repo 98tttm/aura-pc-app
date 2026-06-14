@@ -188,7 +188,7 @@ public class CompleteProfileActivity extends AppCompatActivity {
                 dateInput.setBackgroundResource(R.drawable.bg_profile_input_error);
                 dateInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_profile_error, 0);
                 dateInput.setCompoundDrawablePadding(dpToPx(12));
-                dateError.setText("Ngày sinh không được là ngày trong tương lai");
+                dateError.setText(getString(R.string.error_future_birthday));
                 dateError.setVisibility(View.VISIBLE);
                 if (firstErrorView == null) firstErrorView = dateInput;
                 valid = false;
@@ -323,7 +323,7 @@ public class CompleteProfileActivity extends AppCompatActivity {
                 dateInput.setBackgroundResource(R.drawable.bg_profile_input_error);
                 dateInput.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_profile_error, 0);
                 dateInput.setCompoundDrawablePadding(dpToPx(12));
-                dateError.setText("Ngày sinh không được là ngày trong tương lai");
+                dateError.setText(getString(R.string.error_future_birthday));
                 dateError.setVisibility(View.VISIBLE);
                 return;
             }
@@ -585,7 +585,7 @@ public class CompleteProfileActivity extends AppCompatActivity {
 
     private void updateSubmitButtonLabel(boolean submitting) {
         if (submitting) {
-            submitButton.setText("Đang lưu...");
+            submitButton.setText(getString(R.string.label_saving));
             submitButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
             return;
         }
