@@ -1,6 +1,7 @@
 package com.example.aura_pc_app.data.db;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
@@ -11,17 +12,18 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.aura_pc_app.data.db.dao.CartDao;
 import com.example.aura_pc_app.data.db.dao.ProductDao;
+import com.example.aura_pc_app.data.db.dao.SearchHistoryDao;
 import com.example.aura_pc_app.data.db.dao.UserDao;
 import com.example.aura_pc_app.data.db.dao.WishlistDao;
 import com.example.aura_pc_app.data.db.entity.CartItemEntity;
 import com.example.aura_pc_app.data.db.entity.DeviceProfileEntity;
 import com.example.aura_pc_app.data.db.entity.PriceHistoryEntity;
 import com.example.aura_pc_app.data.db.entity.ProductEntity;
+import com.example.aura_pc_app.data.db.entity.SearchHistoryEntity;
 import com.example.aura_pc_app.data.db.entity.UserEntity;
 import com.example.aura_pc_app.data.db.entity.WishlistEntity;
 import com.example.aura_pc_app.utils.Constants;
 
-// 1. Thêm các Entity mới vào danh sách
 @Database(entities = {
         UserEntity.class,
         ProductEntity.class,
@@ -35,7 +37,6 @@ import com.example.aura_pc_app.utils.Constants;
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
 
-    // 3. Khai báo các DAO
     public abstract UserDao userDao();
     public abstract ProductDao productDao();
     public abstract CartDao cartDao();

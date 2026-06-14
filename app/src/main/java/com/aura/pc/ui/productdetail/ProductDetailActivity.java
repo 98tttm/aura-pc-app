@@ -462,7 +462,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void loadRelatedProducts(String categorySlug) {
         if (relatedRecyclerView != null) {
-            ApiClient.getInstance(this).getApiService().getProductsFiltered(1, 10, categorySlug, null, null, null, null, null, null).enqueue(new retrofit2.Callback<Map<String, Object>>() {
+            ApiClient.getInstance(this).getApiService().getProductsFiltered(1, 10, categorySlug, null, null, null, null, null, null, null).enqueue(new retrofit2.Callback<Map<String, Object>>() {
                 @Override
                 public void onResponse(retrofit2.Call<Map<String, Object>> call, retrofit2.Response<Map<String, Object>> response) {
                     if (response.isSuccessful() && response.body() != null) {

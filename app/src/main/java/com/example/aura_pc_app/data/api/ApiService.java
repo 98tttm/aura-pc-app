@@ -68,6 +68,12 @@ public interface ApiService {
             @Query("limit") int limit
     );
 
+    @GET("products")
+    Call<ProductResponse> searchProducts(
+            @Query("search") String search,
+            @Query("limit") int limit
+    );
+
     @POST("cart/sync")
     Call<CartResponse> syncCartToServer(@Body SyncCartRequest request);
 

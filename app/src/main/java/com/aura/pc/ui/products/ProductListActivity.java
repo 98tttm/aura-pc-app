@@ -1,8 +1,10 @@
 package com.aura.pc.ui.products;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
@@ -22,6 +24,7 @@ import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.api.ApiClient;
 import com.example.aura_pc_app.databinding.ActivityAuraProductsBinding;
 import com.example.aura_pc_app.ui.base.BaseActivity;
+import com.example.aura_pc_app.utils.ProductSearchUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.ChipGroup;
@@ -37,6 +40,8 @@ import java.util.List;
  * và Category Chips chuyển đổi nhanh.
  */
 public class ProductListActivity extends BaseActivity<ActivityAuraProductsBinding> {
+
+    private static final int REQUEST_SEARCH = 1001;
 
     private ProductListViewModel viewModel;
     private ProductPagingAdapter adapter;
@@ -72,9 +77,15 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
         initRecyclerView();
         initSortSpinner();
         initCategoryChips();
+        initSearchInput();
         initActions();
-        
-        // Handle incoming category from Intent
+
+        // Gắn observer một lần duy nhất, trước khi kích hoạt lần tải đầu tiên.
+        observeData();
+
+        // Ưu tiên tìm theo keyword (mở từ thanh "Bạn muốn mua gì hôm nay"),
+        // sau đó tới lọc theo danh mục (mở từ chip danh mục / trang Danh mục).
+        String initialQuery = getIntent().getStringExtra("query");
         String initialCategory = getIntent().getStringExtra("category");
         String categoryName = getIntent().getStringExtra("categoryName");
         

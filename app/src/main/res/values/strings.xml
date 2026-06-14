@@ -192,6 +192,13 @@
     <string name="product_list_load_more">Xem thêm %1$d sản phẩm</string>
     <string name="product_list_load_more_initial">Xem thêm sản phẩm</string>
 
+    <string name="search_popular_title">T&#236;m ki&#7871;m ph&#7893; bi&#7871;n</string>
+    <string name="search_suggestion_title">G&#7907;i &#253; t&#236;m ki&#7871;m</string>
+    <string name="search_no_results">Kh&#244;ng c&#243; s&#7843;n ph&#7849;m ph&#249; h&#7907;p</string>
+    <string name="home_search_results_title">K&#7871;t qu&#7843; t&#236;m ki&#7871;m</string>
+    <string name="search_page_hint">B&#7841;n mu&#7889;n mua g&#236; h&#244;m nay?</string>
+    <string name="search_trend_title">Xu h&#432;&#7899;ng t&#236;m ki&#7871;m</string>
+
     <!-- Cart Screen -->
     <string name="cart_title">Giỏ hàng của bạn</string>
     <string name="cart_item_count">2 sản phẩm trong giỏ</string>

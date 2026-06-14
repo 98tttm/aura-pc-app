@@ -36,6 +36,7 @@ public class ProductListViewModel extends ViewModel {
     private Double minRating = null;
     private Boolean inStock = null;
     private String sort = null;
+    private String search = null;
 
     // LiveData
     private final MutableLiveData<List<Map<String, Object>>> productList = new MutableLiveData<>(new ArrayList<>());
@@ -98,7 +99,7 @@ public class ProductListViewModel extends ViewModel {
 
     private void fetchProducts(int page, boolean isFirstPage) {
         apiService.getProductsFiltered(
-                page, PAGE_SIZE, category, brand, minPrice, maxPrice, minRating, inStock, sort
+                page, PAGE_SIZE, category, brand, minPrice, maxPrice, minRating, inStock, sort, search
         ).enqueue(new Callback<Map<String, Object>>() {
             @Override
             public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
@@ -160,6 +161,11 @@ public class ProductListViewModel extends ViewModel {
     public void setCategory(String category) { this.category = category; }
     public String getCategory() { return category; }
 
+    public void setSearch(String search) {
+        this.search = (search == null || search.trim().isEmpty()) ? null : search.trim();
+    }
+    public String getSearch() { return search; }
+
     public void setSort(String sort) { this.sort = sort; }
     public String getSort() { return sort; }
 
@@ -197,6 +203,7 @@ public class ProductListViewModel extends ViewModel {
         this.inStock = null;
         // Có thể cân nhắc giữ lại `sort` nếu muốn, hoặc reset sort về mặc định. Ở đây reset sort.
         this.sort = null;
+        this.search = null;
         loadFirstPage();
     }
 

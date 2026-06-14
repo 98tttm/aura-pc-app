@@ -1,6 +1,7 @@
 package com.example.aura_pc_app.ui.home;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -26,9 +28,11 @@ import com.example.aura_pc_app.adapter.HomeProductAdapter;
 import com.example.aura_pc_app.adapter.HomeSaleProductAdapter;
 import com.example.aura_pc_app.data.api.ApiClient;
 import com.example.aura_pc_app.data.db.entity.ProductEntity;
+import com.example.aura_pc_app.data.db.entity.SearchHistoryEntity;
 import com.example.aura_pc_app.databinding.ActivityHomeBinding;
 import com.example.aura_pc_app.ui.base.BaseActivity;
 import com.example.aura_pc_app.utils.AuthGate;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -42,6 +46,22 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
+    private static final int HISTORY_LIMIT = 5;
+    private static final long SEARCH_DEBOUNCE_MS = 300L;
+    private static final String[] POPULAR_QUERIES = {
+            "Laptop gaming",
+            "RTX 4060",
+            "PC gaming",
+            "Man hinh 27",
+            "Logitech",
+            "SSD NVMe"
+    };
+
+    private final Handler searchHandler = new Handler(Looper.getMainLooper());
+    private final ExecutorService historyExecutor = Executors.newSingleThreadExecutor();
+    private final List<ProductEntity> allProducts = new ArrayList<>();
+    private final List<String> recentSearches = new ArrayList<>();
+
     private HomeProductAdapter productAdapter;
     private HomeSaleProductAdapter saleProductAdapter;
     private boolean collapsedHeaderVisible;
@@ -65,6 +85,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         BottomNavigationHelper.setup(this, BottomNavigationHelper.TAB_HOME);
         setupSaleSection();
         setupProductList();
+        setupHomeSearch();
         setupHomeActions();
         setupHomeProductTabs();
         loadHomeCategories();
@@ -640,6 +661,238 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         return null;
     }
 
+    private void scheduleDebouncedSearch(String rawQuery) {
+        isSearchActivated = true;
+        String nextQuery = sanitizeKeyword(rawQuery);
+        if (!nextQuery.equals(committedSuggestionQuery)) {
+            hideSuggestionsForCommittedQuery = false;
+            committedSuggestionQuery = "";
+        }
+        if (pendingSearchRunnable != null) {
+            searchHandler.removeCallbacks(pendingSearchRunnable);
+        }
+        pendingSearchRunnable = () -> applyHomeSearch(rawQuery);
+        searchHandler.postDelayed(pendingSearchRunnable, SEARCH_DEBOUNCE_MS);
+    }
+
+    private void selectSuggestion(String keyword) {
+        String selectedQuery = sanitizeKeyword(keyword);
+        if (selectedQuery.isEmpty()) {
+            return;
+        }
+
+        isSearchActivated = true;
+        hideSuggestionsForCommittedQuery = true;
+        committedSuggestionQuery = selectedQuery;
+        binding.homeProductSearchView.setQuery(selectedQuery, false);
+        runSearchImmediately(selectedQuery, true);
+        binding.homeProductSearchView.clearFocus();
+        hideSuggestionPanel();
+    }
+
+    private void runSearchImmediately(String rawQuery, boolean persist) {
+        isSearchActivated = true;
+        if (pendingSearchRunnable != null) {
+            searchHandler.removeCallbacks(pendingSearchRunnable);
+        }
+        applyHomeSearch(rawQuery);
+        if (persist) {
+            saveSearchQuery(rawQuery);
+        }
+    }
+
+    private void applyHomeSearch(String rawQuery) {
+        activeHomeQuery = sanitizeKeyword(rawQuery);
+        updateSuggestions(activeHomeQuery);
+
+        if (activeHomeQuery.isEmpty()) {
+            binding.homeSearchResultsSection.setVisibility(View.GONE);
+            binding.homeSearchEmptyText.setVisibility(View.GONE);
+            searchResultAdapter.setProducts(new ArrayList<>(), "");
+            return;
+        }
+
+        List<ProductEntity> filtered = filterProducts(activeHomeQuery);
+        binding.homeSearchResultsSection.setVisibility(View.VISIBLE);
+        binding.homeSearchResultsRecyclerView.setVisibility(filtered.isEmpty() ? View.GONE : View.VISIBLE);
+        binding.homeSearchEmptyText.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
+        searchResultAdapter.setProducts(filtered, activeHomeQuery);
+    }
+
+    private List<ProductEntity> filterProducts(String query) {
+        List<ProductEntity> filtered = new ArrayList<>();
+        for (ProductEntity product : allProducts) {
+            if (query.isEmpty() || matchesProduct(product, query)) {
+                filtered.add(product);
+            }
+        }
+        return filtered;
+    }
+
+    private boolean matchesProduct(ProductEntity product, String query) {
+        String lowerQuery = query.toLowerCase(Locale.ROOT);
+        return contains(product.name, lowerQuery)
+                || contains(product.brand, lowerQuery)
+                || contains(product.slug, lowerQuery)
+                || contains(product.specs, lowerQuery)
+                || contains(product.category_id, lowerQuery)
+                || containsCategoryIds(product.category_ids, lowerQuery);
+    }
+
+    private boolean containsCategoryIds(List<String> categoryIds, String lowerQuery) {
+        if (categoryIds == null) {
+            return false;
+        }
+        for (String categoryId : categoryIds) {
+            if (contains(categoryId, lowerQuery)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean contains(String value, String lowerQuery) {
+        return value != null && value.toLowerCase(Locale.ROOT).contains(lowerQuery);
+    }
+
+    private void updateSuggestions(String query) {
+        if (!isSearchActivated) {
+            hideSuggestionPanel();
+            return;
+        }
+
+        if (hideSuggestionsForCommittedQuery && query.equals(committedSuggestionQuery)) {
+            hideSuggestionPanel();
+            return;
+        }
+
+        List<String> suggestions;
+        if (query.isEmpty()) {
+            binding.homeSearchSuggestionTitle.setText(R.string.search_popular_title);
+            suggestions = buildIdleSuggestions();
+        } else {
+            binding.homeSearchSuggestionTitle.setText(R.string.search_suggestion_title);
+            suggestions = buildKeywordSuggestions(query);
+        }
+        binding.homeSearchSuggestionPanel.setVisibility(suggestions.isEmpty() ? View.GONE : View.VISIBLE);
+        suggestionAdapter.submitList(suggestions, query);
+    }
+
+    private void hideSuggestionPanel() {
+        binding.homeSearchSuggestionPanel.setVisibility(View.GONE);
+        suggestionAdapter.submitList(new ArrayList<>(), activeHomeQuery);
+    }
+
+    private void activateHomeSearch() {
+        isSearchActivated = true;
+        updateSuggestions(activeHomeQuery);
+    }
+
+    private List<String> buildIdleSuggestions() {
+        Set<String> merged = new LinkedHashSet<>();
+        merged.addAll(recentSearches);
+        for (String query : POPULAR_QUERIES) {
+            merged.add(query);
+        }
+        return limitSuggestions(merged, 8);
+    }
+
+    private List<String> buildKeywordSuggestions(String query) {
+        Set<String> suggestions = new LinkedHashSet<>();
+        String lowerQuery = query.toLowerCase(Locale.ROOT);
+
+        for (ProductEntity product : allProducts) {
+            if (matchesProduct(product, query)) {
+                String name = product.name == null ? "" : product.name.trim();
+                if (!name.isEmpty()) {
+                    suggestions.add(name);
+                }
+            }
+            if (suggestions.size() >= 6) {
+                break;
+            }
+        }
+
+        for (String popular : POPULAR_QUERIES) {
+            if (popular.toLowerCase(Locale.ROOT).contains(lowerQuery)) {
+                suggestions.add(popular);
+            }
+        }
+
+        if (suggestions.isEmpty()) {
+            suggestions.add(query);
+        }
+        return limitSuggestions(suggestions, 6);
+    }
+
+    private List<String> limitSuggestions(Set<String> values, int limit) {
+        List<String> limited = new ArrayList<>();
+        for (String value : values) {
+            if (limited.size() == limit) {
+                break;
+            }
+            limited.add(value);
+        }
+        return limited;
+    }
+
+    private void loadSearchHistory() {
+        historyExecutor.execute(() -> {
+            List<SearchHistoryEntity> entities = searchHistoryDao.getRecent(HISTORY_LIMIT);
+            List<String> keywords = toKeywords(entities);
+            runOnUiThread(() -> {
+                recentSearches.clear();
+                recentSearches.addAll(keywords);
+                updateSuggestions(activeHomeQuery);
+            });
+        });
+    }
+
+    private void saveSearchQuery(String rawQuery) {
+        String keyword = sanitizeKeyword(rawQuery);
+        if (keyword.isEmpty()) {
+            return;
+        }
+        historyExecutor.execute(() -> {
+            searchHistoryDao.upsert(new SearchHistoryEntity(
+                    normalizeKeyword(keyword),
+                    keyword,
+                    System.currentTimeMillis()
+            ));
+            searchHistoryDao.pruneToLimit(HISTORY_LIMIT);
+            List<String> keywords = toKeywords(searchHistoryDao.getRecent(HISTORY_LIMIT));
+            runOnUiThread(() -> {
+                recentSearches.clear();
+                recentSearches.addAll(keywords);
+                updateSuggestions(activeHomeQuery);
+            });
+        });
+    }
+
+    private List<String> toKeywords(List<SearchHistoryEntity> entities) {
+        List<String> keywords = new ArrayList<>();
+        if (entities == null) {
+            return keywords;
+        }
+        for (SearchHistoryEntity entity : entities) {
+            if (entity.keyword != null && !entity.keyword.trim().isEmpty()) {
+                keywords.add(entity.keyword.trim());
+            }
+        }
+        return keywords;
+    }
+
+    private String sanitizeKeyword(String rawQuery) {
+        if (rawQuery == null) {
+            return "";
+        }
+        return rawQuery.trim().replaceAll("\\s+", " ");
+    }
+
+    private String normalizeKeyword(String keyword) {
+        return sanitizeKeyword(keyword).toLowerCase(Locale.ROOT);
+    }
+
     private void setupCategoryStrip() {
         String[] titles = {
                 "Laptop", "PC", "Màn hình", "Linh kiện", "Khác", "Xem tất cả"
@@ -776,6 +1029,12 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         startActivity(intent);
     }
 
+    private void openProductSearch() {
+        Intent intent = new Intent(this, ProductSearchActivity.class);
+        intent.putExtra(ProductSearchActivity.EXTRA_SOURCE, ProductSearchActivity.SOURCE_HOME);
+        startActivity(intent);
+    }
+
     private void openCart() {
         startActivity(new Intent(this, CartActivity.class));
     }
@@ -808,14 +1067,28 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         return products;
     }
 
-    private void addFallback(List<ProductEntity> products, String id, String name, double price, double salePrice) {
+    private ProductEntity product(String id, String name, String brand, String slug,
+                                  double price, @Nullable Double salePrice, String specs) {
         ProductEntity product = new ProductEntity();
         product._id = id;
         product.name = name;
+        product.brand = brand;
+        product.slug = slug;
         product.price = price;
         product.salePrice = salePrice;
+        product.specs = specs;
         product.active = true;
-        products.add(product);
+        product.stock = 12;
+        return product;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (pendingSearchRunnable != null) {
+            searchHandler.removeCallbacks(pendingSearchRunnable);
+        }
+        historyExecutor.shutdownNow();
+        super.onDestroy();
     }
 
     private static class CategoryChip {

@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -37,10 +38,15 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     }
 
     public void setProducts(List<ProductEntity> newProducts) {
+        setProducts(newProducts, "");
+    }
+
+    public void setProducts(List<ProductEntity> newProducts, String query) {
         products.clear();
         if (newProducts != null) {
             products.addAll(newProducts);
         }
+        highlightQuery = query == null ? "" : query.trim();
         notifyDataSetChanged();
     }
 
@@ -78,7 +84,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         ProductEntity product = products.get(position);
-        holder.title.setText(product.name == null || product.name.isEmpty()
+        String productName = product.name == null || product.name.isEmpty()
                 ? holder.itemView.getContext().getString(R.string.product_title_acer_nitro_v16s)
                 : product.name);
 

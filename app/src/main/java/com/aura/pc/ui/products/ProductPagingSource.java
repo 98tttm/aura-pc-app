@@ -71,7 +71,7 @@ public class ProductPagingSource extends PagingSource<Integer, Map<String, Objec
 
         try {
             Response<Map<String, Object>> response = apiService.getProductsFiltered(
-                    page, limit, category, brand, minPrice, maxPrice, minRating, inStock, sort
+                    page, limit, category, brand, minPrice, maxPrice, minRating, inStock, sort, null
             ).execute();
 
             if (response.isSuccessful() && response.body() != null) {

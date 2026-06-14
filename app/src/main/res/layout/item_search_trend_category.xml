@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="76dp"
+    android:layout_margin="5dp"
+    android:background="@drawable/bg_search_trend_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp">
+
+    <ImageView
+        android:id="@+id/trendCategoryImage"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:background="@color/aura_white"
+        android:contentDescription="@null"
+        android:padding="5dp"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/trendCategoryTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-bold"
+        android:lineSpacingExtra="1dp"
+        android:maxLines="2"
+        android:textColor="@color/aura_muted"
+        android:textSize="15sp" />
+</LinearLayout>
