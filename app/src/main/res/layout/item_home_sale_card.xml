@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="139dp"
+    android:layout_height="169dp"
+    android:layout_marginEnd="9dp"
+    android:background="@drawable/bg_home_sale_card"
+    android:clipToOutline="true"
+    android:orientation="vertical"
+    android:paddingStart="6dp"
+    android:paddingTop="7dp"
+    android:paddingEnd="6dp"
+    android:paddingBottom="6dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="62dp">
+
+        <ImageView
+            android:id="@+id/saleProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/home_flash_sale"
+            android:scaleType="fitCenter"
+            android:src="@drawable/figma_sale_case" />
+
+        <TextView
+            android:id="@+id/saleDiscountBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            android:layout_gravity="top|start"
+            android:background="@drawable/bg_home_badge_red"
+            android:fontFamily="sans-serif-bold"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:minWidth="40dp"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="@string/product_discount_15"
+            android:textColor="@color/aura_white"
+            android:textSize="7sp" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/saleProductTitle"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-bold"
+        android:includeFontPadding="false"
+        android:maxLines="2"
+        android:text="@string/home_product_case_name"
+        android:textColor="@color/aura_ink"
+        android:textSize="10sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:layout_marginTop="3dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/saleProductPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-bold"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:text="@string/home_product_case_price"
+            android:textColor="@color/aura_orange"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/saleProductOldPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="6dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:text="@string/home_product_case_old_price"
+            android:textColor="#FFB7B7B7"
+            android:textSize="8sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="12dp"
+        android:layout_marginTop="4dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_home_stock_track" />
+
+        <View
+            android:id="@+id/saleStockFill"
+            android:layout_width="19dp"
+            android:layout_height="12dp"
+            android:layout_gravity="start|center_vertical"
+            android:background="@drawable/bg_home_stock_fill" />
+
+        <TextView
+            android:id="@+id/saleStockText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-bold"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:text="@string/home_flash_stock"
+            android:textColor="@color/aura_white"
+            android:textSize="7.5sp" />
+    </FrameLayout>
+</LinearLayout>

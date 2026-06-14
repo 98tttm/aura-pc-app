@@ -2,6 +2,7 @@ package com.example.aura_pc_app.data.db.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import java.util.List;
 
@@ -26,4 +27,10 @@ public class ProductEntity {
     public String brand;
     public int stock;
     public boolean active;
+
+    @Ignore
+    public Double oldPrice;
+
+    @Ignore
+    public String imageUrl;
 }

@@ -27,8 +27,12 @@ public interface ApiService {
     @GET("products")
     Call<Map<String, Object>> getProducts();
 
+    @GET("categories")
+    Call<List<Map<String, Object>>> getCategories();
+
     @GET("products")
-    Call<Map<String, Object>> getProductsPaginatedMap(
+    Call<Map<String, Object>> getProductsByCategory(
+            @Query("category") String categoryId,
             @Query("page") int page,
             @Query("limit") int limit
     );
@@ -36,14 +40,11 @@ public interface ApiService {
     @GET("users/{id}")
     Call<Map<String, Object>> getUserById(@Path("id") int id);
 
+    @GET("users/{id}")
+    Call<Map<String, Object>> getUserById(@Path("id") String id);
+
     @GET("users/me")
     Call<Map<String, Object>> getCurrentUser();
-
-    @PATCH("users/me")
-    Call<Map<String, Object>> updateCurrentUser(@Body Map<String, Object> profile);
-
-    @PUT("auth/profile")
-    Call<Map<String, Object>> updateCurrentUserProfile(@Body Map<String, Object> profile);
 
     @GET("products")
     Call<ProductResponse> getProductsPaginated(
@@ -57,24 +58,6 @@ public interface ApiService {
     @GET("auth/addresses/{userId}")
     Call<AddressListResponse> getAddresses(@Path("userId") String userId);
 
-    @POST("auth/addresses")
-    Call<AddressListResponse> addAddress(@Body Map<String, Object> body);
-
-    @PUT("auth/addresses/{addressId}")
-    Call<AddressListResponse> updateAddress(
-            @Path("addressId") String addressId,
-            @Body Map<String, Object> body
-    );
-
-    @HTTP(method = "DELETE", path = "auth/addresses/{addressId}", hasBody = true)
-    Call<AddressListResponse> deleteAddress(
-            @Path("addressId") String addressId,
-            @Body Map<String, Object> body
-    );
-
-    @PUT("auth/addresses/{addressId}/default")
-    Call<AddressListResponse> setDefaultAddress(
-            @Path("addressId") String addressId,
-            @Body Map<String, Object> body
-    );
+    @POST("auth/verify-otp")
+    Call<Map<String, Object>> verifyOtp(@Body Map<String, String> body);
 }

@@ -1,136 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/aura_white">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/productScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingBottom="92dp"
+        android:scrollbars="none">
 
         <LinearLayout
-            android:id="@+id/topAppBar"
             android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:background="@color/aura_orange"
-            android:elevation="4dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp">
-
-            <ImageView
-                android:layout_width="42dp"
-                android:layout_height="40dp"
-                android:contentDescription="@string/cd_aurapc_logo"
-                android:padding="2dp"
-                android:src="@drawable/figma_home_logo" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"
-                android:fontFamily="sans-serif-black"
-                android:gravity="center_vertical"
-                android:includeFontPadding="false"
-                android:text="@string/app_name"
-                android:textColor="@color/aura_white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="112dp">
 
             <FrameLayout
-                android:layout_width="38dp"
-                android:layout_height="38dp">
-
-                <ImageButton
-                    android:id="@+id/topNotificationsButton"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/cd_notifications"
-                    android:padding="7dp"
-                    android:src="@drawable/ic_figma_bell_bold"
-                    app:tint="@color/aura_white" />
-
-                <TextView
-                    android:layout_width="13dp"
-                    android:layout_height="13dp"
-                    android:layout_gravity="top|end"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="3dp"
-                    android:background="@drawable/bg_header_badge_red"
-                    android:fontFamily="sans-serif-bold"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text="@string/home_badge_count"
-                    android:textColor="@color/aura_white"
-                    android:textSize="6sp" />
-            </FrameLayout>
-
-            <FrameLayout
-                android:layout_width="38dp"
-                android:layout_height="38dp"
-                android:layout_marginStart="8dp">
-
-                <ImageButton
-                    android:id="@+id/topCartButton"
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/home_open_cart"
-                    android:padding="7dp"
-                    android:src="@drawable/ic_figma_cart_large_bold"
-                    app:tint="@color/aura_white" />
-
-                <TextView
-                    android:layout_width="13dp"
-                    android:layout_height="13dp"
-                    android:layout_gravity="top|end"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="1dp"
-                    android:background="@drawable/bg_header_badge_red"
-                    android:fontFamily="sans-serif-bold"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text="@string/home_badge_count"
-                    android:textColor="@color/aura_white"
-                    android:textSize="6sp" />
-            </FrameLayout>
-        </LinearLayout>
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            android:fillViewport="false"
-            android:overScrollMode="never"
-            android:paddingBottom="146dp"
-            android:scrollbars="none">
-
-            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:orientation="vertical"
-                android:paddingStart="20dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="20dp">
+                android:layout_height="72dp"
+                android:visibility="invisible">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="85dp"
+                    android:layout_marginTop="69dp"
+                    android:background="@drawable/bg_home_header_curve"
+                    android:elevation="3dp" />
 
                 <LinearLayout
+                    android:id="@+id/topAppBar"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="72dp"
+                    android:background="@color/aura_orange"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp">
+
+                    <ImageButton
+                        android:id="@+id/topMenuButton"
+                        android:layout_width="50dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/cd_aurapc_logo"
+                        android:padding="0dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/figma_home_logo" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="25dp"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:text="@string/app_name"
+                        android:textColor="@color/aura_white"
+                        android:textSize="18sp" />
+
+                    <FrameLayout
+                        android:id="@+id/topNotificationsButton"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:contentDescription="@string/cd_notifications"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_figma_bell_bold"
+                            app:tint="@color/aura_white" />
+
+                        <TextView
+                            android:layout_width="13dp"
+                            android:layout_height="13dp"
+                            android:layout_gravity="top|end"
+                            android:layout_marginTop="3dp"
+                            android:layout_marginEnd="2dp"
+                            android:background="@drawable/bg_home_badge_red"
+                            android:fontFamily="sans-serif-bold"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_badge_count"
+                            android:textColor="@color/aura_white"
+                            android:textSize="6sp" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/topCartButton"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="2dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:contentDescription="@string/home_open_cart"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_figma_cart_large_bold"
+                            app:tint="@color/aura_white" />
+
+                        <TextView
+                            android:layout_width="13dp"
+                            android:layout_height="13dp"
+                            android:layout_gravity="top|end"
+                            android:layout_marginTop="3dp"
+                            android:layout_marginEnd="2dp"
+                            android:background="@drawable/bg_home_badge_red"
+                            android:fontFamily="sans-serif-bold"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/home_badge_count"
+                            android:textColor="@color/aura_white"
+                            android:textSize="6sp" />
+                    </FrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/topSearchBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="53dp"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginTop="89dp"
+                    android:layout_marginEnd="18dp"
                     android:background="@drawable/bg_search_pill"
+                    android:elevation="6dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="17dp"
-                    android:paddingEnd="8dp">
+                    android:paddingEnd="17dp">
 
                     <ImageView
                         android:layout_width="18dp"
@@ -144,116 +156,204 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        android:hint="@string/search_hint"
+                        android:hint="@string/home_figma_search_hint"
                         android:includeFontPadding="false"
                         android:inputType="text"
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp"
                         android:singleLine="true"
                         android:textColor="@color/aura_ink"
-                        android:textColorHint="@color/aura_placeholder"
-                        android:textSize="16sp" />
+                        android:textColorHint="#FF6B7280"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/aura_white"
+                    android:elevation="1dp"
+                    android:orientation="vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingBottom="12dp">
 
                     <ImageButton
-                        android:id="@+id/searchFilterButton"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="@drawable/bg_dark_circle"
-                        android:contentDescription="@string/cd_filter_products"
-                        android:elevation="7dp"
-                        android:padding="10dp"
-                        android:src="@drawable/filter"
-                        android:translationZ="2dp" />
-                </LinearLayout>
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="36dp"
-                    android:layout_marginTop="16dp"
-                    android:overScrollMode="never"
-                    android:scrollbars="none">
+                        android:id="@+id/productBackButton"
+                        android:layout_width="32dp"
+                        android:layout_height="28dp"
+                        android:layout_marginTop="6dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/cd_back"
+                        android:padding="7dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_figma_cart_back" />
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="4dp"
+                            android:layout_height="36dp"
+                            android:background="@color/aura_orange" />
+
+                        <TextView
+                            android:id="@+id/categoryTitleText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:fontFamily="sans-serif-black"
+                            android:includeFontPadding="false"
+                            android:maxLines="1"
+                            android:text="@string/products_title"
+                            android:textColor="@color/aura_ink"
+                            android:textSize="22sp"
+                            tools:text="Laptop" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/breadcrumbText"
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        android:layout_marginTop="6dp"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-medium"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textColor="@color/aura_muted"
+                        android:textSize="12sp"
+                        android:visibility="gone"
+                        tools:text="Laptop > ASUS"
+                        tools:visibility="visible" />
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:layout_marginTop="14dp"
+                        android:overScrollMode="never"
+                        android:scrollbars="none">
+
+                        <LinearLayout
+                            android:id="@+id/subcategoryChipRow"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal" />
+                    </HorizontalScrollView>
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/productSortFilterRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@color/aura_white">
+
+                    <LinearLayout
+                        android:id="@+id/productSortButtonRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="58dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
-                            style="@style/AuraChip"
-                            android:background="@drawable/bg_chip_active"
-                            android:text="@string/filter_all"
-                            android:textColor="@color/aura_white" />
+                            android:id="@+id/sortPopularButton"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif-bold"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/products_sort_popular"
+                            android:textColor="@color/aura_orange"
+                            android:textSize="14sp" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="22dp"
+                            android:background="#FFE5E7EB" />
 
                         <TextView
-                            style="@style/AuraChip"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/filter_best_seller" />
+                            android:id="@+id/sortPromotionButton"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif-medium"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/products_sort_promotion"
+                            android:textColor="@color/aura_nav_muted"
+                            android:textSize="14sp" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="22dp"
+                            android:background="#FFE5E7EB" />
 
                         <TextView
-                            style="@style/AuraChip"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/filter_good_price" />
+                            android:id="@+id/sortPriceButton"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif-medium"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/products_sort_price"
+                            android:textColor="@color/aura_nav_muted"
+                            android:textSize="14sp" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="22dp"
+                            android:background="#FFE5E7EB" />
 
                         <TextView
-                            style="@style/AuraChip"
-                            android:layout_marginStart="16dp"
-                            android:text="@string/filter_gaming" />
-
-                        <TextView
-                            style="@style/AuraChip"
-                            android:layout_marginStart="16dp"
-                            android:background="@drawable/bg_chip_subtle"
-                            android:text="@string/filter_office" />
+                            android:id="@+id/searchFilterButton"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif-medium"
+                            android:gravity="center"
+                            android:includeFontPadding="false"
+                            android:text="@string/products_filter"
+                            android:textColor="@color/aura_nav_muted"
+                            android:textSize="14sp" />
                     </LinearLayout>
-                </HorizontalScrollView>
+
+                    <View
+                        android:id="@+id/sortActiveIndicator"
+                        android:layout_width="68dp"
+                        android:layout_height="2dp"
+                        android:layout_gravity="bottom|start"
+                        android:background="@color/aura_orange" />
+                </FrameLayout>
 
                 <GridLayout
                     android:id="@+id/productGrid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="14dp"
                     android:alignmentMode="alignBounds"
                     android:clipChildren="false"
                     android:clipToPadding="false"
                     android:columnCount="2"
                     android:columnOrderPreserved="false"
                     android:gravity="center_horizontal"
-                    android:rowCount="4"
-                    android:useDefaultMargins="false">
-
-                    <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemLeft">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-
-                    <FrameLayout style="@style/AuraProductGridItemRight">
-                        <include layout="@layout/item_product_list_card" />
-                    </FrameLayout>
-                </GridLayout>
+                    android:useDefaultMargins="false" />
 
                 <Button
                     android:id="@+id/loadMoreProductsButton"
@@ -261,24 +361,269 @@
                     android:layout_height="56dp"
                     android:layout_marginStart="11dp"
                     android:layout_marginTop="2dp"
-                    android:layout_marginEnd="11dp"
-                    android:layout_marginBottom="30dp"
-                    android:background="@drawable/bg_product_load_more_button"
-                    android:backgroundTint="@null"
+                    android:layout_marginBottom="18dp">
+
+                    <ProgressBar
+                        android:id="@+id/loadingProgress"
+                        android:layout_width="32dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:indeterminate="true"
+                        android:indeterminateTint="@color/aura_orange" />
+                </FrameLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <FrameLayout
+        android:id="@+id/productFixedHeader"
+        android:layout_width="match_parent"
+        android:layout_height="72dp">
+
+        <LinearLayout
+            android:id="@+id/fixedTopAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/aura_orange"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="18dp"
+            android:paddingEnd="16dp">
+
+            <ImageButton
+                android:id="@+id/fixedTopMenuButton"
+                android:layout_width="42dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_aurapc_logo"
+                android:padding="0dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/figma_home_logo" />
+
+            <LinearLayout
+                android:id="@+id/fixedTopSearchBox"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_search_pill"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_search_muted" />
+
+                <EditText
+                    android:id="@+id/fixedSearchInput"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/home_figma_search_hint"
+                    android:includeFontPadding="false"
+                    android:inputType="text"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="8dp"
+                    android:singleLine="true"
+                    android:textColor="@color/aura_ink"
+                    android:textColorHint="#FFB8B8B8"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/fixedTopNotificationsButton"
+                android:layout_width="34dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@string/cd_notifications"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_figma_bell_bold"
+                    app:tint="@color/aura_white" />
+
+                <TextView
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@drawable/bg_home_badge_red"
                     android:fontFamily="sans-serif-bold"
                     android:gravity="center"
                     android:includeFontPadding="false"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
-                    android:paddingStart="18dp"
-                    android:paddingEnd="18dp"
-                    android:text="@string/product_list_load_more_initial"
-                    android:textAllCaps="false"
+                    android:text="@string/home_badge_count"
                     android:textColor="@color/aura_white"
-                    android:textSize="20sp" />
+                    android:textSize="6sp" />
+            </FrameLayout>
 
-            </LinearLayout>
-        </ScrollView>
+            <FrameLayout
+                android:id="@+id/fixedTopCartButton"
+                android:layout_width="34dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="2dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@string/home_open_cart"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_figma_cart_large_bold"
+                    app:tint="@color/aura_white" />
+
+                <TextView
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@drawable/bg_home_badge_red"
+                    android:fontFamily="sans-serif-bold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/home_badge_count"
+                    android:textColor="@color/aura_white"
+                    android:textSize="6sp" />
+            </FrameLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/stickyCollapsedHeader"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:alpha="0"
+        android:background="@color/aura_orange"
+        android:elevation="18dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingEnd="16dp"
+        android:visibility="gone"
+        tools:alpha="1"
+        tools:visibility="visible">
+
+        <ImageButton
+            android:id="@+id/stickyTopMenuButton"
+            android:layout_width="40dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cd_aurapc_logo"
+            android:padding="0dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/figma_home_logo" />
+
+        <LinearLayout
+            android:id="@+id/stickySearchBox"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_search_pill"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_search_muted" />
+
+            <EditText
+                android:id="@+id/stickySearchInput"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="@string/home_figma_search_hint"
+                android:includeFontPadding="false"
+                android:inputType="text"
+                android:paddingStart="10dp"
+                android:paddingEnd="8dp"
+                android:singleLine="true"
+                android:textColor="@color/aura_ink"
+                android:textColorHint="#FFB8B8B8"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/stickyNotificationsButton"
+            android:layout_width="34dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/cd_notifications"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_figma_bell_bold"
+                app:tint="@color/aura_white" />
+
+            <TextView
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="1dp"
+                android:background="@drawable/bg_home_badge_red"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="@string/home_badge_count"
+                android:textColor="@color/aura_white"
+                android:textSize="6sp" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/stickyCartButton"
+            android:layout_width="34dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/home_open_cart"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_figma_cart_large_bold"
+                app:tint="@color/aura_white" />
+
+            <TextView
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="1dp"
+                android:background="@drawable/bg_home_badge_red"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:text="@string/home_badge_count"
+                android:textColor="@color/aura_white"
+                android:textSize="6sp" />
+        </FrameLayout>
     </LinearLayout>
 
     <ImageButton
@@ -286,24 +631,19 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="128dp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginBottom="92dp"
         android:background="@drawable/bg_dark_circle"
         android:contentDescription="@string/cd_open_filters"
         android:elevation="14dp"
-        android:paddingStart="18dp"
-        android:paddingTop="22dp"
-        android:paddingEnd="18dp"
-        android:paddingBottom="22dp"
-        android:src="@drawable/filter"
-        android:translationZ="3dp" />
+        android:padding="16dp"
+        android:src="@drawable/ic_filter"
+        android:visibility="gone"
+        app:tint="@color/aura_white" />
 
     <include
         layout="@layout/view_bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="62dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="20dp" />
+        android:layout_height="82dp"
+        android:layout_gravity="bottom" />
 </FrameLayout>

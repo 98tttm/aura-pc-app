@@ -3,20 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottomNavCard"
     android:layout_width="match_parent"
-    android:layout_height="62dp"
+    android:layout_height="82dp"
     android:clipChildren="false"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="20dp">
 
     <LinearLayout
-        android:layout_width="302dp"
+        android:layout_width="match_parent"
         android:layout_height="54dp"
-        android:layout_gravity="center"
+        android:layout_gravity="bottom"
         android:background="@drawable/bg_bottom_nav_figma"
         android:elevation="10dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingStart="22dp"
-        android:paddingEnd="22dp">
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp">
 
         <FrameLayout
             android:id="@+id/nav_home_container"
@@ -29,10 +32,9 @@
 
             <ImageView
                 android:id="@+id/nav_home_icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="13dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
                 android:contentDescription="@string/nav_home"
                 android:src="@drawable/ic_figma_nav_home"
                 app:tint="@color/premium_nav_inactive" />
