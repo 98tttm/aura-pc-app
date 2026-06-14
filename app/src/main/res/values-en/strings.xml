@@ -229,6 +229,34 @@
     <string name="product_name_placeholder">Aura Nova X9 - Limitless performance</string>
     <string name="product_description_placeholder">Aura Nova X9 is a workstation built for professional creators and gamers who need powerful hardware. It delivers strong graphics performance...</string>
     <string name="consult_text">Consult</string>
+    <string name="specs_show_all">See all</string>
+    <string name="specs_collapse">Collapse</string>
+    <string name="specs_table_label_header">Specification</string>
+    <string name="specs_table_detail_header">Details</string>
+    <string name="description_show_all">See all</string>
+    <string name="description_collapse">Collapse</string>
+    <string name="tab_reviews">Reviews</string>
+    <string name="tab_questions_answers">Comments - Q&amp;A</string>
+    <string name="questions_answers_title">Comments - Q&amp;A</string>
+    <string name="comments_count_zero">0 comments</string>
+    <string name="send_comment">Send comment</string>
+    <string name="newest">Newest</string>
+    <string name="oldest">Oldest</string>
+    <string name="comments_empty_state">There are no comments for this product yet.</string>
+    <string name="comments_coming_soon">Comments will be available soon.</string>
+    <string name="comments_count_format">%1$d comments</string>
+    <string name="comment_input_hint">Enter your comment</string>
+    <string name="comment_cancel">Cancel</string>
+    <string name="comment_send">Send</string>
+    <string name="comment_content_required">Please enter a comment.</string>
+    <string name="comment_customer_name">AuraPC Customer</string>
+    <string name="comment_just_now">Just now</string>
+    <string name="product_description_generated">%1$s is a strong choice for %2$s. Key specifications include %3$s, delivering reliable performance for everyday tasks and sustained workloads. Its practical design and flexible connectivity make it suitable for a wide range of setups.</string>
+    <string name="product_description_general_highlight">balanced specifications and reliable operation</string>
+    <string name="product_audience_gaming">gaming, entertainment, and high-performance graphics</string>
+    <string name="product_audience_workstation">workstation, rendering, and professional workloads</string>
+    <string name="product_audience_creative">content creation, design, and graphics work</string>
+    <string name="product_audience_general">everyday study, work, and entertainment</string>
 
     <!-- Network & Auth -->
     <string name="error_network">Unable to connect. Please check your network.</string>

@@ -170,7 +170,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         productAdapter = new HomeProductAdapter(new HomeProductAdapter.ProductClickListener() {
             @Override
             public void onProductClick(ProductEntity product) {
-                openProductDetail();
+                openProductDetail(product);
             }
 
             @Override

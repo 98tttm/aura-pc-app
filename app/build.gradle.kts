@@ -82,6 +82,8 @@ dependencies {
     // Glide for image loading from URL
     implementation(libs.glide)
     annotationProcessor(libs.glide.compiler)
+    implementation(libs.viewpager2)
+    implementation(libs.photoview)
 
     // Paging 3
     implementation(libs.paging.runtime)

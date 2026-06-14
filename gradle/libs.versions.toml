@@ -45,6 +45,8 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 # Glide Image Loader
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+photoview = { group = "com.github.chrisbanes", name = "PhotoView", version.ref = "photoview" }
 
 # Paging 3
 paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }

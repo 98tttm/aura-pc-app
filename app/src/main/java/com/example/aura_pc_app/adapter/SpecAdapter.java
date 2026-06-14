@@ -3,7 +3,6 @@ package com.example.aura_pc_app.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,7 +32,6 @@ public class SpecAdapter extends RecyclerView.Adapter<SpecAdapter.ViewHolder> {
         ProductSpec spec = specs.get(position);
         holder.label.setText(spec.getLabel());
         holder.value.setText(spec.getValue());
-        holder.icon.setImageResource(spec.getIconResId());
     }
 
     @Override
@@ -42,11 +40,9 @@ public class SpecAdapter extends RecyclerView.Adapter<SpecAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView icon;
         TextView label, value;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            icon = itemView.findViewById(R.id.specIcon);
             label = itemView.findViewById(R.id.specLabel);
             value = itemView.findViewById(R.id.specValue);
         }
