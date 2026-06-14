@@ -29,10 +29,8 @@ import com.example.aura_pc_app.utils.Constants;
         ProductEntity.class,
         CartItemEntity.class,
         DeviceProfileEntity.class,
-        PriceHistoryEntity.class,
-        WishlistEntity.class
+        PriceHistoryEntity.class
 }, version = 2, exportSchema = true)
-// 2. Khai báo bộ chuyển đổi
 @TypeConverters({AuraTypeConverters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
@@ -42,20 +40,24 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract CartDao cartDao();
     public abstract WishlistDao wishlistDao();
 
-    // 4. Migration v1 -> v2: Thêm bảng wishlist_items
     public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL(
-                "CREATE TABLE IF NOT EXISTS `wishlist_items` (" +
-                "`productId` TEXT NOT NULL, " +
-                "`name` TEXT, " +
-                "`price` REAL NOT NULL, " +
-                "`oldPrice` REAL NOT NULL, " +
-                "`imageUrl` TEXT, " +
-                "`addedAt` INTEGER NOT NULL, " +
-                "PRIMARY KEY(`productId`))" 
-            );
+            database.execSQL("CREATE TABLE IF NOT EXISTS cart_items_new ("
+                    + "productId TEXT NOT NULL, "
+                    + "variantId TEXT NOT NULL DEFAULT '', "
+                    + "name TEXT, "
+                    + "specs TEXT, "
+                    + "imageUrl TEXT, "
+                    + "unitPrice REAL NOT NULL DEFAULT 0, "
+                    + "quantity INTEGER NOT NULL, "
+                    + "synced INTEGER NOT NULL DEFAULT 0, "
+                    + "updatedAt INTEGER NOT NULL DEFAULT 0, "
+                    + "PRIMARY KEY(productId, variantId))");
+            database.execSQL("INSERT INTO cart_items_new (productId, variantId, quantity) "
+                    + "SELECT productId, '', quantity FROM cart_items");
+            database.execSQL("DROP TABLE cart_items");
+            database.execSQL("ALTER TABLE cart_items_new RENAME TO cart_items");
         }
     };
 
@@ -68,8 +70,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                     AppDatabase.class,
                                     Constants.DB_NAME
                             )
-                            .addMigrations(MIGRATION_1_2) // 5. Gắn Migration vào Builder
-                            .fallbackToDestructiveMigration() // Thêm vào để tránh crash/hang nếu sai schema
+                            .addMigrations(MIGRATION_1_2)
                             .build();
                 }
             }

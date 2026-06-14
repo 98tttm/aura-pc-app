@@ -16,8 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+
 import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.ui.categories.CategoriesActivity;
 import com.aura.pc.ui.products.AuraProductsActivity;
@@ -31,19 +30,6 @@ import com.example.aura_pc_app.data.db.entity.ProductEntity;
 import com.example.aura_pc_app.data.db.entity.SearchHistoryEntity;
 import com.example.aura_pc_app.databinding.ActivityHomeBinding;
 import com.example.aura_pc_app.ui.base.BaseActivity;
-import com.example.aura_pc_app.utils.AuthGate;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
     private static final int HISTORY_LIMIT = 5;
@@ -175,7 +161,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
 
             @Override
             public void onCartClick(ProductEntity product) {
-                addProductToCart();
+                addProductToCart(product);
             }
         });
         binding.productRecyclerView.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.HORIZONTAL, false));
@@ -196,179 +182,21 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
                 binding.homeProductIndicatorThumb));
     }
 
-    private void setupSaleSection() {
-        saleProductAdapter = new HomeSaleProductAdapter(product -> openProductDetail());
-        binding.homeSaleRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        binding.homeSaleRecyclerView.setAdapter(saleProductAdapter);
-        binding.homeSaleRecyclerView.setHasFixedSize(false);
-        binding.homeSaleRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@androidx.annotation.NonNull RecyclerView recyclerView, int dx, int dy) {
-                updateRecyclerIndicator(
-                        binding.homeSaleRecyclerView,
-                        binding.homeSaleIndicatorTrack,
-                        binding.homeSaleIndicatorThumb);
+    private void observeProducts() {
+        binding.loadingProgress.setVisibility(View.VISIBLE);
+        viewModel.getProducts().observe(this, products -> {
+            productAdapter.setProducts(products);
+            binding.loadingProgress.setVisibility(View.GONE);
+        });
+        viewModel.getProductAdded().observe(this, added -> {
+            if (Boolean.TRUE.equals(added)) {
+                Toast.makeText(this, R.string.cart_added, Toast.LENGTH_SHORT).show();
+                viewModel.clearProductAdded();
             }
         });
-
-        binding.homeSaleTabFlash.setOnClickListener(v -> selectSaleCampaign(0));
-        binding.homeSaleTabDeal.setOnClickListener(v -> selectSaleCampaign(1));
-        binding.homeSaleTabHot.setOnClickListener(v -> selectSaleCampaign(2));
-        binding.homeSaleDateOne.setOnClickListener(v -> selectSaleDate(0));
-        binding.homeSaleDateTwo.setOnClickListener(v -> selectSaleDate(1));
-        binding.homeSaleDateThree.setOnClickListener(v -> selectSaleDate(2));
-        updateSaleDateLabels();
-        updateSaleSelectionUi();
-        saleCountdownHandler.removeCallbacks(saleCountdownRunnable);
-        saleCountdownHandler.post(saleCountdownRunnable);
-    }
-
-    private void selectSaleCampaign(int campaignIndex) {
-        selectedSaleCampaignIndex = campaignIndex;
-        updateSaleSelectionUi();
-        updateSaleCountdown();
-        renderSaleProducts();
-    }
-
-    private void selectSaleDate(int dateIndex) {
-        selectedSaleDateIndex = dateIndex;
-        updateSaleSelectionUi();
-        updateSaleCountdown();
-        renderSaleProducts();
-    }
-
-    private void updateSaleSelectionUi() {
-        updateSaleTab(binding.homeSaleTabFlash, selectedSaleCampaignIndex == 0);
-        updateSaleTab(binding.homeSaleTabDeal, selectedSaleCampaignIndex == 1);
-        updateSaleTab(binding.homeSaleTabHot, selectedSaleCampaignIndex == 2);
-        updateSaleDateTab(binding.homeSaleDateOne, selectedSaleDateIndex == 0);
-        updateSaleDateTab(binding.homeSaleDateTwo, selectedSaleDateIndex == 1);
-        updateSaleDateTab(binding.homeSaleDateThree, selectedSaleDateIndex == 2);
-    }
-
-    private void updateSaleTab(TextView tab, boolean selected) {
-        tab.setAlpha(1f);
-        tab.setScaleX(1f);
-        tab.setScaleY(1f);
-    }
-
-    private void updateSaleDateTab(TextView tab, boolean selected) {
-        tab.setBackgroundResource(selected ? R.drawable.bg_home_date_selected : R.drawable.bg_home_date_outline);
-        tab.setTextColor(selected ? 0xFFFF1F1F : getColor(R.color.aura_white));
-    }
-
-    private void updateSaleDateLabels() {
-        TextView[] dateTabs = {
-                binding.homeSaleDateOne,
-                binding.homeSaleDateTwo,
-                binding.homeSaleDateThree
-        };
-        Calendar date = Calendar.getInstance();
-        for (int i = 0; i < dateTabs.length; i++) {
-            if (i > 0) {
-                date.add(Calendar.DAY_OF_YEAR, 1);
-            }
-            dateTabs[i].setText(String.format(Locale.US, "%02d/%02d",
-                    date.get(Calendar.DAY_OF_MONTH),
-                    date.get(Calendar.MONTH) + 1));
-        }
-    }
-
-    private void updateSaleCountdown() {
-        Calendar now = Calendar.getInstance();
-        SaleCountdownTarget target = saleCountdownTarget(now);
-        long remainingMs = Math.max(0, target.targetTime.getTimeInMillis() - now.getTimeInMillis());
-        long totalSeconds = remainingMs / 1000;
-        long hours = totalSeconds / 3600;
-        long minutes = (totalSeconds % 3600) / 60;
-        long seconds = totalSeconds % 60;
-        binding.homeSaleCountdownLabel.setText(target.labelResId);
-        binding.homeSaleCountdownHour.setText(String.format(Locale.US, "%02d", hours));
-        binding.homeSaleCountdownMinute.setText(String.format(Locale.US, "%02d", minutes));
-        binding.homeSaleCountdownSecond.setText(String.format(Locale.US, "%02d", seconds));
-    }
-
-    private SaleCountdownTarget saleCountdownTarget(Calendar now) {
-        Calendar selectedDate = saleSelectedDate();
-        if (isSameDay(now, selectedDate)) {
-            Calendar endOfDay = (Calendar) selectedDate.clone();
-            endOfDay.set(Calendar.HOUR_OF_DAY, 23);
-            endOfDay.set(Calendar.MINUTE, 59);
-            endOfDay.set(Calendar.SECOND, 59);
-            endOfDay.set(Calendar.MILLISECOND, 999);
-            return new SaleCountdownTarget(endOfDay, R.string.home_flash_countdown_remaining_label);
-        }
-
-        int[] starts = {9, 13, 20};
-        int startHour = starts[Math.max(0, Math.min(selectedSaleCampaignIndex, starts.length - 1))];
-        Calendar startTime = (Calendar) selectedDate.clone();
-        startTime.set(Calendar.HOUR_OF_DAY, startHour);
-        startTime.set(Calendar.MINUTE, 0);
-        startTime.set(Calendar.SECOND, 0);
-        startTime.set(Calendar.MILLISECOND, 0);
-
-        if (now.before(startTime)) {
-            return new SaleCountdownTarget(startTime, R.string.home_flash_countdown_label);
-        }
-
-        Calendar nextStart = (Calendar) startTime.clone();
-        nextStart.add(Calendar.DAY_OF_YEAR, 1);
-        return new SaleCountdownTarget(nextStart, R.string.home_flash_countdown_label);
-    }
-
-    private Calendar saleSelectedDate() {
-        Calendar selectedDate = Calendar.getInstance();
-        selectedDate.add(Calendar.DAY_OF_YEAR, selectedSaleDateIndex);
-        return selectedDate;
-    }
-
-    private boolean isSameDay(Calendar first, Calendar second) {
-        return first.get(Calendar.YEAR) == second.get(Calendar.YEAR)
-                && first.get(Calendar.DAY_OF_YEAR) == second.get(Calendar.DAY_OF_YEAR);
-    }
-
-    private void setupHomeProductTabs() {
-        binding.homeProductTabLaptop.setOnClickListener(v -> selectHomeProductCategory("laptop"));
-        binding.homeProductTabPc.setOnClickListener(v -> selectHomeProductCategory("pc"));
-        binding.homeProductTabMonitor.setOnClickListener(v -> selectHomeProductCategory("man-hinh"));
-        binding.homeProductTabAccessory.setOnClickListener(v -> selectHomeProductCategory("phu-kien"));
-        updateHomeProductTabs();
-    }
-
-    private void selectHomeProductCategory(String categoryId) {
-        selectedProductCategoryId = categoryId;
-        updateHomeProductTabs();
-        renderHomeBrandChips();
-        binding.productRecyclerView.scrollToPosition(0);
-        loadHomeProducts(categoryId);
-    }
-
-    private void updateHomeProductTabs() {
-        updateHomeProductTab(binding.homeProductTabLaptop, "laptop");
-        updateHomeProductTab(binding.homeProductTabPc, "pc");
-        updateHomeProductTab(binding.homeProductTabMonitor, "man-hinh");
-        updateHomeProductTab(binding.homeProductTabAccessory, "phu-kien");
-    }
-
-    private void updateHomeProductTab(TextView tab, String categoryId) {
-        boolean selected = categoryId.equals(selectedProductCategoryId);
-        tab.setBackgroundResource(selected ? R.drawable.bg_home_top_tab_active : R.drawable.bg_home_top_tab);
-        tab.setTypeface(tab.getTypeface(), selected ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
-    }
-
-    private void loadHomeCategories() {
-        ApiClient.getInstance(this).getApiService().getCategories().enqueue(new Callback<List<Map<String, Object>>>() {
-            @Override
-            public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    consumeHomeCategories(response.body());
-                }
-                renderHomeBrandChips();
-            }
-
-            @Override
-            public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
-                renderHomeBrandChips();
+        viewModel.errorMessage.observe(this, message -> {
+            if (message != null && !message.isEmpty()) {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -1039,75 +867,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         startActivity(new Intent(this, CartActivity.class));
     }
 
-    private void addProductToCart() {
-        if (!AuthGate.requireLogin(this, CartActivity.class)) {
-            return;
-        }
-        openCart();
-    }
-
-    private List<ProductEntity> createFallbackProducts() {
-        List<ProductEntity> products = new ArrayList<>();
-        addFallback(products, "fallback-case-one", getString(R.string.home_product_case_name), 5490000, 3990000);
-        addFallback(products, "fallback-cpu-one", getString(R.string.home_product_cpu_name), 5490000, 1110000);
-        addFallback(products, "fallback-case-two", getString(R.string.home_product_case_name), 5490000, 3990000);
-        addFallback(products, "fallback-cpu-two", getString(R.string.home_product_cpu_name), 5490000, 1110000);
-        return products;
-    }
-
-    private List<ProductEntity> createSaleFallbackProducts() {
-        List<ProductEntity> products = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
-            if (i % 2 == 0) {
-                addFallback(products, "fallback-sale-case-" + i, getString(R.string.home_product_case_name), 5490000, 3990000);
-            } else {
-                addFallback(products, "fallback-sale-cpu-" + i, getString(R.string.home_product_cpu_name), 5490000, 1110000);
-            }
-        }
-        return products;
-    }
-
-    private ProductEntity product(String id, String name, String brand, String slug,
-                                  double price, @Nullable Double salePrice, String specs) {
-        ProductEntity product = new ProductEntity();
-        product._id = id;
-        product.name = name;
-        product.brand = brand;
-        product.slug = slug;
-        product.price = price;
-        product.salePrice = salePrice;
-        product.specs = specs;
-        product.active = true;
-        product.stock = 12;
-        return product;
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (pendingSearchRunnable != null) {
-            searchHandler.removeCallbacks(pendingSearchRunnable);
-        }
-        historyExecutor.shutdownNow();
-        super.onDestroy();
-    }
-
-    private static class CategoryChip {
-        final String categoryId;
-        final String name;
-
-        CategoryChip(String categoryId, String name) {
-            this.categoryId = categoryId;
-            this.name = name;
-        }
-    }
-
-    private static class SaleCountdownTarget {
-        final Calendar targetTime;
-        final int labelResId;
-
-        SaleCountdownTarget(Calendar targetTime, int labelResId) {
-            this.targetTime = targetTime;
-            this.labelResId = labelResId;
-        }
+    private void addProductToCart(ProductEntity product) {
+        viewModel.addProductToCart(product);
     }
 }

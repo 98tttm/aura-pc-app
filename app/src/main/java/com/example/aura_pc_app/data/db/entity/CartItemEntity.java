@@ -2,14 +2,20 @@ package com.example.aura_pc_app.data.db.entity;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
-@Entity(tableName = "cart_items")
+@Entity(tableName = "cart_items", primaryKeys = {"productId", "variantId"})
 public class CartItemEntity {
 
-    @PrimaryKey
     @NonNull
-    public String productId = ""; // Cấp giá trị rỗng mặc định để tránh lỗi Null
+    public String productId = "";
 
+    @NonNull
+    public String variantId = "";
+    public String name;
+    public String specs;
+    public String imageUrl;
+    public double unitPrice;
     public int quantity;
+    public boolean synced;
+    public long updatedAt;
 }

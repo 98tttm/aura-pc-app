@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "1a1c9f2036f3a708d630b88597114c1d",
+    "identityHash": "49d5f0cd9984e62fdfa523c3d5793edb",
     "entities": [
       {
         "tableName": "users",
@@ -130,7 +130,7 @@
       },
       {
         "tableName": "cart_items",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` TEXT NOT NULL, `quantity` INTEGER NOT NULL, PRIMARY KEY(`productId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` TEXT NOT NULL, `variantId` TEXT NOT NULL, `name` TEXT, `specs` TEXT, `imageUrl` TEXT, `unitPrice` REAL NOT NULL, `quantity` INTEGER NOT NULL, `synced` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`productId`, `variantId`))",
         "fields": [
           {
             "fieldPath": "productId",
@@ -139,8 +139,50 @@
             "notNull": true
           },
           {
+            "fieldPath": "variantId",
+            "columnName": "variantId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "specs",
+            "columnName": "specs",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "unitPrice",
+            "columnName": "unitPrice",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
             "fieldPath": "quantity",
             "columnName": "quantity",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "synced",
+            "columnName": "synced",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -148,7 +190,8 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "productId"
+            "productId",
+            "variantId"
           ]
         },
         "indices": [],
@@ -217,62 +260,12 @@
         },
         "indices": [],
         "foreignKeys": []
-      },
-      {
-        "tableName": "wishlist_items",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` TEXT NOT NULL, `name` TEXT, `price` REAL NOT NULL, `oldPrice` REAL NOT NULL, `imageUrl` TEXT, `addedAt` INTEGER NOT NULL, PRIMARY KEY(`productId`))",
-        "fields": [
-          {
-            "fieldPath": "productId",
-            "columnName": "productId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "price",
-            "columnName": "price",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "oldPrice",
-            "columnName": "oldPrice",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "imageUrl",
-            "columnName": "imageUrl",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "addedAt",
-            "columnName": "addedAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "productId"
-          ]
-        },
-        "indices": [],
-        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1a1c9f2036f3a708d630b88597114c1d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '49d5f0cd9984e62fdfa523c3d5793edb')"
     ]
   }
 }

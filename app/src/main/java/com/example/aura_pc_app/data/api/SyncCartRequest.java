@@ -11,10 +11,16 @@ public class SyncCartRequest {
 
     public static class Item {
         public String productId;
+        public String variantId;
         public int quantity;
 
         public Item(String productId, int quantity) {
+            this(productId, null, quantity);
+        }
+
+        public Item(String productId, String variantId, int quantity) {
             this.productId = productId;
+            this.variantId = variantId;
             this.quantity = quantity;
         }
     }

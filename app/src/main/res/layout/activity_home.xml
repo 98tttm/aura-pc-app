@@ -24,6 +24,81 @@
             android:paddingBottom="96dp">
 
             <FrameLayout
+                android:id="@+id/topNotificationsButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@string/cd_notifications"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_figma_bell_bold"
+                    app:tint="@color/aura_white" />
+
+                <TextView
+                    android:id="@+id/header_notification_badge"
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@drawable/bg_home_badge_red"
+                    android:fontFamily="sans-serif-bold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/home_badge_count"
+                    android:textColor="@color/aura_white"
+                    android:textSize="6sp" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/topCartButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@string/home_open_cart"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_figma_cart_large_bold"
+                    app:tint="@color/aura_white" />
+
+                <TextView
+                    android:id="@+id/header_cart_badge"
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="2dp"
+                    android:background="@drawable/bg_home_badge_red"
+                    android:fontFamily="sans-serif-bold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/aura_white"
+                    android:textSize="6sp"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:paddingBottom="112dp"
+            android:scrollbars="none">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="154dp">
 

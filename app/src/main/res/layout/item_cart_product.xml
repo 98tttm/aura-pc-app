@@ -7,7 +7,10 @@
     android:elevation="4dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="12dp">
+    android:paddingStart="12dp"
+    android:paddingTop="12dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="12dp">
 
     <ImageView
         android:id="@+id/cartItemCheckbox"

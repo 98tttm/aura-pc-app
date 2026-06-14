@@ -5,11 +5,13 @@ import android.os.CountDownTimer;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import com.example.aura_pc_app.data.cart.CartRepositoryImpl;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.api.ApiResponse;
 import com.example.aura_pc_app.data.api.TokenManager;
 import com.example.aura_pc_app.data.repository.AuthRepositoryImpl;
 import com.example.aura_pc_app.domain.repository.AuthRepository;
+import com.example.aura_pc_app.domain.cart.CartRepository;
 import com.example.aura_pc_app.ui.base.BaseViewModel;
 import com.example.aura_pc_app.utils.LocaleManager;
 import com.google.gson.Gson;
@@ -196,6 +198,17 @@ public class AuthViewModel extends BaseViewModel {
                     if (user != null) {
                         tokenManager.saveCurrentUserJson(GSON.toJson(normalizeUserForSession(user, phoneStr)));
                     }
+                    new CartRepositoryImpl(getApplication()).syncCartAfterLogin(new CartRepository.CartCallback() {
+                        @Override
+                        public void onSuccess() {
+                            // Cart badge and cart screen observe Room, so no direct UI event is needed here.
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            postError(message);
+                        }
+                    });
                 }
             }
         });
