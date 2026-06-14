@@ -1,15 +1,19 @@
-package com.example.aura_pc_app;
+package com.aura.pc.ui.productdetail;
 
-import android.content.Context;
+import com.example.aura_pc_app.R;
+import com.example.aura_pc_app.App;import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.text.HtmlCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -31,19 +35,29 @@ import com.example.aura_pc_app.domain.model.Product;
 import com.example.aura_pc_app.domain.model.ProductSpec;
 import com.example.aura_pc_app.utils.AuthGate;
 import com.example.aura_pc_app.utils.LocaleManager;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.concurrent.Executors;
 
-public class MainActivity extends AppCompatActivity {
+import com.example.aura_pc_app.data.db.AppDatabase;
+import com.example.aura_pc_app.data.db.entity.WishlistEntity;
+
+public class ProductDetailActivity extends AppCompatActivity {
 
     private RecyclerView thumbnailRecyclerView, specsRecyclerView, relatedRecyclerView, viewedRecyclerView;
-    private TextView productName, ratingText, soldCount, reviewCount, currentPrice, oldPrice, discountBadge, productDescription, specsTitle;
-    private ImageView mainProductImage, btnFavorite, descProductImage;
-    private android.view.View btnConsult, btnAddToCart, btnBuyNow, viewedSection;
+    private TextView productName, ratingText, soldCount, reviewCount, currentPrice, oldPrice, discountBadge, productDescription, specsTitle, descriptionTitle;
+    private WebView productDescriptionWebView;
+    private ImageView mainProductImage, btnFavorite, descriptionImage;
+    private android.view.View btnConsult, btnAddToCart, btnBuyNow;
     private boolean isFavorite = false;
+    
+    private String currentProductId;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -64,6 +78,12 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         setupPrimaryNavigationOverrides();
+        
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("product_id")) {
+            currentProductId = intent.getStringExtra("product_id");
+        }
+        
         loadData();
         
         // Initialize Bottom Navigation
@@ -81,9 +101,12 @@ public class MainActivity extends AppCompatActivity {
         oldPrice = findViewById(R.id.oldPrice);
         discountBadge = findViewById(R.id.discountBadge);
         productDescription = findViewById(R.id.productDescription);
+        productDescriptionWebView = findViewById(R.id.productDescriptionWebView);
+        specsTitle = findViewById(R.id.specsTitle);
+        descriptionTitle = findViewById(R.id.descriptionTitle);
+        descriptionImage = findViewById(R.id.descriptionImage);
         btnFavorite = findViewById(R.id.btnFavorite);
 
-        // Find views inside included overlays to avoid ID overrides returning null
         android.view.View actionOverlay = findViewById(R.id.actionOverlay);
         if (actionOverlay != null) {
             btnConsult = actionOverlay.findViewById(R.id.btnConsult);
@@ -95,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
             btnBuyNow = findViewById(R.id.btnBuyNow);
         }
 
-        // navOverlay overrides the root ID of view_bottom_navigation
         android.view.View bottomNavCard = findViewById(R.id.navOverlay);
         if (bottomNavCard == null) {
             bottomNavCard = findViewById(R.id.bottomNavCard);
@@ -105,47 +127,36 @@ public class MainActivity extends AppCompatActivity {
         specsRecyclerView = findViewById(R.id.specsRecyclerView);
         relatedRecyclerView = findViewById(R.id.relatedRecyclerView);
         viewedRecyclerView = findViewById(R.id.viewedRecyclerView);
-        descProductImage = findViewById(R.id.descProductImage);
-        viewedSection = findViewById(R.id.viewedSection);
-        specsTitle = findViewById(R.id.specsTitle);
 
-        // Apply strikethrough to the old price with safety check
         if (oldPrice != null) {
             oldPrice.setPaintFlags(oldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
         if (btnFavorite != null) {
-            btnFavorite.setOnClickListener(v -> {
-                isFavorite = !isFavorite;
-                if (isFavorite) {
-                    btnFavorite.setColorFilter(getResources().getColor(R.color.orange_primary, getTheme()));
-                } else {
-                    btnFavorite.setColorFilter(getResources().getColor(R.color.gray_text, getTheme()));
-                }
-            });
+            // Will be wired up after product data loads (see setupWishlistToggle)
         }
 
         if (btnConsult != null) {
             btnConsult.setOnClickListener(v -> {
-                android.widget.Toast.makeText(this, "Đang kết nối với tư vấn viên...", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this, getString(R.string.toast_connecting_consultant), android.widget.Toast.LENGTH_SHORT).show();
             });
         }
 
         if (btnAddToCart != null) {
             btnAddToCart.setOnClickListener(v -> {
-                android.widget.Toast.makeText(this, "Đã thêm vào giỏ hàng", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this, getString(R.string.toast_added_to_cart), android.widget.Toast.LENGTH_SHORT).show();
             });
         }
 
         if (btnBuyNow != null) {
             btnBuyNow.setOnClickListener(v -> {
-                android.widget.Toast.makeText(this, "Đang chuyển đến trang thanh toán", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this, getString(R.string.toast_navigating_checkout), android.widget.Toast.LENGTH_SHORT).show();
             });
         }
 
         if (bottomNavCard != null) {
             bottomNavCard.setOnClickListener(v -> {
-                android.widget.Toast.makeText(this, "Chức năng thanh điều hướng đang phát triển", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this, getString(R.string.toast_nav_developing), android.widget.Toast.LENGTH_SHORT).show();
             });
         }
     }
@@ -159,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!AuthGate.requireLogin(this, CartActivity.class)) {
                     return;
                 }
-                android.widget.Toast.makeText(this, "Added to cart", android.widget.Toast.LENGTH_SHORT).show();
+                android.widget.Toast.makeText(this, getString(R.string.toast_added_to_cart), android.widget.Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this, CartActivity.class));
             });
         }
@@ -174,32 +185,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        String productId = getIntent().getStringExtra("product_id");
-
-        if (productId != null && !productId.isEmpty()) {
-            // Load specific product by ID
-            ApiClient.getInstance(this).getApiService().getProductById(productId).enqueue(new retrofit2.Callback<Map<String, Object>>() {
+        if (currentProductId != null && !currentProductId.isEmpty()) {
+            ApiClient.getInstance(this).getApiService().getProductById(currentProductId).enqueue(new retrofit2.Callback<Map<String, Object>>() {
                 @Override
                 public void onResponse(retrofit2.Call<Map<String, Object>> call, retrofit2.Response<Map<String, Object>> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        try {
-                            bindRealProductData(response.body());
-                            return;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        bindRealProductData(response.body());
+                    } else {
+                        loadMockData();
                     }
-                    loadMockData();
                 }
 
                 @Override
                 public void onFailure(retrofit2.Call<Map<String, Object>> call, Throwable t) {
-                    t.printStackTrace();
                     loadMockData();
                 }
             });
         } else {
-            // Fallback: load first product from all products (Old behavior)
+            // Fallback load default product list if no ID is passed
             ApiClient.getInstance(this).getApiService().getProducts().enqueue(new retrofit2.Callback<Map<String, Object>>() {
                 @Override
                 public void onResponse(retrofit2.Call<Map<String, Object>> call, retrofit2.Response<Map<String, Object>> response) {
@@ -220,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(retrofit2.Call<Map<String, Object>> call, Throwable t) {
-                    t.printStackTrace();
                     loadMockData();
                 }
             });
@@ -229,10 +231,55 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindRealProductData(Map<String, Object> productData) {
         String name = (String) productData.get("name");
+        String descHtml = (String) productData.get("description_html");
         String desc = (String) productData.get("description");
-        if (desc == null || desc.trim().isEmpty()) {
-            desc = "Sản phẩm " + name + " mang đến trải nghiệm tuyệt vời với hiệu năng mạnh mẽ. Được thiết kế tinh tế và trang bị công nghệ tiên tiến nhất, đáp ứng hoàn hảo mọi nhu cầu của bạn.";
+
+        if (descHtml != null && !descHtml.trim().isEmpty()) {
+            // Xóa bảng thông số kỹ thuật dư thừa (nếu có)
+            // Fix: Only remove table if there's enough other text (so we don't delete the whole description)
+            String withoutTable = descHtml.replaceAll("(?s)<table.*?>.*?</table>", "");
+            if (withoutTable.replaceAll("<[^>]*>", "").trim().length() > 50) {
+                descHtml = withoutTable;
+            }
+            
+            // Xóa tiêu đề "THÔNG SỐ KĨ THUẬT" nếu nó nằm độc lập ngoài bảng
+            descHtml = descHtml.replaceAll("(?i)<h2>(?s).*?thông số.*?(kĩ|kỹ).*?thuật.*?</h2>", "");
+            descHtml = descHtml.replaceAll("(?i)<strong>(?s).*?thông số.*?(kĩ|kỹ).*?thuật.*?</strong>", "");
+            
+            // Sửa lỗi url ảnh bị thiếu https:// (xử lý mọi trường hợp src="//, src = '//, v.v...)
+            descHtml = descHtml.replaceAll("(?i)src\\s*=\\s*\"//", "src=\"https://");
+            descHtml = descHtml.replaceAll("(?i)src\\s*=\\s*'//", "src='https://");
+            descHtml = descHtml.replaceAll("(?i)src\\s*=\\s*\"http://", "src=\"https://");
+            descHtml = descHtml.replaceAll("(?i)src\\s*=\\s*'http://", "src='https://");
+
+            if (productDescriptionWebView != null) {
+                productDescriptionWebView.setVisibility(android.view.View.GONE);
+            }
+            if (productDescription != null) {
+                productDescription.setVisibility(android.view.View.VISIBLE);
+                productDescription.setText(android.text.Html.fromHtml(
+                        descHtml,
+                        android.text.Html.FROM_HTML_MODE_COMPACT,
+                        new com.example.aura_pc_app.utils.GlideImageGetter(this, productDescription),
+                        null
+                ));
+            }
+        } else {
+            if (productDescriptionWebView != null) {
+                productDescriptionWebView.setVisibility(android.view.View.GONE);
+            }
+            if (productDescription != null) {
+                productDescription.setVisibility(android.view.View.VISIBLE);
+                if (desc != null && !desc.trim().isEmpty()) {
+                    productDescription.setText(desc);
+                } else {
+                    productDescription.setText("Chưa có thông tin mô tả sản phẩm.");
+                }
+            }
         }
+
+        // Save to viewed products
+        saveToViewedProducts(productData);
 
         // Format Prices
         Double priceVal = 0.0;
@@ -262,13 +309,17 @@ public class MainActivity extends AppCompatActivity {
 
         // Bind core data to views
         if (productName != null) productName.setText(name);
-        if (productDescription != null) productDescription.setText(desc);
         if (currentPrice != null) currentPrice.setText(curPriceStr);
         if (oldPrice != null) oldPrice.setText(oldPriceStr);
         if (discountBadge != null) {
-            discountBadge.setText("-" + discountPct + "%");
+            if (discountPct > 0) {
+                discountBadge.setVisibility(android.view.View.VISIBLE);
+                discountBadge.setText("-" + discountPct + "%");
+            } else {
+                discountBadge.setVisibility(android.view.View.GONE);
+            }
         }
-        if (ratingText != null) ratingText.setText("4.9");
+        if (ratingText != null) ratingText.setText(getString(R.string.label_default_rating));
         if (soldCount != null) soldCount.setText(getString(R.string.sold_count_format, "850"));
         if (reviewCount != null) reviewCount.setText(getString(R.string.reviews_count_format, 124));
 
@@ -276,8 +327,20 @@ public class MainActivity extends AppCompatActivity {
         if (mainProductImage != null && !imageUrls.isEmpty()) {
             Glide.with(this)
                     .load(imageUrls.get(0))
-                    .placeholder(R.drawable.product_case)
+                    .placeholder(R.drawable.aura_laptop)
                     .into(mainProductImage);
+                    
+            if (descriptionImage != null) {
+                Glide.with(this)
+                        .load(imageUrls.get(0))
+                        .placeholder(R.drawable.product_case)
+                        .into(descriptionImage);
+            }
+        } else if (mainProductImage != null) {
+            mainProductImage.setImageResource(R.drawable.aura_laptop);
+            if (descriptionImage != null) {
+                descriptionImage.setImageResource(R.drawable.product_case);
+            }
         }
 
         // Setup horizontal thumbnail carousel
@@ -289,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
                     mainProductImage.setAlpha(0f);
                     Glide.with(this)
                             .load(imageUrl)
-                            .placeholder(R.drawable.product_case)
+                            .placeholder(R.drawable.aura_laptop)
                             .into(mainProductImage);
                     mainProductImage.animate().alpha(1f).setDuration(300).start();
                 }
@@ -300,7 +363,11 @@ public class MainActivity extends AppCompatActivity {
         // Setup specifications from backend dynamically
         if (specsRecyclerView != null) {
             List<ProductSpec> specList = new ArrayList<>();
-            Map<String, String> specsMap = (Map<String, String>) productData.get("specs");
+            Map<String, String> specsMap = null;
+            try {
+                specsMap = (Map<String, String>) productData.get("specs");
+            } catch (Exception ignored) {}
+            
             if (specsMap != null) {
                 for (Map.Entry<String, String> entry : specsMap.entrySet()) {
                     String key = entry.getKey();
@@ -324,150 +391,140 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (specList.isEmpty()) {
+                // If no specs available, hide the specs section entirely
                 if (specsTitle != null) specsTitle.setVisibility(android.view.View.GONE);
-                specsRecyclerView.setVisibility(android.view.View.GONE);
+                if (specsRecyclerView != null) specsRecyclerView.setVisibility(android.view.View.GONE);
             } else {
                 if (specsTitle != null) specsTitle.setVisibility(android.view.View.VISIBLE);
-                specsRecyclerView.setVisibility(android.view.View.VISIBLE);
+                if (specsRecyclerView != null) specsRecyclerView.setVisibility(android.view.View.VISIBLE);
                 specsRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
                 specsRecyclerView.setAdapter(new SpecAdapter(specList));
             }
         }
 
-        // Load descProductImage with Glide if available
-        if (descProductImage != null && !imageUrls.isEmpty()) {
-            Glide.with(this)
-                    .load(imageUrls.get(0))
-                    .placeholder(R.drawable.product_case)
-                    .into(descProductImage);
-        }
+        String categorySlug = null;
+        try {
+            Map<String, Object> categoryMap = (Map<String, Object>) productData.get("category");
+            if (categoryMap != null) {
+                categorySlug = (String) categoryMap.get("slug");
+            }
+        } catch (Exception ignored) {}
 
-        // Setup related products dynamically from API by category
+        loadRelatedProducts(categorySlug);
+        loadViewedProducts();
+
+        // Setup wishlist toggle for product detail
+        setupWishlistToggle(productData);
+    }
+
+    private void setupWishlistToggle(Map<String, Object> productData) {
+        if (btnFavorite == null || currentProductId == null) return;
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            boolean fav = AppDatabase.getInstance(this).wishlistDao().isFavorite(currentProductId);
+            runOnUiThread(() -> {
+                isFavorite = fav;
+                btnFavorite.setImageResource(fav ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
+                btnFavorite.setColorFilter(getResources().getColor(
+                        fav ? R.color.orange_primary : R.color.gray_text, getTheme()));
+            });
+        });
+
+        btnFavorite.setOnClickListener(v -> {
+            Executors.newSingleThreadExecutor().execute(() -> {
+                if (isFavorite) {
+                    AppDatabase.getInstance(this).wishlistDao().deleteByProductId(currentProductId);
+                } else {
+                    String n = (String) productData.get("name");
+                    double p = 0, op = 0;
+                    try { p = ((Number) productData.get("price")).doubleValue(); } catch (Exception ignored) {}
+                    try { op = ((Number) productData.get("old_price")).doubleValue(); } catch (Exception ignored) {}
+                    String img = "";
+                    try {
+                        List<String> imgs = (List<String>) productData.get("images");
+                        if (imgs != null && !imgs.isEmpty()) img = imgs.get(0);
+                    } catch (Exception ignored) {}
+                    AppDatabase.getInstance(this).wishlistDao().insert(
+                            new WishlistEntity(currentProductId, n, p, op, img));
+                }
+                isFavorite = !isFavorite;
+                runOnUiThread(() -> {
+                    btnFavorite.setImageResource(isFavorite ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
+                    btnFavorite.setColorFilter(getResources().getColor(
+                            isFavorite ? R.color.orange_primary : R.color.gray_text, getTheme()));
+                    android.widget.Toast.makeText(this,
+                            isFavorite ? getString(R.string.wishlist_added) : getString(R.string.wishlist_removed),
+                            android.widget.Toast.LENGTH_SHORT).show();
+                });
+            });
+        });
+    }
+
+    private void loadRelatedProducts(String categorySlug) {
         if (relatedRecyclerView != null) {
-            relatedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            
-            String categorySlug = "";
-            Object catObj = productData.get("category");
-            if (catObj instanceof Map) {
-                Object slugObj = ((Map<?, ?>) catObj).get("slug");
-                if (slugObj instanceof String) categorySlug = (String) slugObj;
-            }
-            if (categorySlug.isEmpty()) {
-                Object catIdObj = productData.get("category_id");
-                if (catIdObj instanceof String) categorySlug = (String) catIdObj;
-            }
-            
-            if (categorySlug.isEmpty()) categorySlug = "pc"; // fallback
-            
-            // Gọi API lấy danh sách sản phẩm cùng danh mục
-            ApiClient.getInstance(this).getApiService().getProductsByCategory(categorySlug, 1, 15).enqueue(new retrofit2.Callback<Map<String, Object>>() {
+            ApiClient.getInstance(this).getApiService().getProductsFiltered(1, 10, categorySlug, null, null, null, null, null, null).enqueue(new retrofit2.Callback<Map<String, Object>>() {
                 @Override
                 public void onResponse(retrofit2.Call<Map<String, Object>> call, retrofit2.Response<Map<String, Object>> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        try {
-                            List<Map<String, Object>> items = (List<Map<String, Object>>) response.body().get("items");
-                            if (items != null && items.size() > 0) {
-                                // Trộn (shuffle) để hiện ngẫu nhiên
-                                java.util.Collections.shuffle(items);
-                                // Lấy tối đa 5 sản phẩm
-                                List<Map<String, Object>> relatedItems = items.subList(0, Math.min(items.size(), 5));
-                                RelatedProductAdapter adapter = new RelatedProductAdapter(relatedItems);
-                                adapter.setOnProductClickListener(p -> openProductDetail(p));
-                                relatedRecyclerView.setAdapter(adapter);
-                                return;
-                            }
-                        } catch (Exception ignored) {}
+                        List<Map<String, Object>> items = (List<Map<String, Object>>) response.body().get("items");
+                        if (items != null) {
+                            relatedRecyclerView.setLayoutManager(new LinearLayoutManager(ProductDetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
+                            RelatedProductAdapter adapter = new RelatedProductAdapter(items);
+                            adapter.setOnProductClickListener(ProductDetailActivity.this::openProductDetail);
+                            relatedRecyclerView.setAdapter(adapter);
+                        }
                     }
                 }
                 @Override
                 public void onFailure(retrofit2.Call<Map<String, Object>> call, Throwable t) {}
             });
         }
-        
-        // Save current product to viewed history and load the viewed section
-        saveViewedProduct(productData);
-        loadViewedProducts((String) productData.get("_id"));
     }
 
-    private void saveViewedProduct(Map<String, Object> productData) {
-        if (productData == null || productData.get("_id") == null) return;
-        
-        android.content.SharedPreferences prefs = getSharedPreferences("aura_prefs", Context.MODE_PRIVATE);
-        com.google.gson.Gson gson = new com.google.gson.Gson();
+    private void saveToViewedProducts(Map<String, Object> product) {
+        SharedPreferences prefs = getSharedPreferences("aura_prefs", MODE_PRIVATE);
         String json = prefs.getString("viewed_products", "[]");
-        
-        java.lang.reflect.Type type = new com.google.gson.reflect.TypeToken<List<Map<String, Object>>>(){}.getType();
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
         List<Map<String, Object>> viewedList = gson.fromJson(json, type);
         if (viewedList == null) viewedList = new ArrayList<>();
-        
-        String currentId = (String) productData.get("_id");
-        
-        // Remove if already exists to move it to the front
-        for (int i = 0; i < viewedList.size(); i++) {
-            if (currentId.equals(viewedList.get(i).get("_id"))) {
-                viewedList.remove(i);
-                break;
-            }
-        }
-        
-        viewedList.add(0, productData);
+
+        // Remove if already exists to put it at the top
+        String newId = (String) product.get("_id");
+        viewedList.removeIf(p -> {
+            String id = (String) p.get("_id");
+            return id != null && id.equals(newId);
+        });
+
+        viewedList.add(0, product);
         if (viewedList.size() > 10) {
             viewedList = viewedList.subList(0, 10);
         }
-        
+
         prefs.edit().putString("viewed_products", gson.toJson(viewedList)).apply();
     }
-    
-    private void loadViewedProducts(String currentId) {
-        if (viewedRecyclerView == null || viewedSection == null) return;
-        
-        android.content.SharedPreferences prefs = getSharedPreferences("aura_prefs", Context.MODE_PRIVATE);
-        com.google.gson.Gson gson = new com.google.gson.Gson();
-        String json = prefs.getString("viewed_products", "[]");
-        
-        java.lang.reflect.Type type = new com.google.gson.reflect.TypeToken<List<Map<String, Object>>>(){}.getType();
-        List<Map<String, Object>> viewedList = gson.fromJson(json, type);
-        
-        if (viewedList == null) viewedList = new ArrayList<>();
-        
-        // Filter out current product so we don't show the one being viewed right now
-        List<Map<String, Object>> displayList = new ArrayList<>();
-        for (Map<String, Object> item : viewedList) {
-            if (!item.get("_id").equals(currentId)) {
-                displayList.add(item);
+
+    private void loadViewedProducts() {
+        if (viewedRecyclerView != null) {
+            SharedPreferences prefs = getSharedPreferences("aura_prefs", MODE_PRIVATE);
+            String json = prefs.getString("viewed_products", "[]");
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<Map<String, Object>>>() {}.getType();
+            List<Map<String, Object>> viewedList = gson.fromJson(json, type);
+
+            if (viewedList != null && !viewedList.isEmpty()) {
+                viewedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+                ViewedProductAdapter adapter = new ViewedProductAdapter(viewedList);
+                adapter.setOnProductClickListener(this::openProductDetail);
+                viewedRecyclerView.setAdapter(adapter);
             }
-        }
-        
-        if (displayList.isEmpty()) {
-            viewedSection.setVisibility(android.view.View.GONE);
-        } else {
-            viewedSection.setVisibility(android.view.View.VISIBLE);
-            viewedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            ViewedProductAdapter adapter = new ViewedProductAdapter(displayList);
-            adapter.setOnProductClickListener(p -> openProductDetail(p));
-            viewedRecyclerView.setAdapter(adapter);
         }
     }
 
     private void openProductDetail(Map<String, Object> product) {
-        android.content.Intent intent = new android.content.Intent(this, MainActivity.class);
-        String productId = "";
-        Object idObj = product.get("_id");
-        if (idObj instanceof String) {
-            productId = (String) idObj;
-        } else {
-            Object prodIdObj = product.get("product_id");
-            if (prodIdObj instanceof String) {
-                productId = (String) prodIdObj;
-            }
-        }
+        Intent intent = new Intent(this, ProductDetailActivity.class);
+        String productId = (String) product.get("_id");
         intent.putExtra("product_id", productId);
-        
-        Object nameObj = product.get("name");
-        if (nameObj instanceof String) {
-            intent.putExtra("product_name", (String) nameObj);
-        }
-        
         startActivity(intent);
     }
 
@@ -501,7 +558,7 @@ public class MainActivity extends AppCompatActivity {
             imageAdapter.setOnImageClickListener(imageUrl -> {
                 if (mainProductImage != null) {
                     mainProductImage.setAlpha(0f);
-                    Glide.with(this).load(imageUrl).placeholder(R.drawable.product_case).into(mainProductImage);
+                    Glide.with(this).load(imageUrl).placeholder(R.drawable.aura_laptop).into(mainProductImage);
                     mainProductImage.animate().alpha(1f).setDuration(300).start();
                 }
             });
@@ -511,36 +568,6 @@ public class MainActivity extends AppCompatActivity {
         if (specsRecyclerView != null) {
             specsRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
             specsRecyclerView.setAdapter(new SpecAdapter(product.getSpecs()));
-        }
-
-        if (relatedRecyclerView != null) {
-            relatedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            
-            // Convert MockData Product objects to Map<String, Object> for the updated adapter
-            List<Map<String, Object>> mockRelatedMaps = new ArrayList<>();
-            for (Product p : MockData.getRelatedProducts()) {
-                java.util.Map<String, Object> map = new java.util.HashMap<>();
-                map.put("name", p.getName());
-                try {
-                    String priceStr = p.getCurrentPrice().replace(".", "").replace("đ", "").trim();
-                    map.put("price", Double.parseDouble(priceStr));
-                } catch (Exception e) {
-                    map.put("price", 0.0);
-                }
-                List<String> imgs = new ArrayList<>();
-                if (p.getImages() != null && !p.getImages().isEmpty()) {
-                    imgs.add("android.resource://" + getPackageName() + "/" + p.getImages().get(0));
-                }
-                map.put("images", imgs);
-                mockRelatedMaps.add(map);
-            }
-            RelatedProductAdapter adapter = new RelatedProductAdapter(mockRelatedMaps);
-            adapter.setOnProductClickListener(p -> openProductDetail(p));
-            relatedRecyclerView.setAdapter(adapter);
-        }
-
-        if (viewedSection != null) {
-            viewedSection.setVisibility(android.view.View.GONE); // Hide viewed section in mock mode
         }
     }
 

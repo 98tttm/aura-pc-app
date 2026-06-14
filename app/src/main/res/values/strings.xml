@@ -340,53 +340,101 @@
     <string name="home_product_mouse_price">2.490.000đ</string>
     <string name="home_product_rating_one">4.8 (124)</string>
     <string name="home_product_rating_two">5.0 (89)</string>
-    <string name="home_view_all_chevron">Xem tất cả &gt;</string>
-    <string name="home_arrow_prev">&#8249;</string>
-    <string name="home_colon">:</string>
-    <string name="home_category_pc">PC</string>
-    <string name="home_category_gaming_gear">Gaming Gear</string>
-    <string name="home_category_chair">Bàn - Ghế</string>
-    <string name="home_category_components">Linh kiện</string>
-    <string name="home_category_accessory">Phụ kiện</string>
-    <string name="home_flash_deal">DEAL NGON</string>
-    <string name="home_flash_hot_sale">HOT SALE</string>
-    <string name="home_flash_date_one">05/06</string>
-    <string name="home_flash_date_two">06/06</string>
-    <string name="home_flash_date_three">07/06</string>
-    <string name="home_flash_countdown_label">BẮT ĐẦU SAU:</string>
-    <string name="home_flash_countdown_remaining_label">CÒN LẠI:</string>
-    <string name="home_flash_countdown_end_label">KẾT THÚC SAU:</string>
-    <string name="home_flash_hour">02</string>
-    <string name="home_flash_minute">45</string>
-    <string name="home_flash_second">12</string>
-    <string name="home_flash_stock">0/20 suất đã bán</string>
-    <string name="home_flash_stock_dynamic">%1$d/20 suất đã bán</string>
-    <string name="home_flash_terms">Chỉ áp dụng thanh toán online thành công - Mỗi SĐT chỉ được mua 1 sản phẩm cùng loại</string>
-    <string name="home_product_case_name">Case Hyte Y40 BlackWhite - ATX</string>
-    <string name="home_product_case_price">3.990.000đ</string>
-    <string name="home_product_case_old_price">5.490.000đ</string>
-    <string name="home_product_cpu_name">CPU AMD ATHLON 3000G SPK |3.5GHz|2 nhân 4 luồng|Radeon</string>
-    <string name="home_product_cpu_price">1.110.000đ</string>
-    <string name="home_product_cpu_old_price">5.490.000đ</string>
-    <string name="home_product_rating_short">5</string>
-    <string name="home_product_trend_badge">XU HƯỚNG</string>
-    <string name="home_component_section">Sắm thêm linh kiện chất lượng</string>
-    <string name="home_component_case">Case</string>
-    <string name="home_component_hdd">HDD</string>
-    <string name="home_component_psu">Nguồn</string>
-    <string name="home_component_fan">Quạt Case</string>
-    <string name="home_component_cooler">Tản nhiệt</string>
-    <string name="home_brand_asus">ASUS</string>
-    <string name="home_brand_dell">DELL</string>
-    <string name="home_brand_msi">msi</string>
-    <string name="home_brand_lenovo">Lenovo</string>
-    <string name="home_brand_acer">acer</string>
-    <string name="home_recently_viewed">Sản phẩm vừa xem</string>
-    <string name="home_product_gpu_name">Card đồ họa ASUS TUF Gaming RTX 4070 Ti</string>
-    <string name="home_product_gpu_price">24.590.000đ</string>
-    <string name="home_live_badge">LIVE</string>
-    <string name="home_video_views_one">12.5k</string>
-    <string name="home_video_views_two">5.8k</string>
+
+    <!-- ===================== Sổ địa chỉ (Address Book) ===================== -->
+    <string name="address_back">Quay lại</string>
+    <string name="address_book_title">Sổ địa chỉ</string>
+    <string name="address_empty_title">Bạn chưa có địa chỉ nào</string>
+    <string name="address_empty_subtitle">Thêm địa chỉ giao hàng để thanh toán nhanh hơn</string>
+    <string name="address_add_new">Thêm địa chỉ mới</string>
+    <string name="address_default">Mặc định</string>
+    <string name="address_set_default">Đặt mặc định</string>
+    <string name="address_set_default_done">Đã đặt làm địa chỉ mặc định</string>
+    <string name="address_edit">Sửa</string>
+    <string name="address_delete">Xóa</string>
+
+    <string name="address_add_title">Thêm địa chỉ mới</string>
+    <string name="address_edit_title">Sửa địa chỉ</string>
+    <string name="address_field_label">Loại địa chỉ</string>
+    <string name="address_field_fullname">Họ và tên *</string>
+    <string name="address_field_phone">Số điện thoại *</string>
+    <string name="address_field_city">Tỉnh / Thành phố *</string>
+    <string name="address_field_district">Quận / Huyện *</string>
+    <string name="address_field_ward">Phường / Xã *</string>
+    <string name="address_field_detail">Địa chỉ cụ thể *</string>
+    <string name="address_hint_fullname">Nhập họ tên người nhận</string>
+    <string name="address_hint_phone">Nhập số điện thoại</string>
+    <string name="address_hint_detail">Số nhà, tên đường…</string>
+    <string name="address_select_city">Chọn Tỉnh / Thành phố</string>
+    <string name="address_select_district">Chọn Quận / Huyện</string>
+    <string name="address_select_ward">Chọn Phường / Xã</string>
+    <string name="address_set_default_toggle">Đặt làm địa chỉ mặc định</string>
+    <string name="address_delete_this">Xóa địa chỉ</string>
+    <string name="address_save_add">Thêm</string>
+    <string name="address_save_update">Cập nhật</string>
+    <string name="address_cancel">Hủy</string>
+
+    <string name="address_delete_confirm_title">Xác nhận xóa</string>
+    <string name="address_delete_confirm_msg">Bạn có chắc chắn muốn xóa địa chỉ này khỏi sổ địa chỉ không?</string>
+
+    <string name="address_err_fullname">Vui lòng nhập họ tên.</string>
+    <string name="address_err_phone_empty">Vui lòng nhập số điện thoại.</string>
+    <string name="address_err_phone_invalid">Số điện thoại không hợp lệ (VD: 0912345678).</string>
+    <string name="address_err_city">Vui lòng chọn Tỉnh / Thành phố.</string>
+    <string name="address_err_district">Vui lòng chọn Quận / Huyện.</string>
+    <string name="address_err_ward">Vui lòng chọn Phường / Xã.</string>
+    <string name="address_err_detail">Vui lòng nhập địa chỉ cụ thể.</string>
+    <string name="address_location_error">Không tải được danh sách Tỉnh/Thành. Kiểm tra mạng.</string>
+
+    <string name="address_added">Đã thêm địa chỉ</string>
+    <string name="address_updated">Đã cập nhật địa chỉ</string>
+    <string name="address_deleted">Đã xóa địa chỉ</string>
+
+    <string-array name="address_label_options">
+        <item>Nhà riêng</item>
+        <item>Công ty</item>
+        <item>Khác</item>
+    </string-array>
+
+    <!-- Trang Cá nhân -->
+    <string name="profile_greeting">Xin chào 👋</string>
+    <string name="profile_section_account">Tài khoản của tôi</string>
+    <string name="profile_menu_info">Thông tin tài khoản</string>
+    <string name="profile_menu_info_sub">Họ tên, số điện thoại, email</string>
+    <string name="profile_menu_address">Quản lý sổ địa chỉ</string>
+    <string name="profile_menu_address_sub">Địa chỉ giao hàng của bạn</string>
+    <string name="profile_menu_orders">Đơn hàng của tôi</string>
+    <string name="profile_menu_orders_sub">Theo dõi &amp; lịch sử mua hàng</string>
+    <string name="profile_menu_wishlist">Sản phẩm yêu thích</string>
+    <string name="profile_menu_wishlist_sub">Danh sách đã lưu</string>
+    <string name="profile_logout">Đăng xuất</string>
+
+    <!-- MOB-018 — Wishlist -->
+    <string name="wishlist_title">Sản phẩm yêu thích</string>
+    <string name="wishlist_added">Đã thêm vào yêu thích</string>
+    <string name="wishlist_removed">Đã xoá khỏi yêu thích</string>
+    <string name="wishlist_empty_title">Chưa có sản phẩm yêu thích</string>
+    <string name="wishlist_empty_subtitle">Hãy khám phá và lưu lại những sản phẩm bạn quan tâm nhé!</string>
+    <string name="wishlist_explore">Khám phá sản phẩm</string>
+    <string name="wishlist_add_to_cart">Thêm vào giỏ</string>
+    <string name="wishlist_remove">Xoá</string>
+    <string name="cd_toggle_favorite">Yêu thích</string>
+
+    <!-- Hardcode cleanup — Toast / UI messages -->
+    <string name="toast_added_to_cart">Đã thêm vào giỏ hàng</string>
+    <string name="toast_coming_soon">Sắp ra mắt</string>
+    <string name="toast_connecting_consultant">Đang kết nối với tư vấn viên…</string>
+    <string name="toast_navigating_checkout">Đang chuyển đến trang thanh toán</string>
+    <string name="toast_nav_developing">Chức năng thanh điều hướng đang phát triển</string>
+    <string name="toast_order_confirmed">Đã xác nhận đơn hàng</string>
+    <string name="toast_menu_coming_soon">Tính năng sắp ra mắt</string>
+    <string name="error_load_data">Lỗi tải dữ liệu</string>
+    <string name="label_saving">Đang lưu…</string>
+    <string name="error_future_birthday">Ngày sinh không được là ngày trong tương lai</string>
+    <string name="label_redirecting_home">Đang chuyển bạn tới Trang chủ…</string>
+    <string name="label_default_rating">4.9</string>
 </resources>
+
+
 
 

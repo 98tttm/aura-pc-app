@@ -24,17 +24,33 @@ public interface ApiService {
     @POST("auth/verify-otp")
     Call<Map<String, Object>> verifyOtp(@Body Map<String, String> body);
 
+    @GET("categories")
+    Call<java.util.List<Map<String, Object>>> getCategories();
+
     @GET("products")
     Call<Map<String, Object>> getProducts();
 
-    @GET("categories")
-    Call<List<Map<String, Object>>> getCategories();
+    @GET("products/{id}")
+    Call<Map<String, Object>> getProductById(@Path("id") String id);
 
     @GET("products")
     Call<Map<String, Object>> getProductsByCategory(
             @Query("category") String categoryId,
             @Query("page") int page,
             @Query("limit") int limit
+    );
+
+    @GET("products")
+    Call<Map<String, Object>> getProductsFiltered(
+            @Query("page") int page,
+            @Query("limit") int limit,
+            @Query("category") String category,
+            @Query("brand") String brand,
+            @Query("minPrice") Double minPrice,
+            @Query("maxPrice") Double maxPrice,
+            @Query("minRating") Double minRating,
+            @Query("inStock") Boolean inStock,
+            @Query("sort") String sort
     );
 
     @GET("users/{id}")

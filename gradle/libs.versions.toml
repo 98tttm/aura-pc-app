@@ -20,6 +20,7 @@ biometric = "1.1.0"
 mpandroidchart = "3.1.0"
 
 glide = "4.16.0"
+paging = "3.3.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -44,6 +45,9 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 # Glide Image Loader
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+
+# Paging 3
+paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 
 # Lifecycle
 lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycle" }

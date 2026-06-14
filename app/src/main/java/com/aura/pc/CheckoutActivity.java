@@ -47,7 +47,7 @@ public class CheckoutActivity extends AppCompatActivity {
         View confirmOrder = findViewById(R.id.btnConfirmOrder);
         if (confirmOrder != null) {
             confirmOrder.setOnClickListener(v ->
-                    Toast.makeText(this, "Order confirmed", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(this, getString(R.string.toast_order_confirmed), Toast.LENGTH_SHORT).show());
         }
     }
 

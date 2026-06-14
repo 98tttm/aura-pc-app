@@ -20,7 +20,7 @@ import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.ui.categories.CategoriesActivity;
 import com.aura.pc.ui.products.AuraProductsActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
-import com.example.aura_pc_app.MainActivity;
+import com.aura.pc.ui.productdetail.ProductDetailActivity;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.adapter.HomeProductAdapter;
 import com.example.aura_pc_app.adapter.HomeSaleProductAdapter;
@@ -641,14 +641,8 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
     }
 
     private void setupCategoryStrip() {
-        int[] titles = {
-                R.string.category_laptop,
-                R.string.home_category_pc,
-                R.string.category_monitor,
-                R.string.home_category_gaming_gear,
-                R.string.home_category_chair,
-                R.string.home_category_components,
-                R.string.home_category_accessory
+        String[] titles = {
+                "Laptop", "PC", "Màn hình", "Linh kiện", "Khác", "Xem tất cả"
         };
         int[] icons = {
                 R.drawable.figma_cat_laptop,
@@ -729,7 +723,22 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
             if (icon != null) {
                 icon.setImageResource(icons[i]);
             }
-            item.setOnClickListener(v -> startActivity(new Intent(this, CategoriesActivity.class)));
+            String slug = null;
+            if (i == 0) slug = "laptop";
+            else if (i == 1) slug = "pc";
+            else if (i == 2) slug = "man-hinh";
+            else if (i == 3) slug = "linh-kien";
+
+            final String finalSlug = slug;
+            item.setOnClickListener(v -> {
+                if (finalSlug == null) {
+                    startActivity(new Intent(this, CategoriesActivity.class));
+                } else {
+                    Intent intent = new Intent(this, ProductListActivity.class);
+                    intent.putExtra("category", finalSlug);
+                    startActivity(intent);
+                }
+            });
         }
     }
 
@@ -757,7 +766,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
     }
 
     private void openProductDetail() {
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, ProductDetailActivity.class));
     }
 
     private void openCategoryProducts(String categoryId, String categoryName) {

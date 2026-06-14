@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.aura_pc_app.R;
-import com.example.aura_pc_app.domain.model.Product;
 
 import java.text.DecimalFormat;
 import java.util.List;

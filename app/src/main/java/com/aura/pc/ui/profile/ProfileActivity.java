@@ -13,7 +13,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.aura.pc.ui.cart.CartActivity;
+import com.aura.pc.ui.address.AddressBookActivity;
+import com.aura.pc.ui.wishlist.WishlistActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.api.ApiClient;
@@ -182,37 +183,30 @@ public class ProfileActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(userJson)) {
             return new HashMap<>();
         }
-        try {
-            Map<String, Object> user = GSON.fromJson(userJson, USER_MAP_TYPE);
-            return normalizeUserPhoneFields(user == null ? new HashMap<>() : user);
-        } catch (RuntimeException ignored) {
-            return new HashMap<>();
+
+        // Các mục khác (sẽ phát triển sau) — hiện thông báo nhẹ để không gây nhầm
+        setComingSoon(R.id.menuInfo);
+        setComingSoon(R.id.menuOrders);
+
+        // Mở "Sản phẩm yêu thích"
+        View menuWishlist = findViewById(R.id.menuWishlist);
+        if (menuWishlist != null) {
+            menuWishlist.setOnClickListener(v ->
+                    startActivity(new Intent(this, WishlistActivity.class)));
+        }
+
+        View logout = findViewById(R.id.btnLogout);
+        if (logout != null) {
+            logout.setOnClickListener(v ->
+                    Toast.makeText(this, getString(R.string.profile_logout), Toast.LENGTH_SHORT).show());
         }
     }
 
-    private void refreshUserFromApi(Map<String, Object> cachedUser) {
-        String cachedId = firstString(cachedUser, "_id", "id", "userId", "user_id");
-        ApiClient.getInstance(this).getApiService().getCurrentUser().enqueue(new Callback<Map<String, Object>>() {
-            @Override
-            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
-                Map<String, Object> user = extractUser(response.body());
-                if (!user.isEmpty()) {
-                    cacheAndBindUser(user);
-                    return;
-                }
-                refreshUserById(cachedId);
-            }
-
-            @Override
-            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
-                refreshUserById(cachedId);
-            }
-        });
-    }
-
-    private void refreshUserById(String userId) {
-        if (TextUtils.isEmpty(userId)) {
-            return;
+    private void setComingSoon(int id) {
+        View v = findViewById(id);
+        if (v != null) {
+            v.setOnClickListener(view ->
+                    Toast.makeText(this, getString(R.string.toast_coming_soon), Toast.LENGTH_SHORT).show());
         }
         ApiClient.getInstance(this).getApiService().getUserById(userId).enqueue(new Callback<Map<String, Object>>() {
             @Override

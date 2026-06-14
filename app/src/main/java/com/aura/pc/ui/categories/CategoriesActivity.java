@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.ui.products.AuraProductsActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
+import com.aura.pc.utils.CategoryMapping;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.api.ApiClient;
 import com.example.aura_pc_app.utils.LocaleManager;
@@ -104,7 +105,7 @@ public class CategoriesActivity extends AppCompatActivity {
                     Toast.makeText(this, R.string.msg_notifications_pending, Toast.LENGTH_SHORT).show());
         }
         if (search != null) {
-            search.setOnClickListener(v -> openProductList(selectedRoot));
+            search.setOnClickListener(v -> openProductList(null, null));
         }
         if (filter != null) {
             filter.setOnClickListener(v ->
@@ -148,75 +149,15 @@ public class CategoriesActivity extends AppCompatActivity {
         rootCategories.clear();
         childrenByParent.clear();
 
-        for (Map<String, Object> raw : rawItems) {
-            CategoryItem item = CategoryItem.from(raw);
-            if (item.categoryId.isEmpty() || item.name.isEmpty()) {
-                continue;
-            }
-            categories.add(item);
-            String parentKey = item.parentId == null ? "" : item.parentId;
-            List<CategoryItem> siblings = childrenByParent.get(parentKey);
-            if (siblings == null) {
-                siblings = new ArrayList<>();
-                childrenByParent.put(parentKey, siblings);
-            }
-            siblings.add(item);
-            if (item.parentId == null || item.parentId.isEmpty()) {
-                rootCategories.add(item);
-            }
-        }
-
-        sortRootCategories();
-        for (List<CategoryItem> siblings : childrenByParent.values()) {
-            Collections.sort(siblings, (a, b) -> a.name.compareToIgnoreCase(b.name));
-        }
-
-        selectedRoot = findById("laptop");
-        if (selectedRoot == null && !rootCategories.isEmpty()) {
-            selectedRoot = rootCategories.get(0);
-        }
-        renderAll();
-    }
-
-    private void showFallbackCategories() {
-        List<Map<String, Object>> fallback = new ArrayList<>();
-        fallback.add(mapCategory("laptop", null, "Laptop", 1));
-        fallback.add(mapCategory("pc", null, "PC", 1));
-        fallback.add(mapCategory("linh-kien", null, "Linh Kiện", 1));
-        fallback.add(mapCategory("phu-kien", null, "Phụ kiện", 1));
-        fallback.add(mapCategory("man-hinh", null, "Màn hình", 1));
-        fallback.add(mapCategory("gaming-gear", null, "Gaming gear", 1));
-        fallback.add(mapCategory("ban-ghe", null, "Bàn-Ghế", 1));
-        fallback.add(mapCategory("laptop-asus", "laptop", "ASUS", 2));
-        fallback.add(mapCategory("laptop-lenovo", "laptop", "LENOVO", 2));
-        fallback.add(mapCategory("laptop-gaming-ai", "laptop", "Laptop A.I", 2));
-        fallback.add(mapCategory("laptop-van-phong", "laptop", "Văn phòng", 2));
-        fallback.add(mapCategory("laptop-sinh-vien", "laptop", "SINH VIÊN", 2));
-        consumeCategories(fallback);
-    }
-
-    private Map<String, Object> mapCategory(String id, String parent, String name, int level) {
-        Map<String, Object> item = new HashMap<>();
-        item.put("category_id", id);
-        item.put("parent_id", parent);
-        item.put("name", name);
-        item.put("level", level);
-        return item;
-    }
-
-    private void renderAll() {
-        if (selectedRoot == null) return;
-        collectSelectedDescendants();
-        renderSidebar();
-        renderContent();
-        loadProductCount(selectedRoot.categoryId);
-    }
-
-    private void renderSidebar() {
-        if (sidebarList == null) return;
-        sidebarList.removeAllViews();
-        for (CategoryItem item : rootCategories) {
-            sidebarList.addView(createSidebarItem(item));
+            if (title != null) title.setText(item);
+            if (subtitle != null) subtitle.setText(R.string.category_item_cta);
+            if (icon != null) icon.setImageResource(getGroupIcon(selectedGroupIndex));
+            
+            String slug = generateSlug(item);
+            final String finalSlug = slug;
+            final String finalName = item;
+            tile.setOnClickListener(v -> openProductList(finalSlug, finalName));
+            grid.addView(tile);
         }
     }
 
@@ -308,14 +249,29 @@ public class CategoriesActivity extends AppCompatActivity {
         }
     }
 
-    private void renderStaticFilters() {
-        if (priceGrid != null) {
-            priceGrid.removeAllViews();
-            for (String label : Arrays.asList("Dưới 10tr", "10 - 15tr", "15 - 20tr", "20 - 30tr", "30 - 50tr", "Trên 50tr")) {
-                priceGrid.addView(createSmallButton(label, false,
-                        () -> openProductList(selectedRoot, AuraProductsActivity.FILTER_TYPE_PRICE, label, 0, 0)));
-            }
+    private String generateSlug(String text) {
+        if (text == null) return "";
+        String slug = CategoryMapping.getSlug(text);
+        if (slug != null) {
+            return slug;
         }
+        
+        // Fallback generator
+        slug = text.toLowerCase();
+        slug = java.text.Normalizer.normalize(slug, java.text.Normalizer.Form.NFD);
+        slug = slug.replaceAll("\\p{M}", "");
+        slug = slug.replaceAll("[^a-z0-9\\s-]", "");
+        slug = slug.trim().replaceAll("\\s+", "-");
+        return slug;
+    }
+
+    private void openProductList(String category, String categoryName) {
+        Intent intent = new Intent(this, ProductListActivity.class);
+        if (category != null) {
+            intent.putExtra("category", category);
+            intent.putExtra("categoryName", categoryName);
+        }
+        startActivity(intent);
     }
 
     private void renderNeeds() {
