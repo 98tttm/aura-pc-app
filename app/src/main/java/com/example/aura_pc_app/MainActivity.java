@@ -1,25 +1,30 @@
 package com.example.aura_pc_app;
 
 import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -51,6 +56,7 @@ import com.google.gson.JsonParser;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,6 +66,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int COLLAPSED_SPECS_COUNT = 6;
+    private static final int COLLAPSED_DESCRIPTION_LINES = 4;
+
     public static final String EXTRA_PRODUCT_ID = "extra_product_id";
     public static final String EXTRA_PRODUCT_INDEX = "extra_product_index";
     public static final String EXTRA_PRODUCT_NAME = "extra_product_name";
@@ -82,12 +91,23 @@ public class MainActivity extends AppCompatActivity {
     private TextView oldPrice;
     private TextView discountBadge;
     private TextView description;
-    private View specsTitle;
-    private View descriptionTitle;
-    private View descriptionImageCard;
+    private TextView specsExpandButton;
+    private TextView descriptionExpandButton;
     private View reviewsContent;
+    private View qaContent;
+    private TextView commentsCount;
+    private TextView commentsEmptyState;
+    private TextView newestCommentsFilter;
+    private TextView oldestCommentsFilter;
+    private LinearLayout commentsContainer;
     private View addToCart;
     private View buyNow;
+    private List<ProductSpec> fullSpecs = new ArrayList<>();
+    private final List<LocalComment> localComments = new ArrayList<>();
+    private boolean specsExpanded;
+    private boolean descriptionExpanded;
+    private boolean descriptionExpandable;
+    private boolean newestCommentsFirst = true;
     private DetailProduct selectedProduct;
     private AppRepository repository;
 
@@ -131,10 +151,15 @@ public class MainActivity extends AppCompatActivity {
         oldPrice = findViewById(R.id.oldPrice);
         discountBadge = findViewById(R.id.discountBadge);
         description = findViewById(R.id.productDescription);
-        specsTitle = findViewById(R.id.specsTitle);
-        descriptionTitle = findViewById(R.id.descriptionTitle);
-        descriptionImageCard = findViewById(R.id.descriptionImageCard);
+        specsExpandButton = findViewById(R.id.specsExpandButton);
+        descriptionExpandButton = findViewById(R.id.descriptionExpandButton);
         reviewsContent = findViewById(R.id.reviewsContent);
+        qaContent = findViewById(R.id.qaContent);
+        commentsCount = findViewById(R.id.commentsCount);
+        commentsEmptyState = findViewById(R.id.commentsEmptyState);
+        newestCommentsFilter = findViewById(R.id.newestCommentsFilter);
+        oldestCommentsFilter = findViewById(R.id.oldestCommentsFilter);
+        commentsContainer = findViewById(R.id.commentsContainer);
         oldPrice.setPaintFlags(oldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
         View actionOverlay = findViewById(R.id.actionOverlay);
@@ -146,9 +171,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupTabs() {
         TabLayout tabs = findViewById(R.id.productTabs);
-        tabs.addTab(tabs.newTab().setText(R.string.tab_specs));
-        tabs.addTab(tabs.newTab().setText(R.string.tab_description));
         tabs.addTab(tabs.newTab().setText(R.string.tab_reviews));
+        tabs.addTab(tabs.newTab().setText(R.string.tab_questions_answers));
         tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -167,14 +191,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showTab(int position) {
-        boolean showSpecs = position == 0;
-        boolean showDescription = position == 1;
-        specsTitle.setVisibility(showSpecs ? View.VISIBLE : View.GONE);
-        specs.setVisibility(showSpecs ? View.VISIBLE : View.GONE);
-        descriptionTitle.setVisibility(showDescription ? View.VISIBLE : View.GONE);
-        description.setVisibility(showDescription ? View.VISIBLE : View.GONE);
-        descriptionImageCard.setVisibility(showDescription ? View.VISIBLE : View.GONE);
-        reviewsContent.setVisibility(position == 2 ? View.VISIBLE : View.GONE);
+        reviewsContent.setVisibility(position == 0 ? View.VISIBLE : View.GONE);
+        qaContent.setVisibility(position == 1 ? View.VISIBLE : View.GONE);
     }
 
     private void setupActions() {
@@ -190,6 +208,24 @@ public class MainActivity extends AppCompatActivity {
         if (consult != null) {
             consult.setOnClickListener(v -> startActivity(new Intent(this, BlogActivity.class)));
         }
+        specsExpandButton.setOnClickListener(v -> {
+            specsExpanded = !specsExpanded;
+            bindSpecs();
+        });
+        descriptionExpandButton.setOnClickListener(v -> {
+            descriptionExpanded = !descriptionExpanded;
+            updateDescriptionState();
+        });
+        findViewById(R.id.sendCommentButton).setOnClickListener(v -> showCommentDialog());
+        newestCommentsFilter.setOnClickListener(v -> {
+            newestCommentsFirst = true;
+            renderComments();
+        });
+        oldestCommentsFilter.setOnClickListener(v -> {
+            newestCommentsFirst = false;
+            renderComments();
+        });
+        renderComments();
         addToCart.setOnClickListener(v -> addSelectedProductToCart());
         buyNow.setOnClickListener(v -> openCheckout());
     }
@@ -242,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
     private void bindProduct(DetailProduct product) {
         selectedProduct = product;
         productName.setText(product.name);
-        description.setText(product.description);
+        bindDescription(product.description);
         ratingText.setText("4.8");
         reviewCount.setText(getString(R.string.reviews_count_format, 0));
         stockText.setText(product.stock > 0
@@ -260,11 +296,115 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setupGallery(product.images);
-        specs.setLayoutManager(new GridLayoutManager(this, 2));
-        specs.setAdapter(new SpecAdapter(product.specs));
+        fullSpecs = product.specs == null ? new ArrayList<>() : new ArrayList<>(product.specs);
+        specsExpanded = false;
+        specs.setLayoutManager(new LinearLayoutManager(this));
+        bindSpecs();
         setupRelatedProducts(product);
         viewed.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         viewed.setAdapter(new ViewedProductAdapter(MockData.getViewedProducts()));
+    }
+
+    private void bindSpecs() {
+        int visibleCount = specsExpanded
+                ? fullSpecs.size() : Math.min(COLLAPSED_SPECS_COUNT, fullSpecs.size());
+        specs.setAdapter(new SpecAdapter(new ArrayList<>(fullSpecs.subList(0, visibleCount))));
+        specsExpandButton.setVisibility(
+                fullSpecs.size() > COLLAPSED_SPECS_COUNT ? View.VISIBLE : View.GONE);
+        specsExpandButton.setText(specsExpanded ? R.string.specs_collapse : R.string.specs_show_all);
+    }
+
+    private void bindDescription(String productDescription) {
+        description.setText(valueOrFallback(productDescription,
+                getString(R.string.product_description_missing)));
+        descriptionExpanded = false;
+        descriptionExpandable = false;
+        descriptionExpandButton.setVisibility(View.GONE);
+        updateDescriptionState();
+        description.post(() -> {
+            if (description.getLayout() == null || description.getLineCount() == 0) {
+                return;
+            }
+            int lastLine = description.getLineCount() - 1;
+            descriptionExpandable = description.getLayout().getEllipsisCount(lastLine) > 0;
+            descriptionExpandButton.setVisibility(descriptionExpandable ? View.VISIBLE : View.GONE);
+        });
+    }
+
+    private void updateDescriptionState() {
+        description.setMaxLines(descriptionExpanded
+                ? Integer.MAX_VALUE : COLLAPSED_DESCRIPTION_LINES);
+        description.setEllipsize(descriptionExpanded ? null : TextUtils.TruncateAt.END);
+        descriptionExpandButton.setText(descriptionExpanded
+                ? R.string.description_collapse : R.string.description_show_all);
+        if (descriptionExpandable) {
+            descriptionExpandButton.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void showCommentDialog() {
+        EditText input = new EditText(this);
+        int padding = (int) (16 * getResources().getDisplayMetrics().density);
+        input.setPadding(padding, padding, padding, padding);
+        input.setHint(R.string.comment_input_hint);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        input.setMinLines(3);
+        input.setMaxLines(6);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.send_comment)
+                .setView(input)
+                .setNegativeButton(R.string.comment_cancel, null)
+                .setPositiveButton(R.string.comment_send, null)
+                .create();
+        dialog.setOnShowListener(ignored -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(v -> {
+                    String content = input.getText().toString().trim();
+                    if (content.isEmpty()) {
+                        input.setError(getString(R.string.comment_content_required));
+                        return;
+                    }
+                    long now = System.currentTimeMillis();
+                    long createdAt = localComments.isEmpty()
+                            ? now : Math.max(now, localComments.get(localComments.size() - 1).createdAt + 1);
+                    localComments.add(new LocalComment(content, createdAt));
+                    newestCommentsFirst = true;
+                    renderComments();
+                    dialog.dismiss();
+                }));
+        dialog.show();
+    }
+
+    private void renderComments() {
+        commentsCount.setText(getString(R.string.comments_count_format, localComments.size()));
+        commentsEmptyState.setVisibility(localComments.isEmpty() ? View.VISIBLE : View.GONE);
+        commentsContainer.removeAllViews();
+
+        List<LocalComment> sortedComments = new ArrayList<>(localComments);
+        Comparator<LocalComment> byCreatedAt = Comparator.comparingLong(comment -> comment.createdAt);
+        sortedComments.sort(newestCommentsFirst ? byCreatedAt.reversed() : byCreatedAt);
+        for (LocalComment comment : sortedComments) {
+            View item = getLayoutInflater().inflate(
+                    R.layout.item_local_comment, commentsContainer, false);
+            ((TextView) item.findViewById(R.id.commentAuthor))
+                    .setText(R.string.comment_customer_name);
+            ((TextView) item.findViewById(R.id.commentTime)).setText(R.string.comment_just_now);
+            ((TextView) item.findViewById(R.id.commentBody)).setText(comment.content);
+            commentsContainer.addView(item);
+        }
+        updateCommentFilterStyles();
+    }
+
+    private void updateCommentFilterStyles() {
+        newestCommentsFilter.setBackgroundResource(
+                newestCommentsFirst ? R.drawable.bg_chip_active : R.drawable.bg_chip_default);
+        oldestCommentsFilter.setBackgroundResource(
+                newestCommentsFirst ? R.drawable.bg_chip_default : R.drawable.bg_chip_active);
+        newestCommentsFilter.setTextColor(ContextCompat.getColor(this,
+                newestCommentsFirst ? R.color.white : R.color.text_gray_label));
+        oldestCommentsFilter.setTextColor(ContextCompat.getColor(this,
+                newestCommentsFirst ? R.color.text_gray_label : R.color.white));
     }
 
     private void setupGallery(List<String> images) {
@@ -384,8 +524,7 @@ public class MainActivity extends AppCompatActivity {
         DetailProduct detail = new DetailProduct();
         detail.id = valueOrFallback(readString(map, "_id", "id", "productId"), "product-fallback");
         detail.name = valueOrFallback(readString(map, "name", "title"), getString(R.string.product_name_placeholder));
-        detail.description = valueOrFallback(readString(map, "description"),
-                getString(R.string.product_description_missing));
+        String apiDescription = readString(map, "description");
         detail.price = readDouble(map, "price", "originalPrice");
         detail.salePrice = readDouble(map, "salePrice", "sale_price", "currentPrice");
         double oldPriceValue = readDouble(map, "old_price");
@@ -399,7 +538,70 @@ public class MainActivity extends AppCompatActivity {
         detail.categoryId = readString(map, "category_id", "categoryId", "category");
         detail.images = parseImages(map.get("images"));
         detail.specs = parseSpecs(map.get("specs"));
+        detail.description = resolveProductDescription(apiDescription, detail);
         return detail;
+    }
+
+    private String resolveProductDescription(String apiDescription, DetailProduct product) {
+        if (apiDescription != null && !apiDescription.trim().isEmpty()) {
+            return apiDescription.trim();
+        }
+
+        Product mock = MockData.getDetailProduct();
+        if (mock != null && sameProductName(product.name, mock.getName())
+                && mock.getDescription() != null && !mock.getDescription().trim().isEmpty()) {
+            return mock.getDescription().trim();
+        }
+
+        String audience = productAudience(product);
+        String specsSummary = buildSpecsSummary(product.specs);
+        if (specsSummary.isEmpty()) {
+            specsSummary = getString(R.string.product_description_general_highlight);
+        }
+        return getString(R.string.product_description_generated, product.name, audience, specsSummary);
+    }
+
+    private boolean sameProductName(String first, String second) {
+        return first != null && second != null && first.trim().equalsIgnoreCase(second.trim());
+    }
+
+    private String productAudience(DetailProduct product) {
+        String searchable = (product.name + " " + valueOrFallback(product.categoryId, "")
+                + " " + buildSpecsSummary(product.specs)).toLowerCase(Locale.ROOT);
+        if (searchable.contains("gaming") || searchable.contains("rtx")
+                || searchable.contains("vga") || searchable.contains("gpu")) {
+            return getString(R.string.product_audience_gaming);
+        }
+        if (searchable.contains("workstation") || searchable.contains("xeon")
+                || searchable.contains("threadripper")) {
+            return getString(R.string.product_audience_workstation);
+        }
+        if (searchable.contains("creator") || searchable.contains("đồ họa")
+                || searchable.contains("graphics")) {
+            return getString(R.string.product_audience_creative);
+        }
+        return getString(R.string.product_audience_general);
+    }
+
+    private String buildSpecsSummary(List<ProductSpec> productSpecs) {
+        if (productSpecs == null || productSpecs.isEmpty()) {
+            return "";
+        }
+        StringBuilder summary = new StringBuilder();
+        for (ProductSpec spec : productSpecs) {
+            if (spec == null || spec.getLabel() == null || spec.getValue() == null
+                    || spec.getValue().trim().isEmpty()) {
+                continue;
+            }
+            if (summary.length() > 0) {
+                summary.append(", ");
+            }
+            summary.append(spec.getLabel()).append(": ").append(spec.getValue());
+            if (summary.length() >= 120) {
+                break;
+            }
+        }
+        return summary.toString();
     }
 
     private ProductEntity toEntity(Map<String, Object> map) {
@@ -611,5 +813,15 @@ public class MainActivity extends AppCompatActivity {
         int stock;
         List<String> images = new ArrayList<>();
         List<ProductSpec> specs = new ArrayList<>();
+    }
+
+    private static class LocalComment {
+        final String content;
+        final long createdAt;
+
+        LocalComment(String content, long createdAt) {
+            this.content = content;
+            this.createdAt = createdAt;
+        }
     }
 }

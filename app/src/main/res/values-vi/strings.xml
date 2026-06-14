@@ -133,6 +133,34 @@
     <string name="product_name_placeholder">Aura Nova X9 - Hiệu năng vô cực</string>
     <string name="product_description_placeholder">Aura Nova X9 là cỗ máy trạm được thiết kế dành cho các nhà sáng tạo nội dung chuyên nghiệp và game thủ đam mê cấu hình khủng. Với khả năng xử lý đồ họa mạnh mẽ...</string>
     <string name="consult_text">Tư vấn</string>
+    <string name="specs_show_all">Xem tất cả</string>
+    <string name="specs_collapse">Thu gọn</string>
+    <string name="specs_table_label_header">Thông số</string>
+    <string name="specs_table_detail_header">Chi tiết</string>
+    <string name="description_show_all">Xem tất cả</string>
+    <string name="description_collapse">Thu gọn</string>
+    <string name="tab_reviews">Đánh giá</string>
+    <string name="tab_questions_answers">Bình luận - Hỏi đáp</string>
+    <string name="questions_answers_title">Bình luận - Hỏi đáp</string>
+    <string name="comments_count_zero">0 bình luận</string>
+    <string name="send_comment">Gửi bình luận</string>
+    <string name="newest">Mới nhất</string>
+    <string name="oldest">Cũ nhất</string>
+    <string name="comments_empty_state">Chưa có bình luận nào cho sản phẩm này.</string>
+    <string name="comments_coming_soon">Tính năng bình luận sẽ được cập nhật sau.</string>
+    <string name="comments_count_format">%1$d bình luận</string>
+    <string name="comment_input_hint">Nhập nội dung bình luận</string>
+    <string name="comment_cancel">Hủy</string>
+    <string name="comment_send">Gửi</string>
+    <string name="comment_content_required">Vui lòng nhập nội dung bình luận.</string>
+    <string name="comment_customer_name">Khách hàng AuraPC</string>
+    <string name="comment_just_now">Vừa xong</string>
+    <string name="product_description_generated">%1$s là lựa chọn đáng cân nhắc dành cho %2$s. Cấu hình nổi bật gồm %3$s, giúp sản phẩm đáp ứng ổn định các tác vụ hằng ngày và duy trì hiệu năng tốt khi làm việc trong thời gian dài. Thiết kế thực dụng cùng khả năng kết nối linh hoạt giúp sản phẩm dễ dàng phù hợp với nhiều không gian sử dụng.</string>
+    <string name="product_description_general_highlight">cấu hình cân bằng và khả năng vận hành ổn định</string>
+    <string name="product_audience_gaming">nhu cầu gaming, giải trí và xử lý đồ họa hiệu năng cao</string>
+    <string name="product_audience_workstation">công việc workstation, dựng hình và xử lý tác vụ chuyên nghiệp</string>
+    <string name="product_audience_creative">sáng tạo nội dung, thiết kế và xử lý đồ họa</string>
+    <string name="product_audience_general">học tập, làm việc và giải trí hằng ngày</string>
 
     <!-- Network & Auth -->
     <string name="error_network">Không thể kết nối mạng. Vui lòng kiểm tra kết nối.</string>
