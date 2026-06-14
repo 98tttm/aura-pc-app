@@ -13,6 +13,8 @@
     <color name="gray_border">#F0F0F0</color>
     <color name="divider">#EEEEEE</color>
     <color name="star_yellow">#FF6B00</color>
+    <color name="review_star_selected">#FFFFBE3D</color>
+    <color name="review_star_unselected">#FFE4E4E4</color>
     <color name="price_color">#C85A00</color>
     <color name="glass_white">#CCFFFFFF</color>
     <color name="discount_bg">#FDEBEC</color>

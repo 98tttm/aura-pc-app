@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,13 +34,18 @@ import com.bumptech.glide.Glide;
 import com.example.aura_pc_app.adapter.ProductGalleryPagerAdapter;
 import com.example.aura_pc_app.adapter.ProductImageAdapter;
 import com.example.aura_pc_app.adapter.RelatedProductEntityAdapter;
+import com.example.aura_pc_app.adapter.ReviewAdapter;
 import com.example.aura_pc_app.adapter.SpecAdapter;
 import com.example.aura_pc_app.adapter.ViewedProductAdapter;
 import com.example.aura_pc_app.data.api.ApiClient;
+import com.example.aura_pc_app.data.api.TokenManager;
 import com.example.aura_pc_app.data.db.entity.ProductEntity;
 import com.example.aura_pc_app.data.repository.AppRepository;
+import com.example.aura_pc_app.data.repository.MockReviewRepository;
 import com.example.aura_pc_app.domain.model.Product;
 import com.example.aura_pc_app.domain.model.ProductSpec;
+import com.example.aura_pc_app.domain.model.Review;
+import com.example.aura_pc_app.domain.repository.ReviewRepository;
 import com.example.aura_pc_app.domain.repository.mock.MockData;
 import com.example.aura_pc_app.utils.LocaleManager;
 import com.github.chrisbanes.photoview.PhotoView;
@@ -68,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private final Gson gson = new Gson();
     private final NumberFormat currency = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
     private final List<ProductEntity> availableProducts = new ArrayList<>();
+    private final List<Review> allReviews = new ArrayList<>();
 
     private RecyclerView thumbnails;
     private RecyclerView specs;
@@ -76,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager2 gallery;
     private TextView productName;
     private TextView ratingText;
+    private RatingBar productRatingStars;
     private TextView stockText;
     private TextView reviewCount;
     private TextView currentPrice;
@@ -86,10 +95,20 @@ public class MainActivity extends AppCompatActivity {
     private View descriptionTitle;
     private View descriptionImageCard;
     private View reviewsContent;
+    private TextView reviewOverallRating;
+    private RatingBar reviewOverallStars;
+    private TextView reviewOverallCount;
+    private TextView reviewEligibilityMessage;
+    private TextView reviewEmptyMessage;
+    private RecyclerView reviewsRecycler;
+    private View writeReviewButton;
+    private View viewAllReviewsButton;
     private View addToCart;
     private View buyNow;
     private DetailProduct selectedProduct;
     private AppRepository repository;
+    private ReviewRepository reviewRepository;
+    private ReviewAdapter reviewAdapter;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -102,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         repository = new AppRepository(getApplication(), ApiClient.getInstance(this).getApiService());
+        reviewRepository = MockReviewRepository.getInstance();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (view, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -110,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         initViews();
+        setupReviewSection();
         setupTabs();
         BottomNavigationHelper.setup(this, BottomNavigationHelper.TAB_HOME);
         BottomNavigationHelper.setupHeader(this);
@@ -125,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         viewed = findViewById(R.id.viewedRecyclerView);
         productName = findViewById(R.id.productName);
         ratingText = findViewById(R.id.ratingText);
+        productRatingStars = findViewById(R.id.productRatingStars);
         stockText = findViewById(R.id.soldCount);
         reviewCount = findViewById(R.id.reviewCount);
         currentPrice = findViewById(R.id.currentPrice);
@@ -135,6 +157,14 @@ public class MainActivity extends AppCompatActivity {
         descriptionTitle = findViewById(R.id.descriptionTitle);
         descriptionImageCard = findViewById(R.id.descriptionImageCard);
         reviewsContent = findViewById(R.id.reviewsContent);
+        reviewOverallRating = findViewById(R.id.reviewOverallRating);
+        reviewOverallStars = findViewById(R.id.reviewOverallStars);
+        reviewOverallCount = findViewById(R.id.reviewOverallCount);
+        reviewEligibilityMessage = findViewById(R.id.reviewEligibilityMessage);
+        reviewEmptyMessage = findViewById(R.id.reviewEmptyMessage);
+        reviewsRecycler = findViewById(R.id.reviewsRecyclerView);
+        writeReviewButton = findViewById(R.id.btnWriteReview);
+        viewAllReviewsButton = findViewById(R.id.btnViewAllReviews);
         oldPrice.setPaintFlags(oldPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
         View actionOverlay = findViewById(R.id.actionOverlay);
@@ -142,6 +172,25 @@ public class MainActivity extends AppCompatActivity {
                 : actionOverlay.findViewById(R.id.btnAddToCart);
         buyNow = actionOverlay == null ? findViewById(R.id.btnBuyNow)
                 : actionOverlay.findViewById(R.id.btnBuyNow);
+    }
+
+    private void setupReviewSection() {
+        reviewAdapter = new ReviewAdapter();
+        reviewsRecycler.setLayoutManager(new LinearLayoutManager(this));
+        reviewsRecycler.setAdapter(reviewAdapter);
+        reviewsRecycler.setNestedScrollingEnabled(false);
+
+        writeReviewButton.setOnClickListener(v -> openWriteReviewActivity());
+        viewAllReviewsButton.setOnClickListener(v -> openReviewList());
+        updateReviewEligibility();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (selectedProduct != null && reviewRepository != null) {
+            loadReviews(selectedProduct.id);
+        }
     }
 
     private void setupTabs() {
@@ -243,8 +292,6 @@ public class MainActivity extends AppCompatActivity {
         selectedProduct = product;
         productName.setText(product.name);
         description.setText(product.description);
-        ratingText.setText("4.8");
-        reviewCount.setText(getString(R.string.reviews_count_format, 0));
         stockText.setText(product.stock > 0
                 ? getString(R.string.product_stock_format, product.stock)
                 : getString(R.string.product_out_of_stock));
@@ -265,6 +312,104 @@ public class MainActivity extends AppCompatActivity {
         setupRelatedProducts(product);
         viewed.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         viewed.setAdapter(new ViewedProductAdapter(MockData.getViewedProducts()));
+        loadReviews(product.id);
+    }
+
+    private void loadReviews(String productId) {
+        allReviews.clear();
+        allReviews.addAll(reviewRepository.getReviews(productId));
+        updateReviewSummary();
+        updateReviewEligibility();
+        renderReviews();
+    }
+
+    private void updateReviewSummary() {
+        double average = 0;
+        for (Review review : allReviews) {
+            average += review.getRating();
+        }
+        if (!allReviews.isEmpty()) {
+            average /= allReviews.size();
+        }
+        String ratingValue = String.format(Locale.US, "%.1f", average);
+        reviewOverallRating.setText(getString(R.string.review_rating_out_of_five, ratingValue));
+        reviewOverallStars.setRating((float) average);
+        productRatingStars.setRating((float) average);
+        reviewOverallCount.setText(getString(R.string.review_total_count, allReviews.size()));
+        ratingText.setText(ratingValue);
+        reviewCount.setText(getString(R.string.reviews_count_format, allReviews.size()));
+    }
+
+    private void renderReviews() {
+        List<Review> visibleReviews = new ArrayList<>(allReviews);
+        visibleReviews.sort((first, second) ->
+                Long.compare(second.getCreatedAt(), first.getCreatedAt()));
+        if (visibleReviews.size() > 2) {
+            visibleReviews = new ArrayList<>(visibleReviews.subList(0, 2));
+        }
+
+        reviewAdapter.submitList(visibleReviews);
+        reviewsRecycler.setVisibility(visibleReviews.isEmpty() ? View.GONE : View.VISIBLE);
+        reviewEmptyMessage.setVisibility(visibleReviews.isEmpty() ? View.VISIBLE : View.GONE);
+        reviewEmptyMessage.setText(allReviews.isEmpty()
+                ? R.string.review_empty : R.string.review_no_images);
+    }
+
+    private void openReviewList() {
+        if (selectedProduct == null) {
+            return;
+        }
+        Intent intent = new Intent(this, ReviewListActivity.class);
+        intent.putExtra(ReviewListActivity.EXTRA_PRODUCT_ID, selectedProduct.id);
+        intent.putExtra(ReviewListActivity.EXTRA_PRODUCT_NAME, selectedProduct.name);
+        startActivity(intent);
+    }
+
+    private void openWriteReviewActivity() {
+        if (!TokenManager.getInstance(this).isLoggedIn()) {
+            Toast.makeText(this, R.string.review_login_required, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (selectedProduct == null
+                || !reviewRepository.isDeliveredPurchaseEligible(selectedProduct.id)) {
+            Toast.makeText(this, R.string.review_delivery_required, Toast.LENGTH_LONG).show();
+            return;
+        }
+        Intent intent = new Intent(this, WriteReviewActivity.class);
+        intent.putExtra(WriteReviewActivity.EXTRA_PRODUCT_ID, selectedProduct.id);
+        intent.putExtra(WriteReviewActivity.EXTRA_PRODUCT_NAME, selectedProduct.name);
+        if (!selectedProduct.images.isEmpty()) {
+            intent.putExtra(WriteReviewActivity.EXTRA_PRODUCT_IMAGE, selectedProduct.images.get(0));
+        }
+        StringBuilder specs = new StringBuilder();
+        for (int i = 0; i < Math.min(3, selectedProduct.specs.size()); i++) {
+            if (specs.length() > 0) {
+                specs.append(" • ");
+            }
+            specs.append(selectedProduct.specs.get(i).getValue());
+        }
+        intent.putExtra(WriteReviewActivity.EXTRA_PRODUCT_SPECS, specs.toString());
+        startActivity(intent);
+    }
+
+    private void updateReviewEligibility() {
+        if (writeReviewButton == null || reviewEligibilityMessage == null) {
+            return;
+        }
+        boolean loggedIn = TokenManager.getInstance(this).isLoggedIn();
+        boolean eligible = selectedProduct != null
+                && reviewRepository.isDeliveredPurchaseEligible(selectedProduct.id);
+        // Keep the CTA clickable so the click handler can explain why writing is unavailable.
+        writeReviewButton.setEnabled(true);
+        if (!loggedIn) {
+            reviewEligibilityMessage.setText(R.string.review_login_required);
+            reviewEligibilityMessage.setVisibility(View.VISIBLE);
+        } else if (!eligible) {
+            reviewEligibilityMessage.setText(R.string.review_delivery_required);
+            reviewEligibilityMessage.setVisibility(View.VISIBLE);
+        } else {
+            reviewEligibilityMessage.setVisibility(View.GONE);
+        }
     }
 
     private void setupGallery(List<String> images) {
@@ -612,4 +757,5 @@ public class MainActivity extends AppCompatActivity {
         List<String> images = new ArrayList<>();
         List<ProductSpec> specs = new ArrayList<>();
     }
+
 }

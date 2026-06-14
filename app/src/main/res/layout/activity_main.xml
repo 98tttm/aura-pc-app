@@ -113,35 +113,16 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@android:drawable/btn_star_big_on"
-                        app:tint="@color/star_yellow" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@android:drawable/btn_star_big_on"
-                        app:tint="@color/star_yellow" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@android:drawable/btn_star_big_on"
-                        app:tint="@color/star_yellow" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@android:drawable/btn_star_big_on"
-                        app:tint="@color/star_yellow" />
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@android:drawable/btn_star_big_on"
-                        app:tint="@color/star_yellow" />
+                    <RatingBar
+                        android:id="@+id/productRatingStars"
+                        style="?android:attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:progressTint="@color/star_yellow"
+                        android:rating="0"
+                        android:stepSize="0.1" />
 
                     <TextView
                         android:id="@+id/ratingText"
@@ -296,18 +277,10 @@
                         android:src="@drawable/product_case" />
                 </androidx.cardview.widget.CardView>
 
-                <TextView
-                    android:id="@+id/reviewsContent"
+                <include
+                    layout="@layout/view_product_reviews"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:background="@drawable/bg_spec_card"
-                    android:gravity="center"
-                    android:padding="24dp"
-                    android:text="@string/product_reviews_placeholder"
-                    android:textColor="@color/text_gray_label"
-                    android:textSize="14sp"
-                    android:visibility="gone" />
+                    android:layout_height="wrap_content" />
 
                 <!-- SECTION 1: CÓ THỂ BẠN THÍCH -->
                 <RelativeLayout

@@ -20,6 +20,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Aura_pc_app">
         <activity android:name=".MainActivity" />
+        <activity android:name=".ReviewListActivity" />
+        <activity
+            android:name=".WriteReviewActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.auth.AuthActivity"
             android:exported="true"
