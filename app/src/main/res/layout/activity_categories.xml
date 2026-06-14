@@ -370,6 +370,7 @@
         app:tint="@color/aura_white" />
 
     <include
+        android:id="@+id/navBottomBar"
         layout="@layout/view_bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="82dp"
