@@ -54,7 +54,9 @@ public class CategoriesActivity extends AppCompatActivity {
     private LinearLayout seriesList;
     private LinearLayout cpuChipRow;
     private GridLayout gpuChipGrid;
+    private TextView moreBrandsButton;
     private ProgressBar loadingProgress;
+    private boolean showAllBrands;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -83,6 +85,7 @@ public class CategoriesActivity extends AppCompatActivity {
         seriesList = findViewById(R.id.categorySeriesList);
         cpuChipRow = findViewById(R.id.categoryCpuChipRow);
         gpuChipGrid = findViewById(R.id.categoryGpuChipGrid);
+        moreBrandsButton = findViewById(R.id.categoryMoreBrandsButton);
         loadingProgress = findViewById(R.id.categoryLoadingProgress);
     }
 
@@ -109,6 +112,12 @@ public class CategoriesActivity extends AppCompatActivity {
         }
         if (viewAll != null) {
             viewAll.setOnClickListener(v -> openProductList(selectedRoot));
+        }
+        if (moreBrandsButton != null) {
+            moreBrandsButton.setOnClickListener(v -> {
+                showAllBrands = true;
+                renderBrandGrid();
+            });
         }
     }
 
@@ -222,6 +231,7 @@ public class CategoriesActivity extends AppCompatActivity {
         container.setFocusable(true);
         container.setOnClickListener(v -> {
             selectedRoot = item;
+            showAllBrands = false;
             renderAll();
         });
 
@@ -280,7 +290,7 @@ public class CategoriesActivity extends AppCompatActivity {
         List<CategoryItem> directChildren = childrenOf(selectedRoot.categoryId);
         List<CategoryItem> brands = new ArrayList<>();
         for (CategoryItem child : directChildren) {
-            if (brands.size() >= 6) break;
+            if (!showAllBrands && brands.size() >= 6) break;
             brands.add(child);
         }
         if (brands.isEmpty()) {
@@ -289,13 +299,21 @@ public class CategoriesActivity extends AppCompatActivity {
         for (CategoryItem brand : brands) {
             brandGrid.addView(createSmallButton(brand.name, false, () -> openProductList(brand)));
         }
+        int hiddenCount = Math.max(0, directChildren.size() - brands.size());
+        if (moreBrandsButton != null) {
+            moreBrandsButton.setVisibility(hiddenCount > 0 ? View.VISIBLE : View.GONE);
+            if (hiddenCount > 0) {
+                moreBrandsButton.setText(getString(R.string.category_more_brands_dynamic, hiddenCount));
+            }
+        }
     }
 
     private void renderStaticFilters() {
         if (priceGrid != null) {
             priceGrid.removeAllViews();
             for (String label : Arrays.asList("Dưới 10tr", "10 - 15tr", "15 - 20tr", "20 - 30tr", "30 - 50tr", "Trên 50tr")) {
-                priceGrid.addView(createSmallButton(label, false, () -> openProductList(selectedRoot)));
+                priceGrid.addView(createSmallButton(label, false,
+                        () -> openProductList(selectedRoot, AuraProductsActivity.FILTER_TYPE_PRICE, label, 0, 0)));
             }
         }
     }
@@ -347,13 +365,15 @@ public class CategoriesActivity extends AppCompatActivity {
         if (cpuChipRow != null) {
             cpuChipRow.removeAllViews();
             for (String label : Arrays.asList("Intel Core i9", "Intel Ultra 7", "Ryzen AI 9", "Apple M3 Pro")) {
-                cpuChipRow.addView(createPillChip(label, false, () -> openProductList(selectedRoot)));
+                cpuChipRow.addView(createPillChip(label, false,
+                        () -> openProductList(selectedRoot, AuraProductsActivity.FILTER_TYPE_FEATURE, label, 0, 0)));
             }
         }
         if (gpuChipGrid != null) {
             gpuChipGrid.removeAllViews();
             for (String label : Arrays.asList("RTX 4090", "RTX 4080", "RTX 4070 Ti", "RX 7900 XTX")) {
-                gpuChipGrid.addView(createSmallButton(label, true, () -> openProductList(selectedRoot)));
+                gpuChipGrid.addView(createSmallButton(label, true,
+                        () -> openProductList(selectedRoot, AuraProductsActivity.FILTER_TYPE_FEATURE, label, 0, 0)));
             }
         }
     }
@@ -390,7 +410,7 @@ public class CategoriesActivity extends AppCompatActivity {
         card.setClickable(true);
         card.setFocusable(true);
         card.setPadding(dpToPx(5), dpToPx(5), dpToPx(5), dpToPx(5));
-        card.setOnClickListener(v -> openProductList(target));
+        card.setOnClickListener(v -> openProductList(target, AuraProductsActivity.FILTER_TYPE_FEATURE, label, 0, 0));
 
         GridLayout.LayoutParams params = new GridLayout.LayoutParams();
         params.width = 0;
@@ -520,10 +540,18 @@ public class CategoriesActivity extends AppCompatActivity {
     }
 
     private void openProductList(CategoryItem item) {
+        openProductList(item, "", "", 0, 0);
+    }
+
+    private void openProductList(CategoryItem item, String filterType, String filterLabel, double minPrice, double maxPrice) {
         if (item == null) return;
         Intent intent = new Intent(this, AuraProductsActivity.class);
         intent.putExtra(AuraProductsActivity.EXTRA_CATEGORY_ID, item.categoryId);
         intent.putExtra(AuraProductsActivity.EXTRA_CATEGORY_NAME, item.name);
+        intent.putExtra(AuraProductsActivity.EXTRA_SELECTED_FILTER_TYPE, filterType);
+        intent.putExtra(AuraProductsActivity.EXTRA_SELECTED_FILTER_LABEL, filterLabel);
+        intent.putExtra(AuraProductsActivity.EXTRA_PRICE_MIN, minPrice);
+        intent.putExtra(AuraProductsActivity.EXTRA_PRICE_MAX, maxPrice);
         startActivity(intent);
     }
 

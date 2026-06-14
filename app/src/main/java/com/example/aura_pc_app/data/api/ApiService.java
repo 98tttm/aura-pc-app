@@ -29,6 +29,12 @@ public interface ApiService {
     @GET("users/{id}")
     Call<Map<String, Object>> getUserById(@Path("id") int id);
 
+    @GET("users/{id}")
+    Call<Map<String, Object>> getUserById(@Path("id") String id);
+
+    @GET("users/me")
+    Call<Map<String, Object>> getCurrentUser();
+
     @GET("products")
     Call<ProductResponse> getProductsPaginated(
             @Query("page") int page,

@@ -13,12 +13,16 @@ import com.example.aura_pc_app.domain.repository.AuthRepository;
 import com.example.aura_pc_app.ui.base.BaseViewModel;
 import com.example.aura_pc_app.utils.LocaleManager;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class AuthViewModel extends BaseViewModel {
 
     private static final Gson GSON = new Gson();
+    private static final Type USER_MAP_TYPE = new TypeToken<Map<String, Object>>() { }.getType();
     private AuthRepository authRepository;
     
     // LiveData states
@@ -190,11 +194,44 @@ public class AuthViewModel extends BaseViewModel {
                     }
                     Object user = data.get("user");
                     if (user != null) {
-                        tokenManager.saveCurrentUserJson(GSON.toJson(user));
+                        tokenManager.saveCurrentUserJson(GSON.toJson(normalizeUserForSession(user, phoneStr)));
                     }
                 }
             }
         });
+    }
+
+    private Map<String, Object> normalizeUserForSession(Object rawUser, String fallbackPhone) {
+        Map<String, Object> user = GSON.fromJson(GSON.toJson(rawUser), USER_MAP_TYPE);
+        if (user == null) {
+            user = new HashMap<>();
+        } else {
+            user = new HashMap<>(user);
+        }
+
+        String normalizedPhone = normalizePhoneNumber(firstString(user, "phone", "phoneNumber", "phone_number", "mobile", "username"));
+        if (normalizedPhone == null) {
+            normalizedPhone = normalizePhoneNumber(fallbackPhone);
+        }
+        if (normalizedPhone != null) {
+            user.put("phoneNumber", normalizedPhone);
+            normalizePhoneField(user, "phone");
+            normalizePhoneField(user, "phone_number");
+            normalizePhoneField(user, "mobile");
+            normalizePhoneField(user, "username");
+        }
+        return user;
+    }
+
+    private void normalizePhoneField(Map<String, Object> user, String key) {
+        Object value = user.get(key);
+        if (value == null) {
+            return;
+        }
+        String normalized = normalizePhoneNumber(String.valueOf(value));
+        if (normalized != null) {
+            user.put(key, normalized);
+        }
     }
 
     private static String getStringValue(Map<String, Object> data, String... keys) {
@@ -205,6 +242,19 @@ public class AuthViewModel extends BaseViewModel {
             }
         }
         return null;
+    }
+
+    private static String firstString(Map<String, Object> data, String... keys) {
+        if (data == null) return "";
+        for (String key : keys) {
+            Object value = data.get(key);
+            if (value == null) continue;
+            String text = String.valueOf(value).trim();
+            if (!text.isEmpty() && !"null".equalsIgnoreCase(text)) {
+                return text;
+            }
+        }
+        return "";
     }
 
     private String localizedString(int resId) {

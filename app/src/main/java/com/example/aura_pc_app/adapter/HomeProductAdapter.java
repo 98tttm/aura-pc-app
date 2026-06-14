@@ -48,14 +48,29 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_aura_product_card, parent, false);
+                .inflate(R.layout.item_home_product_grid_card, parent, false);
+        int gap = Math.round(16 * parent.getResources().getDisplayMetrics().density);
         int parentWidth = parent.getMeasuredWidth();
         if (parentWidth <= 0) {
             parentWidth = parent.getResources().getDisplayMetrics().widthPixels
                     - Math.round(44 * parent.getResources().getDisplayMetrics().density);
         }
-        ViewGroup.LayoutParams params = view.getLayoutParams();
-        params.width = Math.max(1, (parentWidth - Math.round(8 * parent.getResources().getDisplayMetrics().density)) / 2);
+        int parentHeight = parent.getMeasuredHeight();
+        if (parentHeight <= 0) {
+            parentHeight = Math.round(468 * parent.getResources().getDisplayMetrics().density);
+        }
+
+        ViewGroup.LayoutParams currentParams = view.getLayoutParams();
+        RecyclerView.LayoutParams params;
+        if (currentParams instanceof RecyclerView.LayoutParams) {
+            params = (RecyclerView.LayoutParams) currentParams;
+        } else {
+            params = new RecyclerView.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+        params.width = Math.max(1, (parentWidth - gap) / 2);
+        params.height = Math.max(1, (parentHeight - gap) / 2);
         view.setLayoutParams(params);
         return new ProductViewHolder(view);
     }
