@@ -1,7 +1,6 @@
 package com.example.aura_pc_app.ui.home;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,42 +11,38 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.aura.pc.ui.cart.CartActivity;
 import com.aura.pc.ui.categories.CategoriesActivity;
-import com.aura.pc.ui.products.AuraProductsActivity;
-import com.aura.pc.utils.BottomNavigationHelper;
 import com.aura.pc.ui.productdetail.ProductDetailActivity;
+import com.aura.pc.ui.products.AuraProductsActivity;
+import com.aura.pc.ui.products.ProductSearchActivity;
+import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.adapter.HomeProductAdapter;
 import com.example.aura_pc_app.adapter.HomeSaleProductAdapter;
 import com.example.aura_pc_app.data.api.ApiClient;
 import com.example.aura_pc_app.data.db.entity.ProductEntity;
-import com.example.aura_pc_app.data.db.entity.SearchHistoryEntity;
 import com.example.aura_pc_app.databinding.ActivityHomeBinding;
 import com.example.aura_pc_app.ui.base.BaseActivity;
+import com.example.aura_pc_app.utils.AuthGate;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
-    private static final int HISTORY_LIMIT = 5;
-    private static final long SEARCH_DEBOUNCE_MS = 300L;
-    private static final String[] POPULAR_QUERIES = {
-            "Laptop gaming",
-            "RTX 4060",
-            "PC gaming",
-            "Man hinh 27",
-            "Logitech",
-            "SSD NVMe"
-    };
-
-    private final Handler searchHandler = new Handler(Looper.getMainLooper());
-    private final ExecutorService historyExecutor = Executors.newSingleThreadExecutor();
-    private final List<ProductEntity> allProducts = new ArrayList<>();
-    private final List<String> recentSearches = new ArrayList<>();
-
     private HomeProductAdapter productAdapter;
     private HomeSaleProductAdapter saleProductAdapter;
     private boolean collapsedHeaderVisible;
@@ -71,7 +66,6 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         BottomNavigationHelper.setup(this, BottomNavigationHelper.TAB_HOME);
         setupSaleSection();
         setupProductList();
-        setupHomeSearch();
         setupHomeActions();
         setupHomeProductTabs();
         loadHomeCategories();
@@ -98,6 +92,8 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
                 Toast.makeText(this, R.string.msg_menu_pending, Toast.LENGTH_SHORT).show());
         binding.searchFilterButton.setOnClickListener(v ->
                 startActivity(new Intent(this, CategoriesActivity.class)));
+        binding.homeSearchContainer.setOnClickListener(v -> openProductSearch());
+        binding.homeProductSearchView.setOnClickListener(v -> openProductSearch());
         binding.contextualFab.setOnClickListener(v ->
                 Toast.makeText(this, R.string.msg_chat_pending, Toast.LENGTH_SHORT).show());
         binding.homeHeroCard.setOnClickListener(v -> openProductDetail());
@@ -156,12 +152,12 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         productAdapter = new HomeProductAdapter(new HomeProductAdapter.ProductClickListener() {
             @Override
             public void onProductClick(ProductEntity product) {
-                openProductDetail(product);
+                openProductDetail();
             }
 
             @Override
             public void onCartClick(ProductEntity product) {
-                addProductToCart(product);
+                addProductToCart();
             }
         });
         binding.productRecyclerView.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.HORIZONTAL, false));
@@ -182,21 +178,179 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
                 binding.homeProductIndicatorThumb));
     }
 
-    private void observeProducts() {
-        binding.loadingProgress.setVisibility(View.VISIBLE);
-        viewModel.getProducts().observe(this, products -> {
-            productAdapter.setProducts(products);
-            binding.loadingProgress.setVisibility(View.GONE);
-        });
-        viewModel.getProductAdded().observe(this, added -> {
-            if (Boolean.TRUE.equals(added)) {
-                Toast.makeText(this, R.string.cart_added, Toast.LENGTH_SHORT).show();
-                viewModel.clearProductAdded();
+    private void setupSaleSection() {
+        saleProductAdapter = new HomeSaleProductAdapter(product -> openProductDetail());
+        binding.homeSaleRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        binding.homeSaleRecyclerView.setAdapter(saleProductAdapter);
+        binding.homeSaleRecyclerView.setHasFixedSize(false);
+        binding.homeSaleRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@androidx.annotation.NonNull RecyclerView recyclerView, int dx, int dy) {
+                updateRecyclerIndicator(
+                        binding.homeSaleRecyclerView,
+                        binding.homeSaleIndicatorTrack,
+                        binding.homeSaleIndicatorThumb);
             }
         });
-        viewModel.errorMessage.observe(this, message -> {
-            if (message != null && !message.isEmpty()) {
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+
+        binding.homeSaleTabFlash.setOnClickListener(v -> selectSaleCampaign(0));
+        binding.homeSaleTabDeal.setOnClickListener(v -> selectSaleCampaign(1));
+        binding.homeSaleTabHot.setOnClickListener(v -> selectSaleCampaign(2));
+        binding.homeSaleDateOne.setOnClickListener(v -> selectSaleDate(0));
+        binding.homeSaleDateTwo.setOnClickListener(v -> selectSaleDate(1));
+        binding.homeSaleDateThree.setOnClickListener(v -> selectSaleDate(2));
+        updateSaleDateLabels();
+        updateSaleSelectionUi();
+        saleCountdownHandler.removeCallbacks(saleCountdownRunnable);
+        saleCountdownHandler.post(saleCountdownRunnable);
+    }
+
+    private void selectSaleCampaign(int campaignIndex) {
+        selectedSaleCampaignIndex = campaignIndex;
+        updateSaleSelectionUi();
+        updateSaleCountdown();
+        renderSaleProducts();
+    }
+
+    private void selectSaleDate(int dateIndex) {
+        selectedSaleDateIndex = dateIndex;
+        updateSaleSelectionUi();
+        updateSaleCountdown();
+        renderSaleProducts();
+    }
+
+    private void updateSaleSelectionUi() {
+        updateSaleTab(binding.homeSaleTabFlash, selectedSaleCampaignIndex == 0);
+        updateSaleTab(binding.homeSaleTabDeal, selectedSaleCampaignIndex == 1);
+        updateSaleTab(binding.homeSaleTabHot, selectedSaleCampaignIndex == 2);
+        updateSaleDateTab(binding.homeSaleDateOne, selectedSaleDateIndex == 0);
+        updateSaleDateTab(binding.homeSaleDateTwo, selectedSaleDateIndex == 1);
+        updateSaleDateTab(binding.homeSaleDateThree, selectedSaleDateIndex == 2);
+    }
+
+    private void updateSaleTab(TextView tab, boolean selected) {
+        tab.setAlpha(1f);
+        tab.setScaleX(1f);
+        tab.setScaleY(1f);
+    }
+
+    private void updateSaleDateTab(TextView tab, boolean selected) {
+        tab.setBackgroundResource(selected ? R.drawable.bg_home_date_selected : R.drawable.bg_home_date_outline);
+        tab.setTextColor(selected ? 0xFFFF1F1F : getColor(R.color.aura_white));
+    }
+
+    private void updateSaleDateLabels() {
+        TextView[] dateTabs = {
+                binding.homeSaleDateOne,
+                binding.homeSaleDateTwo,
+                binding.homeSaleDateThree
+        };
+        Calendar date = Calendar.getInstance();
+        for (int i = 0; i < dateTabs.length; i++) {
+            if (i > 0) {
+                date.add(Calendar.DAY_OF_YEAR, 1);
+            }
+            dateTabs[i].setText(String.format(Locale.US, "%02d/%02d",
+                    date.get(Calendar.DAY_OF_MONTH),
+                    date.get(Calendar.MONTH) + 1));
+        }
+    }
+
+    private void updateSaleCountdown() {
+        Calendar now = Calendar.getInstance();
+        SaleCountdownTarget target = saleCountdownTarget(now);
+        long remainingMs = Math.max(0, target.targetTime.getTimeInMillis() - now.getTimeInMillis());
+        long totalSeconds = remainingMs / 1000;
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+        binding.homeSaleCountdownLabel.setText(target.labelResId);
+        binding.homeSaleCountdownHour.setText(String.format(Locale.US, "%02d", hours));
+        binding.homeSaleCountdownMinute.setText(String.format(Locale.US, "%02d", minutes));
+        binding.homeSaleCountdownSecond.setText(String.format(Locale.US, "%02d", seconds));
+    }
+
+    private SaleCountdownTarget saleCountdownTarget(Calendar now) {
+        Calendar selectedDate = saleSelectedDate();
+        if (isSameDay(now, selectedDate)) {
+            Calendar endOfDay = (Calendar) selectedDate.clone();
+            endOfDay.set(Calendar.HOUR_OF_DAY, 23);
+            endOfDay.set(Calendar.MINUTE, 59);
+            endOfDay.set(Calendar.SECOND, 59);
+            endOfDay.set(Calendar.MILLISECOND, 999);
+            return new SaleCountdownTarget(endOfDay, R.string.home_flash_countdown_remaining_label);
+        }
+
+        int[] starts = {9, 13, 20};
+        int startHour = starts[Math.max(0, Math.min(selectedSaleCampaignIndex, starts.length - 1))];
+        Calendar startTime = (Calendar) selectedDate.clone();
+        startTime.set(Calendar.HOUR_OF_DAY, startHour);
+        startTime.set(Calendar.MINUTE, 0);
+        startTime.set(Calendar.SECOND, 0);
+        startTime.set(Calendar.MILLISECOND, 0);
+
+        if (now.before(startTime)) {
+            return new SaleCountdownTarget(startTime, R.string.home_flash_countdown_label);
+        }
+
+        Calendar nextStart = (Calendar) startTime.clone();
+        nextStart.add(Calendar.DAY_OF_YEAR, 1);
+        return new SaleCountdownTarget(nextStart, R.string.home_flash_countdown_label);
+    }
+
+    private Calendar saleSelectedDate() {
+        Calendar selectedDate = Calendar.getInstance();
+        selectedDate.add(Calendar.DAY_OF_YEAR, selectedSaleDateIndex);
+        return selectedDate;
+    }
+
+    private boolean isSameDay(Calendar first, Calendar second) {
+        return first.get(Calendar.YEAR) == second.get(Calendar.YEAR)
+                && first.get(Calendar.DAY_OF_YEAR) == second.get(Calendar.DAY_OF_YEAR);
+    }
+
+    private void setupHomeProductTabs() {
+        binding.homeProductTabLaptop.setOnClickListener(v -> selectHomeProductCategory("laptop"));
+        binding.homeProductTabPc.setOnClickListener(v -> selectHomeProductCategory("pc"));
+        binding.homeProductTabMonitor.setOnClickListener(v -> selectHomeProductCategory("man-hinh"));
+        binding.homeProductTabAccessory.setOnClickListener(v -> selectHomeProductCategory("phu-kien"));
+        updateHomeProductTabs();
+    }
+
+    private void selectHomeProductCategory(String categoryId) {
+        selectedProductCategoryId = categoryId;
+        updateHomeProductTabs();
+        renderHomeBrandChips();
+        binding.productRecyclerView.scrollToPosition(0);
+        loadHomeProducts(categoryId);
+    }
+
+    private void updateHomeProductTabs() {
+        updateHomeProductTab(binding.homeProductTabLaptop, "laptop");
+        updateHomeProductTab(binding.homeProductTabPc, "pc");
+        updateHomeProductTab(binding.homeProductTabMonitor, "man-hinh");
+        updateHomeProductTab(binding.homeProductTabAccessory, "phu-kien");
+    }
+
+    private void updateHomeProductTab(TextView tab, String categoryId) {
+        boolean selected = categoryId.equals(selectedProductCategoryId);
+        tab.setBackgroundResource(selected ? R.drawable.bg_home_top_tab_active : R.drawable.bg_home_top_tab);
+        tab.setTypeface(tab.getTypeface(), selected ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
+    }
+
+    private void loadHomeCategories() {
+        ApiClient.getInstance(this).getApiService().getCategories().enqueue(new Callback<List<Map<String, Object>>>() {
+            @Override
+            public void onResponse(Call<List<Map<String, Object>>> call, Response<List<Map<String, Object>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    consumeHomeCategories(response.body());
+                }
+                renderHomeBrandChips();
+            }
+
+            @Override
+            public void onFailure(Call<List<Map<String, Object>>> call, Throwable t) {
+                renderHomeBrandChips();
             }
         });
     }
@@ -489,241 +643,15 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         return null;
     }
 
-    private void scheduleDebouncedSearch(String rawQuery) {
-        isSearchActivated = true;
-        String nextQuery = sanitizeKeyword(rawQuery);
-        if (!nextQuery.equals(committedSuggestionQuery)) {
-            hideSuggestionsForCommittedQuery = false;
-            committedSuggestionQuery = "";
-        }
-        if (pendingSearchRunnable != null) {
-            searchHandler.removeCallbacks(pendingSearchRunnable);
-        }
-        pendingSearchRunnable = () -> applyHomeSearch(rawQuery);
-        searchHandler.postDelayed(pendingSearchRunnable, SEARCH_DEBOUNCE_MS);
-    }
-
-    private void selectSuggestion(String keyword) {
-        String selectedQuery = sanitizeKeyword(keyword);
-        if (selectedQuery.isEmpty()) {
-            return;
-        }
-
-        isSearchActivated = true;
-        hideSuggestionsForCommittedQuery = true;
-        committedSuggestionQuery = selectedQuery;
-        binding.homeProductSearchView.setQuery(selectedQuery, false);
-        runSearchImmediately(selectedQuery, true);
-        binding.homeProductSearchView.clearFocus();
-        hideSuggestionPanel();
-    }
-
-    private void runSearchImmediately(String rawQuery, boolean persist) {
-        isSearchActivated = true;
-        if (pendingSearchRunnable != null) {
-            searchHandler.removeCallbacks(pendingSearchRunnable);
-        }
-        applyHomeSearch(rawQuery);
-        if (persist) {
-            saveSearchQuery(rawQuery);
-        }
-    }
-
-    private void applyHomeSearch(String rawQuery) {
-        activeHomeQuery = sanitizeKeyword(rawQuery);
-        updateSuggestions(activeHomeQuery);
-
-        if (activeHomeQuery.isEmpty()) {
-            binding.homeSearchResultsSection.setVisibility(View.GONE);
-            binding.homeSearchEmptyText.setVisibility(View.GONE);
-            searchResultAdapter.setProducts(new ArrayList<>(), "");
-            return;
-        }
-
-        List<ProductEntity> filtered = filterProducts(activeHomeQuery);
-        binding.homeSearchResultsSection.setVisibility(View.VISIBLE);
-        binding.homeSearchResultsRecyclerView.setVisibility(filtered.isEmpty() ? View.GONE : View.VISIBLE);
-        binding.homeSearchEmptyText.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
-        searchResultAdapter.setProducts(filtered, activeHomeQuery);
-    }
-
-    private List<ProductEntity> filterProducts(String query) {
-        List<ProductEntity> filtered = new ArrayList<>();
-        for (ProductEntity product : allProducts) {
-            if (query.isEmpty() || matchesProduct(product, query)) {
-                filtered.add(product);
-            }
-        }
-        return filtered;
-    }
-
-    private boolean matchesProduct(ProductEntity product, String query) {
-        String lowerQuery = query.toLowerCase(Locale.ROOT);
-        return contains(product.name, lowerQuery)
-                || contains(product.brand, lowerQuery)
-                || contains(product.slug, lowerQuery)
-                || contains(product.specs, lowerQuery)
-                || contains(product.category_id, lowerQuery)
-                || containsCategoryIds(product.category_ids, lowerQuery);
-    }
-
-    private boolean containsCategoryIds(List<String> categoryIds, String lowerQuery) {
-        if (categoryIds == null) {
-            return false;
-        }
-        for (String categoryId : categoryIds) {
-            if (contains(categoryId, lowerQuery)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean contains(String value, String lowerQuery) {
-        return value != null && value.toLowerCase(Locale.ROOT).contains(lowerQuery);
-    }
-
-    private void updateSuggestions(String query) {
-        if (!isSearchActivated) {
-            hideSuggestionPanel();
-            return;
-        }
-
-        if (hideSuggestionsForCommittedQuery && query.equals(committedSuggestionQuery)) {
-            hideSuggestionPanel();
-            return;
-        }
-
-        List<String> suggestions;
-        if (query.isEmpty()) {
-            binding.homeSearchSuggestionTitle.setText(R.string.search_popular_title);
-            suggestions = buildIdleSuggestions();
-        } else {
-            binding.homeSearchSuggestionTitle.setText(R.string.search_suggestion_title);
-            suggestions = buildKeywordSuggestions(query);
-        }
-        binding.homeSearchSuggestionPanel.setVisibility(suggestions.isEmpty() ? View.GONE : View.VISIBLE);
-        suggestionAdapter.submitList(suggestions, query);
-    }
-
-    private void hideSuggestionPanel() {
-        binding.homeSearchSuggestionPanel.setVisibility(View.GONE);
-        suggestionAdapter.submitList(new ArrayList<>(), activeHomeQuery);
-    }
-
-    private void activateHomeSearch() {
-        isSearchActivated = true;
-        updateSuggestions(activeHomeQuery);
-    }
-
-    private List<String> buildIdleSuggestions() {
-        Set<String> merged = new LinkedHashSet<>();
-        merged.addAll(recentSearches);
-        for (String query : POPULAR_QUERIES) {
-            merged.add(query);
-        }
-        return limitSuggestions(merged, 8);
-    }
-
-    private List<String> buildKeywordSuggestions(String query) {
-        Set<String> suggestions = new LinkedHashSet<>();
-        String lowerQuery = query.toLowerCase(Locale.ROOT);
-
-        for (ProductEntity product : allProducts) {
-            if (matchesProduct(product, query)) {
-                String name = product.name == null ? "" : product.name.trim();
-                if (!name.isEmpty()) {
-                    suggestions.add(name);
-                }
-            }
-            if (suggestions.size() >= 6) {
-                break;
-            }
-        }
-
-        for (String popular : POPULAR_QUERIES) {
-            if (popular.toLowerCase(Locale.ROOT).contains(lowerQuery)) {
-                suggestions.add(popular);
-            }
-        }
-
-        if (suggestions.isEmpty()) {
-            suggestions.add(query);
-        }
-        return limitSuggestions(suggestions, 6);
-    }
-
-    private List<String> limitSuggestions(Set<String> values, int limit) {
-        List<String> limited = new ArrayList<>();
-        for (String value : values) {
-            if (limited.size() == limit) {
-                break;
-            }
-            limited.add(value);
-        }
-        return limited;
-    }
-
-    private void loadSearchHistory() {
-        historyExecutor.execute(() -> {
-            List<SearchHistoryEntity> entities = searchHistoryDao.getRecent(HISTORY_LIMIT);
-            List<String> keywords = toKeywords(entities);
-            runOnUiThread(() -> {
-                recentSearches.clear();
-                recentSearches.addAll(keywords);
-                updateSuggestions(activeHomeQuery);
-            });
-        });
-    }
-
-    private void saveSearchQuery(String rawQuery) {
-        String keyword = sanitizeKeyword(rawQuery);
-        if (keyword.isEmpty()) {
-            return;
-        }
-        historyExecutor.execute(() -> {
-            searchHistoryDao.upsert(new SearchHistoryEntity(
-                    normalizeKeyword(keyword),
-                    keyword,
-                    System.currentTimeMillis()
-            ));
-            searchHistoryDao.pruneToLimit(HISTORY_LIMIT);
-            List<String> keywords = toKeywords(searchHistoryDao.getRecent(HISTORY_LIMIT));
-            runOnUiThread(() -> {
-                recentSearches.clear();
-                recentSearches.addAll(keywords);
-                updateSuggestions(activeHomeQuery);
-            });
-        });
-    }
-
-    private List<String> toKeywords(List<SearchHistoryEntity> entities) {
-        List<String> keywords = new ArrayList<>();
-        if (entities == null) {
-            return keywords;
-        }
-        for (SearchHistoryEntity entity : entities) {
-            if (entity.keyword != null && !entity.keyword.trim().isEmpty()) {
-                keywords.add(entity.keyword.trim());
-            }
-        }
-        return keywords;
-    }
-
-    private String sanitizeKeyword(String rawQuery) {
-        if (rawQuery == null) {
-            return "";
-        }
-        return rawQuery.trim().replaceAll("\\s+", " ");
-    }
-
-    private String normalizeKeyword(String keyword) {
-        return sanitizeKeyword(keyword).toLowerCase(Locale.ROOT);
-    }
-
     private void setupCategoryStrip() {
-        String[] titles = {
-                "Laptop", "PC", "Màn hình", "Linh kiện", "Khác", "Xem tất cả"
+        int[] titles = {
+                R.string.category_laptop,
+                R.string.home_category_pc,
+                R.string.category_monitor,
+                R.string.home_category_gaming_gear,
+                R.string.home_category_chair,
+                R.string.home_category_components,
+                R.string.home_category_accessory
         };
         int[] icons = {
                 R.drawable.figma_cat_laptop,
@@ -804,22 +732,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
             if (icon != null) {
                 icon.setImageResource(icons[i]);
             }
-            String slug = null;
-            if (i == 0) slug = "laptop";
-            else if (i == 1) slug = "pc";
-            else if (i == 2) slug = "man-hinh";
-            else if (i == 3) slug = "linh-kien";
-
-            final String finalSlug = slug;
-            item.setOnClickListener(v -> {
-                if (finalSlug == null) {
-                    startActivity(new Intent(this, CategoriesActivity.class));
-                } else {
-                    Intent intent = new Intent(this, ProductListActivity.class);
-                    intent.putExtra("category", finalSlug);
-                    startActivity(intent);
-                }
-            });
+            item.setOnClickListener(v -> startActivity(new Intent(this, CategoriesActivity.class)));
         }
     }
 
@@ -857,17 +770,71 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         startActivity(intent);
     }
 
+    private void openCart() {
+        startActivity(new Intent(this, CartActivity.class));
+    }
+
     private void openProductSearch() {
         Intent intent = new Intent(this, ProductSearchActivity.class);
         intent.putExtra(ProductSearchActivity.EXTRA_SOURCE, ProductSearchActivity.SOURCE_HOME);
         startActivity(intent);
     }
 
-    private void openCart() {
-        startActivity(new Intent(this, CartActivity.class));
+    private void addProductToCart() {
+        if (!AuthGate.requireLogin(this, CartActivity.class)) {
+            return;
+        }
+        openCart();
     }
 
-    private void addProductToCart(ProductEntity product) {
-        viewModel.addProductToCart(product);
+    private List<ProductEntity> createFallbackProducts() {
+        List<ProductEntity> products = new ArrayList<>();
+        addFallback(products, "fallback-case-one", getString(R.string.home_product_case_name), 5490000, 3990000);
+        addFallback(products, "fallback-cpu-one", getString(R.string.home_product_cpu_name), 5490000, 1110000);
+        addFallback(products, "fallback-case-two", getString(R.string.home_product_case_name), 5490000, 3990000);
+        addFallback(products, "fallback-cpu-two", getString(R.string.home_product_cpu_name), 5490000, 1110000);
+        return products;
+    }
+
+    private List<ProductEntity> createSaleFallbackProducts() {
+        List<ProductEntity> products = new ArrayList<>();
+        for (int i = 0; i < 30; i++) {
+            if (i % 2 == 0) {
+                addFallback(products, "fallback-sale-case-" + i, getString(R.string.home_product_case_name), 5490000, 3990000);
+            } else {
+                addFallback(products, "fallback-sale-cpu-" + i, getString(R.string.home_product_cpu_name), 5490000, 1110000);
+            }
+        }
+        return products;
+    }
+
+    private void addFallback(List<ProductEntity> products, String id, String name, double price, double salePrice) {
+        ProductEntity product = new ProductEntity();
+        product._id = id;
+        product.name = name;
+        product.price = price;
+        product.salePrice = salePrice;
+        product.active = true;
+        products.add(product);
+    }
+
+    private static class CategoryChip {
+        final String categoryId;
+        final String name;
+
+        CategoryChip(String categoryId, String name) {
+            this.categoryId = categoryId;
+            this.name = name;
+        }
+    }
+
+    private static class SaleCountdownTarget {
+        final Calendar targetTime;
+        final int labelResId;
+
+        SaleCountdownTarget(Calendar targetTime, int labelResId) {
+            this.targetTime = targetTime;
+            this.labelResId = labelResId;
+        }
     }
 }

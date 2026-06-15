@@ -32,6 +32,7 @@ import com.aura.pc.utils.CategoryMapping;
 import com.example.aura_pc_app.data.repository.AppRepository;
 import com.example.aura_pc_app.utils.LocaleManager;
 import com.example.aura_pc_app.utils.ProductSearchUtils;
+import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -248,7 +249,7 @@ public class ProductSearchActivity extends AppCompatActivity {
                     return; // Response đã cũ, người dùng gõ keyword khác.
                 }
                 List<ProductEntity> items = response.isSuccessful() && response.body() != null
-                        ? response.body().items
+                        ? mapSearchProducts(response.body().items)
                         : null;
                 if (items != null && !items.isEmpty()) {
                     suggestionAdapter.submitList(items, query);
@@ -283,6 +284,68 @@ public class ProductSearchActivity extends AppCompatActivity {
             if (results.size() >= SUGGESTION_LIMIT) break;
         }
         return results;
+    }
+
+    private List<ProductEntity> mapSearchProducts(List<ProductResponse.Item> items) {
+        List<ProductEntity> products = new ArrayList<>();
+        if (items == null) {
+            return products;
+        }
+        for (ProductResponse.Item item : items) {
+            if (item == null) {
+                continue;
+            }
+            ProductEntity product = new ProductEntity();
+            product._id = firstNonEmpty(item._id, item.product_id, item.slug, item.handle);
+            product.name = item.name;
+            product.slug = firstNonEmpty(item.slug, item.handle);
+            product.price = item.price;
+            product.oldPrice = item.old_price;
+            product.salePrice = item.salePrice;
+            product.imageUrl = firstImageUrl(item.images);
+            product.images = product.imageUrl;
+            product.category_id = item.category_id;
+            product.category_ids = item.category_ids;
+            product.specs = specsText(item.specs);
+            product.brand = item.brand;
+            product.stock = item.stock;
+            product.active = item.active == null || item.active;
+            products.add(product);
+        }
+        return products;
+    }
+
+    private String firstNonEmpty(String... values) {
+        if (values == null) {
+            return "";
+        }
+        for (String value : values) {
+            if (value != null && !value.trim().isEmpty()) {
+                return value.trim();
+            }
+        }
+        return "";
+    }
+
+    private String firstImageUrl(JsonElement images) {
+        if (images == null || images.isJsonNull()) {
+            return null;
+        }
+        if (images.isJsonArray() && images.getAsJsonArray().size() > 0) {
+            JsonElement first = images.getAsJsonArray().get(0);
+            return first == null || first.isJsonNull() ? null : first.getAsString();
+        }
+        if (images.isJsonPrimitive()) {
+            return images.getAsString();
+        }
+        return images.toString();
+    }
+
+    private String specsText(JsonElement specs) {
+        if (specs == null || specs.isJsonNull()) {
+            return null;
+        }
+        return specs.isJsonPrimitive() ? specs.getAsString() : specs.toString();
     }
 
     private void selectSuggestion(String keyword) {

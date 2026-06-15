@@ -31,6 +31,7 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
     private final List<ProductEntity> products = new ArrayList<>();
     private final ProductClickListener listener;
     private final NumberFormat currencyFormat;
+    private String highlightQuery = "";
 
     public HomeProductAdapter(ProductClickListener listener) {
         this.listener = listener;
@@ -86,7 +87,8 @@ public class HomeProductAdapter extends RecyclerView.Adapter<HomeProductAdapter.
         ProductEntity product = products.get(position);
         String productName = product.name == null || product.name.isEmpty()
                 ? holder.itemView.getContext().getString(R.string.product_title_acer_nitro_v16s)
-                : product.name);
+                : product.name;
+        holder.title.setText(productName);
 
         double currentPrice = currentPrice(product);
         double oldPriceValue = oldPrice(product, currentPrice);

@@ -21,6 +21,8 @@ mpandroidchart = "3.1.0"
 
 glide = "4.16.0"
 paging = "3.3.0"
+viewpager2 = "1.1.0"
+photoview = "2.3.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }

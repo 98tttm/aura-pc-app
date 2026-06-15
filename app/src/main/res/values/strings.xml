@@ -472,8 +472,127 @@
     <string name="error_future_birthday">Ngày sinh không được là ngày trong tương lai</string>
     <string name="label_redirecting_home">Đang chuyển bạn tới Trang chủ…</string>
     <string name="label_default_rating">4.9</string>
+    <!-- Product list and review strings restored after MOB merge -->
+    <string name="product_list_title">Sản phẩm</string>
+    <string name="product_list_empty">Không tìm thấy sản phẩm nào trong danh mục này.</string>
+    <string name="product_list_retry">Thử lại</string>
+    <string name="product_list_error">Không thể tải danh sách sản phẩm.\nVui lòng thử lại.</string>
+    <string name="product_list_network_error">Lỗi kết nối mạng.\nVui lòng kiểm tra và thử lại.</string>
+    <string name="review_zero_rating">0.0/5</string>
+    <string name="review_zero_count">0 đánh giá</string>
+    <string name="review_rating_out_of_five">%1$s/5</string>
+    <string name="review_total_count">%1$d đánh giá</string>
+    <string name="review_write_button">Viết đánh giá</string>
+    <string name="review_view_all">Xem tất cả đánh giá</string>
+    <string name="review_filter_all">Tất cả</string>
+    <string name="review_filter_images">Có hình ảnh</string>
+    <string name="review_filter_five_star">5★</string>
+    <string name="review_sort_newest_short">Mới nhất</string>
+    <string name="review_sort_highest_short">Cao nhất</string>
+    <string name="review_empty">Chưa có đánh giá cho sản phẩm này</string>
+    <string name="review_no_images">Không có đánh giá kèm ảnh</string>
+    <string name="review_sort_newest">Tất cả • Mới nhất</string>
+    <string name="review_sort_highest">Cao nhất 5★</string>
+    <string name="review_sort_lowest">Thấp nhất</string>
+    <string name="review_sort_with_images">Có ảnh</string>
+    <string name="review_delivered_badge">Đã giao hàng</string>
+    <string name="review_admin_reply_title">Phản hồi từ AuraPC</string>
+    <string name="review_image_description">Ảnh đánh giá sản phẩm</string>
+    <string name="review_write_title">Chia sẻ trải nghiệm</string>
+    <string name="review_write_subtitle">Đánh giá của bạn giúp khách hàng khác lựa chọn tốt hơn.</string>
+    <string name="review_content_hint">Nội dung đánh giá</string>
+    <string name="review_choose_images">Chọn ảnh (tối đa 3)</string>
+    <string name="review_submit">Gửi đánh giá</string>
+    <string name="review_submit_figma">Gửi đánh giá ▷</string>
+    <string name="review_image_limit">Chỉ được tải lên tối đa 3 ảnh.</string>
+    <string name="review_rating_required">Vui lòng chọn từ 1 đến 5 sao</string>
+    <string name="review_content_required">Nội dung đánh giá không được để trống</string>
+    <string name="review_submitted">Đã gửi đánh giá</string>
+    <string name="review_login_required">Vui lòng đăng nhập để viết đánh giá.</string>
+    <string name="review_delivery_required">Bạn chỉ có thể đánh giá sau khi đơn hàng đã được giao thành công.</string>
+    <string name="review_default_user">Khách hàng AuraPC</string>
+    <string name="review_section_title">Đánh giá</string>
+    <string name="review_search_hint">Tìm đánh giá từ khách hàng</string>
+    <string name="review_mock_variant">Phân loại: Cấu hình tiêu chuẩn</string>
+    <string name="review_mock_quality">Chất lượng: Tốt    Mô tả: Chính xác</string>
+    <string name="review_write_header">Đánh giá sản phẩm</string>
+    <string name="review_write_reward_title">Chia sẻ trải nghiệm để nhận Aura Points</string>
+    <string name="review_write_reward_subtitle">Giúp cộng đồng AuraPC chọn được sản phẩm tốt nhất</string>
+    <string name="review_write_reward_badge">+500</string>
+    <string name="review_product_image_description">Ảnh sản phẩm đang đánh giá</string>
+    <string name="review_rating_prompt">Vui lòng đánh giá mức độ hài lòng của bạn</string>
+    <string name="review_rating_helper">Chạm vào sao để đánh giá</string>
+    <string name="review_star_description">Chọn %1$d sao</string>
+    <string name="review_upload_prompt">Thêm ít nhất 1 hình ảnh/video về sản phẩm</string>
+    <string name="review_upload_reward">+200 Points</string>
+    <string name="review_content_label">Viết đánh giá của bạn</string>
+    <string name="review_content_label_figma">Viết đánh giá từ 50 ký tự</string>
+    <string name="review_content_counter_zero">0 / 500</string>
+    <string name="review_content_counter">%1$d / 500</string>
+    <string name="review_content_sample">Hiệu năng: Laptop xử lý tốt các tác vụ gaming...\nMàn hình: Màu sắc đẹp...\nThiết kế: Ngoại hình gaming hiện đại...\nTrải nghiệm: Bàn phím RGB đẹp...</string>
+    <string name="review_tags_title">Đánh giá mức độ phù hợp</string>
+    <string name="review_tag_performance">Hiệu năng cao</string>
+    <string name="review_tag_accurate">Đúng mô tả</string>
+    <string name="review_tag_value">Đáng mua</string>
+    <string name="review_tag_delivery">Giao hàng nhanh</string>
+    <string name="cd_share_product">Chia sẻ sản phẩm</string>
+    <string name="cd_product_gallery_image">Ảnh sản phẩm, chạm để phóng to</string>
+    <string-array name="review_rating_labels">
+        <item>Rất tệ</item>
+        <item>Chưa hài lòng</item>
+        <item>Bình thường</item>
+        <item>Hài lòng</item>
+        <item>Tuyệt vời</item>
+    </string-array>
+
+    <!-- Synced default strings from Vietnamese locale after MOB merge -->
+    <string name="tab_reviews">Đánh giá</string>
+    <string name="home_view_all_chevron">Xem tất cả &gt;</string>
+    <string name="home_arrow_prev">&#8249;</string>
+    <string name="home_colon">:</string>
+    <string name="home_category_pc">PC</string>
+    <string name="home_category_gaming_gear">Gaming Gear</string>
+    <string name="home_category_chair">Bàn - Ghế</string>
+    <string name="home_category_components">Linh kiện</string>
+    <string name="home_category_accessory">Phụ kiện</string>
+    <string name="home_flash_deal">DEAL NGON</string>
+    <string name="home_flash_hot_sale">HOT SALE</string>
+    <string name="home_flash_date_one">05/06</string>
+    <string name="home_flash_date_two">06/06</string>
+    <string name="home_flash_date_three">07/06</string>
+    <string name="home_flash_countdown_label">BẮT ĐẦU SAU:</string>
+    <string name="home_flash_countdown_remaining_label">CÒN LẠI:</string>
+    <string name="home_flash_countdown_end_label">KẾT THÚC SAU:</string>
+    <string name="home_flash_hour">02</string>
+    <string name="home_flash_minute">45</string>
+    <string name="home_flash_second">12</string>
+    <string name="home_flash_stock">0/20 suất đã bán</string>
+    <string name="home_flash_stock_dynamic">%1$d/20 suất đã bán</string>
+    <string name="home_flash_terms">Chỉ áp dụng thanh toán online thành công - Mỗi SĐT chỉ được mua 1 sản phẩm cùng loại</string>
+    <string name="home_product_case_name">Case Hyte Y40 BlackWhite - ATX</string>
+    <string name="home_product_case_price">3.990.000đ</string>
+    <string name="home_product_case_old_price">5.490.000đ</string>
+    <string name="home_product_cpu_name">CPU AMD ATHLON 3000G SPK |3.5GHz|2 nhân 4 luồng|Radeon</string>
+    <string name="home_product_cpu_price">1.110.000đ</string>
+    <string name="home_product_cpu_old_price">5.490.000đ</string>
+    <string name="home_product_rating_short">5</string>
+    <string name="home_product_trend_badge">XU HƯỚNG</string>
+    <string name="home_component_section">Sắm thêm linh kiện chất lượng</string>
+    <string name="home_component_case">Case</string>
+    <string name="home_component_hdd">HDD</string>
+    <string name="home_component_psu">Nguồn</string>
+    <string name="home_component_fan">Quạt Case</string>
+    <string name="home_component_cooler">Tản nhiệt</string>
+    <string name="home_brand_asus">ASUS</string>
+    <string name="home_brand_dell">DELL</string>
+    <string name="home_brand_msi">msi</string>
+    <string name="home_brand_lenovo">Lenovo</string>
+    <string name="home_brand_acer">acer</string>
+    <string name="home_recently_viewed">Sản phẩm vừa xem</string>
+    <string name="home_product_gpu_name">Card đồ họa ASUS TUF Gaming RTX 4070 Ti</string>
+    <string name="home_product_gpu_price">24.590.000đ</string>
+    <string name="home_live_badge">LIVE</string>
+    <string name="home_video_views_one">12.5k</string>
+    <string name="home_video_views_two">5.8k</string>
 </resources>
-
-
-
 

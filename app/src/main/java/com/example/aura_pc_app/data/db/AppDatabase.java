@@ -29,8 +29,10 @@ import com.example.aura_pc_app.utils.Constants;
         ProductEntity.class,
         CartItemEntity.class,
         DeviceProfileEntity.class,
-        PriceHistoryEntity.class
-}, version = 2, exportSchema = true)
+        PriceHistoryEntity.class,
+        SearchHistoryEntity.class,
+        WishlistEntity.class
+}, version = 3, exportSchema = true)
 @TypeConverters({AuraTypeConverters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
@@ -39,6 +41,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ProductDao productDao();
     public abstract CartDao cartDao();
     public abstract WishlistDao wishlistDao();
+    public abstract SearchHistoryDao searchHistoryDao();
 
     public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
@@ -61,6 +64,25 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    public static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS wishlist_items ("
+                    + "productId TEXT NOT NULL, "
+                    + "name TEXT, "
+                    + "price REAL NOT NULL, "
+                    + "oldPrice REAL NOT NULL, "
+                    + "imageUrl TEXT, "
+                    + "addedAt INTEGER NOT NULL, "
+                    + "PRIMARY KEY(productId))");
+            database.execSQL("CREATE TABLE IF NOT EXISTS search_history ("
+                    + "normalizedKeyword TEXT NOT NULL, "
+                    + "keyword TEXT, "
+                    + "updatedAt INTEGER NOT NULL, "
+                    + "PRIMARY KEY(normalizedKeyword))");
+        }
+    };
+
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
             synchronized (AppDatabase.class) {
@@ -71,6 +93,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                     Constants.DB_NAME
                             )
                             .addMigrations(MIGRATION_1_2)
+                            .addMigrations(MIGRATION_2_3)
                             .build();
                 }
             }

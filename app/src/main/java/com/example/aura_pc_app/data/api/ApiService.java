@@ -50,7 +50,8 @@ public interface ApiService {
             @Query("maxPrice") Double maxPrice,
             @Query("minRating") Double minRating,
             @Query("inStock") Boolean inStock,
-            @Query("sort") String sort
+            @Query("sort") String sort,
+            @Query("search") String search
     );
 
     @GET("users/{id}")
@@ -61,6 +62,18 @@ public interface ApiService {
 
     @GET("users/me")
     Call<Map<String, Object>> getCurrentUser();
+
+    @GET("users/me")
+    Call<Map<String, Object>> getMyProfile();
+
+    @PATCH("users/me")
+    Call<Map<String, Object>> updateMyProfile(@Body Map<String, Object> profileData);
+
+    @PATCH("users/me")
+    Call<Map<String, Object>> updateCurrentUser(@Body Map<String, Object> profile);
+
+    @PUT("auth/profile")
+    Call<Map<String, Object>> updateCurrentUserProfile(@Body Map<String, Object> profile);
 
     @GET("products")
     Call<ProductResponse> getProductsPaginated(
@@ -85,6 +98,24 @@ public interface ApiService {
     @GET("auth/addresses/{userId}")
     Call<AddressListResponse> getAddresses(@Path("userId") String userId);
 
-    @POST("auth/verify-otp")
-    Call<Map<String, Object>> verifyOtp(@Body Map<String, String> body);
+    @POST("auth/addresses")
+    Call<AddressListResponse> addAddress(@Body Map<String, Object> body);
+
+    @PUT("auth/addresses/{addressId}")
+    Call<AddressListResponse> updateAddress(
+            @Path("addressId") String addressId,
+            @Body Map<String, Object> body
+    );
+
+    @HTTP(method = "DELETE", path = "auth/addresses/{addressId}", hasBody = true)
+    Call<AddressListResponse> deleteAddress(
+            @Path("addressId") String addressId,
+            @Body Map<String, Object> body
+    );
+
+    @PUT("auth/addresses/{addressId}/default")
+    Call<AddressListResponse> setDefaultAddress(
+            @Path("addressId") String addressId,
+            @Body Map<String, Object> body
+    );
 }

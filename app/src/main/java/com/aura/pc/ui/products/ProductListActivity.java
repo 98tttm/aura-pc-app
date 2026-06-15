@@ -22,7 +22,7 @@ import com.aura.pc.utils.BottomNavigationHelper;
 import com.aura.pc.ui.productdetail.ProductDetailActivity;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.api.ApiClient;
-import com.example.aura_pc_app.databinding.ActivityAuraProductsBinding;
+import com.example.aura_pc_app.databinding.ActivityProductListBinding;
 import com.example.aura_pc_app.ui.base.BaseActivity;
 import com.example.aura_pc_app.utils.ProductSearchUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -39,7 +39,7 @@ import java.util.List;
  * Màn hình danh sách sản phẩm với manual Paging, Filter (BottomSheet), Sort (Spinner),
  * và Category Chips chuyển đổi nhanh.
  */
-public class ProductListActivity extends BaseActivity<ActivityAuraProductsBinding> {
+public class ProductListActivity extends BaseActivity<ActivityProductListBinding> {
 
     private static final int REQUEST_SEARCH = 1001;
 
@@ -61,8 +61,8 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
     private boolean isProgrammaticChange = false;
 
     @Override
-    protected ActivityAuraProductsBinding inflateBinding() {
-        return ActivityAuraProductsBinding.inflate(getLayoutInflater());
+    protected ActivityProductListBinding inflateBinding() {
+        return ActivityProductListBinding.inflate(getLayoutInflater());
     }
 
     @Override
@@ -240,6 +240,16 @@ public class ProductListActivity extends BaseActivity<ActivityAuraProductsBindin
     // ===== Category Chips =====
     private void initCategoryChips() {
         // Handled dynamically via observer
+    }
+
+    private void initSearchInput() {
+        binding.searchInput.setOnClickListener(v -> openProductSearch());
+    }
+
+    private void openProductSearch() {
+        Intent intent = new Intent(this, ProductSearchActivity.class);
+        intent.putExtra(ProductSearchActivity.EXTRA_SOURCE, ProductSearchActivity.SOURCE_PRODUCT_LIST);
+        startActivityForResult(intent, REQUEST_SEARCH);
     }
 
     private void populateCategoryChips(String resolvedParentSlug, List<Map<String, Object>> subCategories) {

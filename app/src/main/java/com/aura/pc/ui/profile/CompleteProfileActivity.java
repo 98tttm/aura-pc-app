@@ -1,7 +1,6 @@
 package com.aura.pc.ui.profile;
 
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -421,7 +420,6 @@ public class CompleteProfileActivity extends AppCompatActivity {
 
     private void styleDatePickerNumber(NumberPicker picker) {
         int activeColor = ContextCompat.getColor(this, R.color.premium_nav_active);
-        int inactiveColor = ContextCompat.getColor(this, R.color.premium_nav_inactive);
         for (int i = 0; i < picker.getChildCount(); i++) {
             View child = picker.getChildAt(i);
             if (child instanceof EditText) {
@@ -432,20 +430,7 @@ public class CompleteProfileActivity extends AppCompatActivity {
                 editText.setGravity(android.view.Gravity.CENTER);
             }
         }
-
-        try {
-            Field selectorWheelPaintField = NumberPicker.class.getDeclaredField("mSelectorWheelPaint");
-            selectorWheelPaintField.setAccessible(true);
-            Paint paint = (Paint) selectorWheelPaintField.get(picker);
-            if (paint != null) {
-                paint.setColor(inactiveColor);
-                paint.setTextSize(dpToPx(20));
-                paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
-            }
-            picker.invalidate();
-        } catch (ReflectiveOperationException ignored) {
-            picker.invalidate();
-        }
+        picker.invalidate();
     }
 
     private int getDaysInMonth(int year, int month) {

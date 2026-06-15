@@ -24,9 +24,9 @@ import androidx.core.widget.NestedScrollView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.aura.pc.ui.cart.CartActivity;
+import com.aura.pc.ui.productdetail.ProductDetailActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.bumptech.glide.Glide;
-import com.example.aura_pc_app.MainActivity;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.api.ApiClient;
 import com.example.aura_pc_app.utils.LocaleManager;
@@ -667,13 +667,22 @@ public class AuraProductsActivity extends AppCompatActivity {
 
             View card = inflater.inflate(R.layout.item_aura_product_card, wrapper, false);
             bindProductCard(card, product);
-            card.setOnClickListener(v -> startActivity(new Intent(this, MainActivity.class)));
+            card.setOnClickListener(v -> openProductDetail(product));
             wrapper.addView(card, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
             ));
             productGrid.addView(wrapper);
         }
+    }
+
+    private void openProductDetail(Map<String, Object> product) {
+        Intent intent = new Intent(this, ProductDetailActivity.class);
+        String productId = firstString(product, "_id", "id", "product_id");
+        if (!TextUtils.isEmpty(productId)) {
+            intent.putExtra("product_id", productId);
+        }
+        startActivity(intent);
     }
 
     private void bindProductCard(View card, Map<String, Object> product) {
@@ -850,6 +859,23 @@ public class AuraProductsActivity extends AppCompatActivity {
 
     private String nonEmpty(String value, String fallback) {
         return TextUtils.isEmpty(value) ? fallback : value;
+    }
+
+    private String firstString(Map<String, Object> data, String... keys) {
+        if (data == null || keys == null) {
+            return "";
+        }
+        for (String key : keys) {
+            Object value = data.get(key);
+            if (value == null) {
+                continue;
+            }
+            String text = String.valueOf(value).trim();
+            if (!text.isEmpty() && !"null".equalsIgnoreCase(text)) {
+                return text;
+            }
+        }
+        return "";
     }
 
     private String normalizeSearchText(String value) {

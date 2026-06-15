@@ -1,0 +1,353 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "32266fddac3970dd95bb026db25f6a29",
+    "entities": [
+      {
+        "tableName": "users",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `username` TEXT, `email` TEXT, `token` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "token",
+            "columnName": "token",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "products",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` TEXT NOT NULL, `name` TEXT, `slug` TEXT, `price` REAL NOT NULL, `salePrice` REAL, `category_id` TEXT, `category_ids` TEXT, `images` TEXT, `specs` TEXT, `brand` TEXT, `stock` INTEGER NOT NULL, `active` INTEGER NOT NULL, PRIMARY KEY(`_id`))",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "slug",
+            "columnName": "slug",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "salePrice",
+            "columnName": "salePrice",
+            "affinity": "REAL",
+            "notNull": false
+          },
+          {
+            "fieldPath": "category_id",
+            "columnName": "category_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "category_ids",
+            "columnName": "category_ids",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "images",
+            "columnName": "images",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "specs",
+            "columnName": "specs",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "brand",
+            "columnName": "brand",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "stock",
+            "columnName": "stock",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "cart_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` TEXT NOT NULL, `variantId` TEXT NOT NULL, `name` TEXT, `specs` TEXT, `imageUrl` TEXT, `unitPrice` REAL NOT NULL, `quantity` INTEGER NOT NULL, `synced` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`productId`, `variantId`))",
+        "fields": [
+          {
+            "fieldPath": "productId",
+            "columnName": "productId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "variantId",
+            "columnName": "variantId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "specs",
+            "columnName": "specs",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "unitPrice",
+            "columnName": "unitPrice",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "quantity",
+            "columnName": "quantity",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "synced",
+            "columnName": "synced",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "productId",
+            "variantId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "device_profile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`deviceId` TEXT NOT NULL, `isDarkMode` INTEGER NOT NULL, PRIMARY KEY(`deviceId`))",
+        "fields": [
+          {
+            "fieldPath": "deviceId",
+            "columnName": "deviceId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDarkMode",
+            "columnName": "isDarkMode",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "deviceId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "price_history",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `productId` TEXT, `oldPrice` REAL NOT NULL, `updateTimestamp` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "productId",
+            "columnName": "productId",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "oldPrice",
+            "columnName": "oldPrice",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updateTimestamp",
+            "columnName": "updateTimestamp",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "search_history",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`normalizedKeyword` TEXT NOT NULL, `keyword` TEXT, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`normalizedKeyword`))",
+        "fields": [
+          {
+            "fieldPath": "normalizedKeyword",
+            "columnName": "normalizedKeyword",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "keyword",
+            "columnName": "keyword",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "normalizedKeyword"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "wishlist_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` TEXT NOT NULL, `name` TEXT, `price` REAL NOT NULL, `oldPrice` REAL NOT NULL, `imageUrl` TEXT, `addedAt` INTEGER NOT NULL, PRIMARY KEY(`productId`))",
+        "fields": [
+          {
+            "fieldPath": "productId",
+            "columnName": "productId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "oldPrice",
+            "columnName": "oldPrice",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "addedAt",
+            "columnName": "addedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "productId"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '32266fddac3970dd95bb026db25f6a29')"
+    ]
+  }
+}
