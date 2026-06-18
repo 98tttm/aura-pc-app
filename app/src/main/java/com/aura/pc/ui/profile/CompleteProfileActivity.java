@@ -1,9 +1,13 @@
 package com.aura.pc.ui.profile;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.text.Editable;
 import android.text.SpannableString;
@@ -16,6 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,15 +38,22 @@ import com.example.aura_pc_app.data.api.TokenManager;
 import com.example.aura_pc_app.data.api.UserProfileService;
 import com.example.aura_pc_app.ui.home.HomeActivity;
 import com.example.aura_pc_app.utils.AuthGate;
+import com.example.aura_pc_app.utils.Constants;
+import com.example.aura_pc_app.utils.LocaleManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -52,14 +64,19 @@ import retrofit2.Response;
 
 public class CompleteProfileActivity extends AppCompatActivity {
 
+    public static final String EXTRA_EDIT_MODE = "com.aura.pc.ui.profile.EXTRA_EDIT_MODE";
     private static final int MIN_BIRTH_YEAR = 1900;
+    private static final int REQUEST_PICK_AVATAR = 7104;
     private static final Gson GSON = new GsonBuilder().create();
+    private static final Type USER_MAP_TYPE = new TypeToken<Map<String, Object>>() { }.getType();
     private static final Pattern FULL_NAME_PATTERN = Pattern.compile("^[\\p{L}\\p{M}\\s'.-]{2,100}$");
 
     private EditText fullNameInput;
     private EditText emailInput;
     private EditText phoneNumberInput;
-    private EditText addressInput;
+    private ImageView avatarImage;
+    private TextView avatarInitial;
+    private View avatarPicker;
     private TextView dateInput;
     private TextView genderInput;
     private TextView fullNameError;
@@ -77,11 +94,17 @@ public class CompleteProfileActivity extends AppCompatActivity {
     private String apiDateOfBirth;
     private String apiGender;
     private String selectedGenderLabel;
+    private String selectedAvatarUri;
     private boolean retryMode;
 
     private final Calendar selectedDate = Calendar.getInstance();
     private final SimpleDateFormat displayDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     private final SimpleDateFormat apiDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleManager.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +116,7 @@ public class CompleteProfileActivity extends AppCompatActivity {
         selectedDate.set(Calendar.MILLISECOND, 0);
 
         bindViews();
+        loadCurrentUserData();
         setupInteractions();
     }
 
@@ -100,7 +124,9 @@ public class CompleteProfileActivity extends AppCompatActivity {
         fullNameInput = findViewById(R.id.edtFullName);
         emailInput = findViewById(R.id.edtEmail);
         phoneNumberInput = findViewById(R.id.edtPhoneNumber);
-        addressInput = findViewById(R.id.edtAddress);
+        avatarImage = findViewById(R.id.editProfileAvatarImage);
+        avatarInitial = findViewById(R.id.editProfileAvatarInitial);
+        avatarPicker = findViewById(R.id.editProfileAvatarFrame);
         dateInput = findViewById(R.id.tvDateOfBirth);
         genderInput = findViewById(R.id.tvGender);
         fullNameError = findViewById(R.id.errorFullName);
@@ -118,6 +144,9 @@ public class CompleteProfileActivity extends AppCompatActivity {
 
     private void setupInteractions() {
         backButton.setOnClickListener(v -> finish());
+        if (avatarPicker != null) {
+            avatarPicker.setOnClickListener(v -> openAvatarPicker());
+        }
         dateInput.setOnClickListener(v -> {
             if (isFormEnabled()) showDatePicker();
         });
@@ -132,8 +161,228 @@ public class CompleteProfileActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressWarnings("unchecked")
+    private void loadCurrentUserData() {
+        Map<String, Object> user = readCurrentUser();
+        String fullName = firstNonEmptyString(
+                firstProfileString(user, "fullName", "full_name", "displayName", "name"),
+                firstString(user, "fullName", "full_name", "displayName", "name", "username")
+        );
+        String email = firstString(user, "email");
+        String phoneNumber = firstString(user, "phone", "phoneNumber", "phone_number", "mobile");
+        String birthDate = firstProfileString(user, "dateOfBirth", "birthday", "dob", "birthDate", "birth_date");
+        String gender = firstProfileString(user, "gender");
+        String avatar = firstNonEmptyString(
+                firstString(user, "avatar", "avatarUrl", "avatarURL", "photoUrl", "photoURL", "image", "profileImage", "profilePicture"),
+                firstProfileString(user, "avatar", "avatarUrl", "avatarURL", "photoUrl", "photoURL", "image", "profileImage", "profilePicture")
+        );
+
+        fullNameInput.setText(fullName);
+        emailInput.setText(email);
+        phoneNumberInput.setText(phoneNumber);
+        applyBirthDate(birthDate);
+        applyGender(gender);
+        bindEditAvatar(avatar, fullName);
+    }
+
+    private Map<String, Object> readCurrentUser() {
+        String userJson = TokenManager.getInstance(this).getCurrentUserJson();
+        if (TextUtils.isEmpty(userJson)) {
+            return new HashMap<>();
+        }
+        try {
+            Map<String, Object> user = GSON.fromJson(userJson, USER_MAP_TYPE);
+            return user == null ? new HashMap<>() : user;
+        } catch (RuntimeException ignored) {
+            return new HashMap<>();
+        }
+    }
+
+    private void applyBirthDate(String value) {
+        if (TextUtils.isEmpty(value)) {
+            return;
+        }
+        String normalized = value.trim();
+        int timeIndex = normalized.indexOf('T');
+        if (timeIndex > 0) {
+            normalized = normalized.substring(0, timeIndex);
+        }
+        Calendar parsed = Calendar.getInstance();
+        try {
+            if (normalized.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+                parsed.setTime(apiDateFormat.parse(normalized));
+                apiDateOfBirth = normalized;
+            } else {
+                parsed.setTime(displayDateFormat.parse(normalized));
+                apiDateOfBirth = apiDateFormat.format(parsed.getTime());
+            }
+            selectedDate.setTime(parsed.getTime());
+            dateInput.setText(displayDateFormat.format(parsed.getTime()));
+            dateInput.setTextColor(getColor(R.color.black));
+        } catch (ParseException ignored) {
+            dateInput.setText(value);
+            dateInput.setTextColor(getColor(R.color.black));
+            apiDateOfBirth = null;
+        }
+    }
+
+    private void applyGender(String value) {
+        if (TextUtils.isEmpty(value)) {
+            return;
+        }
+        String normalized = value.trim().toLowerCase(Locale.ROOT);
+        if ("male".equals(normalized) || "m".equals(normalized) || "nam".equals(normalized)) {
+            apiGender = "male";
+            selectedGenderLabel = "Nam";
+        } else if ("female".equals(normalized) || "f".equals(normalized) || "nu".equals(normalized) || "nữ".equals(normalized)) {
+            apiGender = "female";
+            selectedGenderLabel = "Nữ";
+        } else {
+            apiGender = value.trim();
+            selectedGenderLabel = value.trim();
+        }
+        genderInput.setText(selectedGenderLabel);
+        genderInput.setTextColor(getColor(R.color.black));
+    }
+
+    private void openAvatarPicker() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        startActivityForResult(intent, REQUEST_PICK_AVATAR);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != REQUEST_PICK_AVATAR || resultCode != RESULT_OK || data == null || data.getData() == null) {
+            return;
+        }
+        Uri uri = data.getData();
+        selectedAvatarUri = uri.toString();
+        int flags = data.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
+        if (flags != 0) {
+            try {
+                getContentResolver().takePersistableUriPermission(uri, flags);
+            } catch (SecurityException ignored) {
+                // Some pickers do not grant persistable access; keep the in-session preview.
+            }
+        }
+        bindEditAvatar(selectedAvatarUri, fullNameInput.getText().toString());
+    }
+
+    private void bindEditAvatar(String avatar, String name) {
+        if (avatarImage == null || avatarInitial == null) {
+            return;
+        }
+        String safeName = TextUtils.isEmpty(name) ? fullNameInput.getText().toString() : name;
+        avatarInitial.setText(initialFor(safeName));
+        avatarImage.setVisibility(View.GONE);
+        avatarInitial.setVisibility(View.VISIBLE);
+        if (TextUtils.isEmpty(avatar)) {
+            return;
+        }
+        if (avatar.startsWith("content://") || avatar.startsWith("file://")) {
+            try (InputStream stream = getContentResolver().openInputStream(Uri.parse(avatar))) {
+                Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                if (bitmap != null) {
+                    avatarImage.setImageBitmap(bitmap);
+                    avatarImage.setVisibility(View.VISIBLE);
+                    avatarInitial.setVisibility(View.GONE);
+                    selectedAvatarUri = avatar;
+                }
+            } catch (Exception ignored) {
+                avatarImage.setVisibility(View.GONE);
+                avatarInitial.setVisibility(View.VISIBLE);
+            }
+            return;
+        }
+        String imageUrl = absoluteAvatarUrl(avatar);
+        if (TextUtils.isEmpty(imageUrl)) {
+            return;
+        }
+        avatarImage.setTag(imageUrl);
+        new Thread(() -> {
+            try (InputStream stream = new URL(imageUrl).openStream()) {
+                Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                runOnUiThread(() -> {
+                    if (bitmap == null || avatarImage == null || avatarInitial == null) return;
+                    Object latestTag = avatarImage.getTag();
+                    if (!TextUtils.equals(imageUrl, latestTag == null ? "" : String.valueOf(latestTag))) return;
+                    avatarImage.setImageBitmap(bitmap);
+                    avatarImage.setVisibility(View.VISIBLE);
+                    avatarInitial.setVisibility(View.GONE);
+                });
+            } catch (Exception ignored) {
+                runOnUiThread(() -> {
+                    if (avatarImage != null) avatarImage.setVisibility(View.GONE);
+                    if (avatarInitial != null) avatarInitial.setVisibility(View.VISIBLE);
+                });
+            }
+        }).start();
+    }
+
+    private String absoluteAvatarUrl(String avatar) {
+        if (TextUtils.isEmpty(avatar)) {
+            return "";
+        }
+        String trimmed = avatar.trim();
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")
+                || trimmed.startsWith("content://") || trimmed.startsWith("file://")) {
+            return trimmed;
+        }
+        String apiBase = Constants.BASE_URL;
+        String hostBase = apiBase.endsWith("/api/")
+                ? apiBase.substring(0, apiBase.length() - "/api/".length())
+                : apiBase.replaceAll("/+$", "");
+        return trimmed.startsWith("/") ? hostBase + trimmed : hostBase + "/" + trimmed;
+    }
+
+    private String initialFor(String name) {
+        if (TextUtils.isEmpty(name)) {
+            return getString(R.string.profile_default_initial);
+        }
+        String trimmed = name.trim();
+        if (trimmed.isEmpty()) {
+            return getString(R.string.profile_default_initial);
+        }
+        return trimmed.substring(0, 1).toUpperCase(Locale.ROOT);
+    }
+
+    private String firstString(Map<String, Object> data, String... keys) {
+        if (data == null) return "";
+        for (String key : keys) {
+            Object value = data.get(key);
+            if (value == null) continue;
+            String text = String.valueOf(value).trim();
+            if (!text.isEmpty() && !"null".equalsIgnoreCase(text)) {
+                return text;
+            }
+        }
+        return "";
+    }
+
+    @SuppressWarnings("unchecked")
+    private String firstProfileString(Map<String, Object> user, String... keys) {
+        Object profile = user == null ? null : user.get("profile");
+        if (profile instanceof Map) {
+            return firstString((Map<String, Object>) profile, keys);
+        }
+        return "";
+    }
+
+    private String firstNonEmptyString(String... values) {
+        for (String value : values) {
+            if (!TextUtils.isEmpty(value)) {
+                return value;
+            }
+        }
+        return "";
+    }
+
     private void styleTermsText() {
-        String fullText = "Bằng cách tiếp tục, bạn đồng ý với Điều khoản & Chính sách của chúng tôi.";
+        String fullText = getString(R.string.profile_edit_terms);
         String highlightedText = "Điều khoản & Chính sách";
         SpannableString spannable = new SpannableString(fullText);
         int start = fullText.indexOf(highlightedText);
@@ -522,14 +771,13 @@ public class CompleteProfileActivity extends AppCompatActivity {
 
         String email = emailInput.getText().toString().trim();
         String phoneNumber = phoneNumberInput.getText().toString().trim();
-        String address = addressInput.getText().toString().trim();
         UserProfileService.ProfileUpdateRequest request = new UserProfileService.ProfileUpdateRequest(
                 fullNameInput.getText().toString(),
                 email,
                 apiDateOfBirth,
                 apiGender,
                 TextUtils.isEmpty(phoneNumber) ? null : normalizePhoneNumber(phoneNumber),
-                address
+                null
         );
 
         new UserProfileService(this).updateCurrentUserProfile(request).enqueue(new Callback<Map<String, Object>>() {
@@ -553,17 +801,17 @@ public class CompleteProfileActivity extends AppCompatActivity {
         fullNameInput.setEnabled(!submitting);
         emailInput.setEnabled(!submitting);
         phoneNumberInput.setEnabled(!submitting);
-        addressInput.setEnabled(!submitting);
         dateInput.setEnabled(!submitting);
         genderInput.setEnabled(!submitting);
+        if (avatarPicker != null) avatarPicker.setEnabled(!submitting);
         submitButton.setEnabled(!submitting);
         float formAlpha = submitting ? 0.72f : 1f;
         fullNameInput.setAlpha(formAlpha);
         emailInput.setAlpha(formAlpha);
         phoneNumberInput.setAlpha(formAlpha);
-        addressInput.setAlpha(formAlpha);
         dateInput.setAlpha(formAlpha);
         genderInput.setAlpha(formAlpha);
+        if (avatarPicker != null) avatarPicker.setAlpha(formAlpha);
         updateSubmitButtonLabel(submitting);
         submitProgress.setVisibility(submitting ? View.VISIBLE : View.GONE);
     }
@@ -575,7 +823,7 @@ public class CompleteProfileActivity extends AppCompatActivity {
             return;
         }
 
-        submitButton.setText(retryMode ? "Thử lại" : "Hoàn tất");
+        submitButton.setText(retryMode ? "Thử lại" : getString(R.string.profile_edit_save_changes));
         submitButton.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
     }
 
@@ -650,12 +898,15 @@ public class CompleteProfileActivity extends AppCompatActivity {
 
     @SuppressWarnings("unchecked")
     private void handleSuccess(Map<String, Object> responseBody) {
+        Map<String, Object> updatedUser = readCurrentUser();
         if (responseBody != null) {
             Object user = responseBody.get("user");
             if (user instanceof Map) {
-                TokenManager.getInstance(this).saveCurrentUserJson(GSON.toJson(user));
+                updatedUser = new HashMap<>((Map<String, Object>) user);
             }
         }
+        mergeEditedUserData(updatedUser);
+        TokenManager.getInstance(this).saveCurrentUserJson(GSON.toJson(updatedUser));
         getSharedPreferences(CheckingAccountActivity.PROFILE_PREFS, MODE_PRIVATE)
                 .edit()
                 .putBoolean(CheckingAccountActivity.KEY_PROFILE_COMPLETED, true)
@@ -663,8 +914,52 @@ public class CompleteProfileActivity extends AppCompatActivity {
         successOverlay.setVisibility(View.VISIBLE);
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            goHome();
+            if (getIntent().getBooleanExtra(EXTRA_EDIT_MODE, false)) {
+                finish();
+            } else {
+                goHome();
+            }
         }, 1100);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void mergeEditedUserData(Map<String, Object> user) {
+        if (user == null) {
+            return;
+        }
+        String fullName = fullNameInput.getText().toString().trim();
+        String email = emailInput.getText().toString().trim();
+        String phone = phoneNumberInput.getText().toString().trim();
+
+        if (!TextUtils.isEmpty(email)) user.put("email", email);
+        if (!TextUtils.isEmpty(phone)) {
+            user.put("phoneNumber", normalizePhoneNumber(phone));
+            user.put("phone", normalizePhoneNumber(phone));
+        }
+        Map<String, Object> profile;
+        Object profileValue = user.get("profile");
+        if (profileValue instanceof Map) {
+            profile = new HashMap<>((Map<String, Object>) profileValue);
+        } else {
+            profile = new HashMap<>();
+        }
+        if (!TextUtils.isEmpty(fullName)) {
+            profile.put("fullName", fullName);
+            user.put("fullName", fullName);
+        }
+        if (!TextUtils.isEmpty(apiDateOfBirth)) {
+            profile.put("dateOfBirth", apiDateOfBirth);
+        }
+        if (!TextUtils.isEmpty(apiGender)) {
+            profile.put("gender", apiGender);
+        }
+        if (!TextUtils.isEmpty(selectedAvatarUri)) {
+            user.put("avatar", selectedAvatarUri);
+            user.put("avatarUrl", selectedAvatarUri);
+            profile.put("avatar", selectedAvatarUri);
+            profile.put("avatarUrl", selectedAvatarUri);
+        }
+        user.put("profile", profile);
     }
 
     private void goHome() {

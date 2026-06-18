@@ -95,6 +95,21 @@ public interface ApiService {
     @GET("cart")
     Call<CartResponse> getCart();
 
+    @GET("orders")
+    Call<Object> getOrders();
+
+    @GET("orders/my")
+    Call<Object> getMyOrders();
+
+    @GET("orders/me")
+    Call<Object> getCurrentUserOrders();
+
+    @PATCH("orders/{id}")
+    Call<Object> updateOrder(
+            @Path("id") String orderId,
+            @Body Map<String, Object> body
+    );
+
     @GET("auth/addresses/{userId}")
     Call<AddressListResponse> getAddresses(@Path("userId") String userId);
 

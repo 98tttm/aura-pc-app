@@ -9,8 +9,9 @@
         android:id="@+id/checkoutScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="188dp"
         android:clipToPadding="false"
-        android:paddingBottom="148dp">
+        android:paddingBottom="24dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -527,7 +528,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:fontFamily="sans-serif-bold"
-                        android:text="CHÍNH HÃNG"
+                        android:text="@string/checkout_feature_genuine"
                         android:textColor="@color/black"
                         android:textSize="10sp" />
                 </LinearLayout>

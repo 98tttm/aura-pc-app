@@ -237,14 +237,14 @@ public class ProductDetailActivity extends AppCompatActivity {
         if (descHtml != null && !descHtml.trim().isEmpty()) {
             // Xóa bảng thông số kỹ thuật dư thừa (nếu có)
             // Fix: Only remove table if there's enough other text (so we don't delete the whole description)
-            String withoutTable = descHtml.replaceAll("(?s)<table.*?>.*?</table>", "");
+            String withoutTable = stripTableTags(descHtml);
             if (withoutTable.replaceAll("<[^>]*>", "").trim().length() > 50) {
                 descHtml = withoutTable;
             }
             
             // Xóa tiêu đề "THÔNG SỐ KĨ THUẬT" nếu nó nằm độc lập ngoài bảng
-            descHtml = descHtml.replaceAll("(?i)<h2>(?s).*?thông số.*?(kĩ|kỹ).*?thuật.*?</h2>", "");
-            descHtml = descHtml.replaceAll("(?i)<strong>(?s).*?thông số.*?(kĩ|kỹ).*?thuật.*?</strong>", "");
+            descHtml = descHtml.replaceAll("(?i)<h2>[^<]*?thông số[^<]*?(kĩ|kỹ)[^<]*?thuật[^<]*?</h2>", "");
+            descHtml = descHtml.replaceAll("(?i)<strong>[^<]*?thông số[^<]*?(kĩ|kỹ)[^<]*?thuật[^<]*?</strong>", "");
             
             // Sửa lỗi url ảnh bị thiếu https:// (xử lý mọi trường hợp src="//, src = '//, v.v...)
             descHtml = descHtml.replaceAll("(?i)src\\s*=\\s*\"//", "src=\"https://");
@@ -576,5 +576,25 @@ public class ProductDetailActivity extends AppCompatActivity {
             return String.format(Locale.US, "%.1fk", count / 1000.0);
         }
         return String.valueOf(count);
+    }
+
+    private static String stripTableTags(String html) {
+        if (html == null) return "";
+        StringBuilder sb = new StringBuilder();
+        int lastIndex = 0;
+        while (true) {
+            int tableStart = html.toLowerCase(Locale.ROOT).indexOf("<table", lastIndex);
+            if (tableStart == -1) {
+                sb.append(html.substring(lastIndex));
+                break;
+            }
+            sb.append(html.substring(lastIndex, tableStart));
+            int tableEnd = html.toLowerCase(Locale.ROOT).indexOf("</table>", tableStart);
+            if (tableEnd == -1) {
+                break;
+            }
+            lastIndex = tableEnd + "</table>".length();
+        }
+        return sb.toString();
     }
 }

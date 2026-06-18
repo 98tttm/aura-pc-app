@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -13,9 +14,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.aura.pc.ui.address.AddressBookActivity;
 import com.aura.pc.ui.cart.CartActivity;
+import com.aura.pc.ui.orders.OrderHistoryActivity;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.R;
+import com.example.aura_pc_app.ReviewListActivity;
 import com.example.aura_pc_app.data.api.ApiClient;
 import com.example.aura_pc_app.data.api.TokenManager;
 import com.example.aura_pc_app.ui.auth.AuthActivity;
@@ -74,6 +78,11 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView userFieldCreatedText;
     private TextView userFieldUpdatedText;
     private TextView userFieldLastLoginText;
+    private TextView infoNameText;
+    private TextView infoPhoneText;
+    private TextView infoEmailText;
+    private TextView infoGenderText;
+    private TextView infoBirthDateText;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -131,12 +140,22 @@ public class ProfileActivity extends AppCompatActivity {
         userFieldCreatedText = findViewById(R.id.profileUserFieldCreatedText);
         userFieldUpdatedText = findViewById(R.id.profileUserFieldUpdatedText);
         userFieldLastLoginText = findViewById(R.id.profileUserFieldLastLoginText);
+        infoNameText = findViewById(R.id.profileInfoNameValue);
+        infoPhoneText = findViewById(R.id.profileInfoPhoneValue);
+        infoEmailText = findViewById(R.id.profileInfoEmailValue);
+        infoGenderText = findViewById(R.id.profileInfoGenderValue);
+        infoBirthDateText = findViewById(R.id.profileInfoBirthDateValue);
     }
 
     private void setupActions() {
         View loginButton = findViewById(R.id.profileLoginButton);
         View notifications = findViewById(R.id.profileNotificationsButton);
         View cart = findViewById(R.id.profileCartButton);
+        View editInfo = findViewById(R.id.profileEditInfoButton);
+        View orders = findViewById(R.id.profileOrdersRow);
+        View address = findViewById(R.id.profileAddressRow);
+        View warranty = findViewById(R.id.profileWarrantyRow);
+        View reviews = findViewById(R.id.profileReviewsRow);
 
         if (loginButton != null) {
             loginButton.setOnClickListener(v -> {
@@ -152,6 +171,31 @@ public class ProfileActivity extends AppCompatActivity {
         }
         if (cart != null) {
             cart.setOnClickListener(v -> startActivity(new Intent(this, CartActivity.class)));
+        }
+        if (editInfo != null) {
+            editInfo.setOnClickListener(v -> {
+                Intent intent = new Intent(this, CompleteProfileActivity.class);
+                intent.putExtra(CompleteProfileActivity.EXTRA_EDIT_MODE, true);
+                startActivity(intent);
+            });
+        }
+        if (orders != null) {
+            orders.setOnClickListener(v -> startActivity(new Intent(this, OrderHistoryActivity.class)));
+        }
+        if (address != null) {
+            address.setOnClickListener(v -> startActivity(new Intent(this, AddressBookActivity.class)));
+        }
+        if (warranty != null) {
+            warranty.setOnClickListener(v ->
+                    Toast.makeText(this, R.string.profile_warranty_coming_soon, Toast.LENGTH_SHORT).show());
+        }
+        if (reviews != null) {
+            reviews.setOnClickListener(v -> {
+                Intent intent = new Intent(this, ReviewListActivity.class);
+                intent.putExtra(ReviewListActivity.EXTRA_PRODUCT_ID, "profile-reviews");
+                intent.putExtra(ReviewListActivity.EXTRA_PRODUCT_NAME, getString(R.string.profile_product_reviews));
+                startActivity(intent);
+            });
         }
     }
 
@@ -231,9 +275,33 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void cacheAndBindUser(Map<String, Object> user) {
-        Map<String, Object> normalizedUser = normalizeUserPhoneFields(user);
+        Map<String, Object> normalizedUser = preserveLocalAvatar(normalizeUserPhoneFields(user));
         tokenManager.saveCurrentUserJson(GSON.toJson(normalizedUser));
         bindUser(normalizedUser);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> preserveLocalAvatar(Map<String, Object> apiUser) {
+        String apiAvatar = avatarUrl(apiUser);
+        if (!TextUtils.isEmpty(apiAvatar)) {
+            return apiUser;
+        }
+        Map<String, Object> cachedUser = readCachedUser();
+        String cachedAvatar = avatarUrl(cachedUser);
+        if (TextUtils.isEmpty(cachedAvatar)
+                || (!cachedAvatar.startsWith("content://") && !cachedAvatar.startsWith("file://"))) {
+            return apiUser;
+        }
+        apiUser.put("avatar", cachedAvatar);
+        apiUser.put("avatarUrl", cachedAvatar);
+        Object profileValue = apiUser.get("profile");
+        Map<String, Object> profile = profileValue instanceof Map
+                ? new HashMap<>((Map<String, Object>) profileValue)
+                : new HashMap<>();
+        profile.put("avatar", cachedAvatar);
+        profile.put("avatarUrl", cachedAvatar);
+        apiUser.put("profile", profile);
+        return apiUser;
     }
 
     @SuppressWarnings("unchecked")
@@ -287,6 +355,18 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void bindUserFields(Map<String, Object> user, String userId, String name, String phone,
                                 String email, String avatar, String memberLabel) {
+        String safeName = TextUtils.isEmpty(name) ? getString(R.string.profile_user_field_missing) : name;
+        String safePhone = TextUtils.isEmpty(phone) ? getString(R.string.profile_user_field_missing) : phone;
+        String safeEmail = TextUtils.isEmpty(email) ? getString(R.string.profile_user_add_email) : email;
+        String safeGender = fieldValue(genderText(firstProfileString(user, "gender")));
+        String safeBirthDate = fieldValue(formatIsoDate(firstProfileString(user, "dateOfBirth", "birthday", "dob")));
+
+        if (infoNameText != null) infoNameText.setText(safeName);
+        if (infoPhoneText != null) infoPhoneText.setText(safePhone);
+        if (infoEmailText != null) infoEmailText.setText(safeEmail);
+        if (infoGenderText != null) infoGenderText.setText(safeGender);
+        if (infoBirthDateText != null) infoBirthDateText.setText(safeBirthDate);
+
         if (userFieldCountText != null) {
             int count = user == null ? 0 : user.size();
             userFieldCountText.setText(getString(R.string.profile_user_fields_count, count));
@@ -422,6 +502,21 @@ public class ProfileActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(imageUrl)) {
             return;
         }
+        if (imageUrl.startsWith("content://") || imageUrl.startsWith("file://")) {
+            try (InputStream stream = getContentResolver().openInputStream(Uri.parse(imageUrl))) {
+                Bitmap bitmap = BitmapFactory.decodeStream(stream);
+                if (bitmap != null) {
+                    avatarImage.setImageBitmap(bitmap);
+                    avatarImage.setVisibility(View.VISIBLE);
+                    initialText.setVisibility(View.GONE);
+                }
+            } catch (Exception ignored) {
+                avatarImage.setVisibility(View.GONE);
+                initialText.setVisibility(View.VISIBLE);
+                initialText.setText(initialFor(name));
+            }
+            return;
+        }
         new Thread(() -> {
             try (InputStream stream = new URL(imageUrl).openStream()) {
                 Bitmap bitmap = BitmapFactory.decodeStream(stream);
@@ -456,7 +551,8 @@ public class ProfileActivity extends AppCompatActivity {
             return "";
         }
         String trimmed = avatar.trim();
-        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")
+                || trimmed.startsWith("content://") || trimmed.startsWith("file://")) {
             return trimmed;
         }
         String apiBase = Constants.BASE_URL;
@@ -684,6 +780,10 @@ public class ProfileActivity extends AppCompatActivity {
     private String fieldLine(int labelResId, String value) {
         String safeValue = TextUtils.isEmpty(value) ? getString(R.string.profile_user_field_missing) : value;
         return getString(R.string.profile_user_field_line, getString(labelResId), safeValue);
+    }
+
+    private String fieldValue(String value) {
+        return TextUtils.isEmpty(value) ? getString(R.string.profile_user_field_missing) : value;
     }
 
     private String userKeys(Map<String, Object> user) {

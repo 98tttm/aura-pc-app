@@ -4,6 +4,7 @@
     android:id="@+id/bottomNavCard"
     android:layout_width="match_parent"
     android:layout_height="82dp"
+    android:background="@color/aura_white"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:paddingStart="16dp"

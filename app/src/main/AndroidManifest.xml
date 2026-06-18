@@ -38,10 +38,16 @@
         <activity android:name="com.aura.pc.ui.profile.CompleteProfileActivity" />
         <activity android:name="com.aura.pc.ui.categories.CategoriesActivity" />
         <activity android:name="com.aura.pc.ui.products.AuraProductsActivity" />
+        <activity android:name="com.aura.pc.ui.products.ProductListActivity" />
+        <activity android:name="com.aura.pc.ui.products.ProductSearchActivity" />
         <activity android:name="com.aura.pc.ui.cart.CartActivity" />
         <activity android:name="com.aura.pc.ui.blog.BlogActivity" />
+        <activity android:name="com.aura.pc.ui.orders.OrderHistoryActivity" />
         <activity android:name="com.aura.pc.ui.profile.ProfileActivity" />
+        <activity android:name="com.aura.pc.ui.profile.EditProfileActivity" />
         <activity android:name="com.aura.pc.ui.wishlist.WishlistActivity" />
+        <activity android:name=".ReviewListActivity" />
+        <activity android:name=".WriteReviewActivity" />
         <activity
             android:name="com.aura.pc.ui.address.AddressBookActivity"
             android:windowSoftInputMode="adjustResize" />
