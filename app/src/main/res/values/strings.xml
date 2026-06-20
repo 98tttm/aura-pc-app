@@ -404,12 +404,6 @@
     <string name="address_hint_fullname">Nhập họ tên người nhận</string>
     <string name="address_hint_phone">Nhập số điện thoại</string>
     <string name="address_hint_detail">Số nhà, tên đường…</string>
-    <string name="address_use_current_location">Dùng vị trí hiện tại</string>
-    <string name="address_locating">Đang lấy vị trí…</string>
-    <string name="address_location_permission_denied">Bạn cần cấp quyền vị trí để tự điền địa chỉ.</string>
-    <string name="address_location_unavailable">Không lấy được vị trí hiện tại. Vui lòng bật GPS/Wi-Fi và thử lại.</string>
-    <string name="address_location_geocode_failed">Không thể chuyển vị trí thành địa chỉ. Vui lòng nhập thủ công.</string>
-    <string name="address_location_filled">Đã tự điền địa chỉ từ vị trí hiện tại. Vui lòng kiểm tra lại.</string>
     <string name="address_select_city">Chọn Tỉnh / Thành phố</string>
     <string name="address_select_district">Chọn Quận / Huyện</string>
     <string name="address_select_ward">Chọn Phường / Xã</string>

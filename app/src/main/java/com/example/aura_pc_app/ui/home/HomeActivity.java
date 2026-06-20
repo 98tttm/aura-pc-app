@@ -26,11 +26,8 @@ import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.adapter.HomeProductAdapter;
 import com.example.aura_pc_app.adapter.HomeSaleProductAdapter;
 import com.example.aura_pc_app.data.api.ApiClient;
-import com.example.aura_pc_app.data.cart.CartRepositoryImpl;
-import com.example.aura_pc_app.data.db.AppDatabase;
 import com.example.aura_pc_app.data.db.entity.ProductEntity;
 import com.example.aura_pc_app.databinding.ActivityHomeBinding;
-import com.example.aura_pc_app.domain.cart.CartRepository;
 import com.example.aura_pc_app.ui.base.BaseActivity;
 import com.example.aura_pc_app.utils.AuthGate;
 import java.util.ArrayList;
@@ -54,7 +51,6 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
     private int selectedSaleDateIndex;
     private final Map<String, List<CategoryChip>> childCategoriesByParent = new HashMap<>();
     private final List<ProductEntity> allSaleProducts = new ArrayList<>();
-    private CartRepository cartRepository;
     private final Handler saleCountdownHandler = new Handler(Looper.getMainLooper());
     private final Runnable saleCountdownRunnable = new Runnable() {
         @Override
@@ -67,12 +63,10 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cartRepository = new CartRepositoryImpl(this);
         BottomNavigationHelper.setup(this, BottomNavigationHelper.TAB_HOME);
         setupSaleSection();
         setupProductList();
         setupHomeActions();
-        observeCartBadge();
         setupHomeProductTabs();
         loadHomeCategories();
         loadSaleProducts();
@@ -110,30 +104,6 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         setupCategoryStrip();
         setupComponentStrip();
         setupCollapsedHeader();
-    }
-
-    private void observeCartBadge() {
-        AppDatabase.getInstance(this)
-                .cartDao()
-                .getCartItemCountLive()
-                .observe(this, count -> updateCartBadge(count == null ? 0 : count));
-    }
-
-    private void updateCartBadge(int count) {
-        updateCartBadgeView(binding.topCartBadge, count);
-        updateCartBadgeView(binding.stickyCartBadge, count);
-    }
-
-    private void updateCartBadgeView(TextView badge, int count) {
-        if (badge == null) {
-            return;
-        }
-        if (count <= 0) {
-            badge.setVisibility(View.GONE);
-            return;
-        }
-        badge.setVisibility(View.VISIBLE);
-        badge.setText(count > 99 ? "99+" : String.valueOf(count));
     }
 
     private void setupCollapsedHeader() {
@@ -182,12 +152,12 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         productAdapter = new HomeProductAdapter(new HomeProductAdapter.ProductClickListener() {
             @Override
             public void onProductClick(ProductEntity product) {
-                openProductDetail(product);
+                openProductDetail();
             }
 
             @Override
             public void onCartClick(ProductEntity product) {
-                addProductToCart(product);
+                addProductToCart();
             }
         });
         binding.productRecyclerView.setLayoutManager(new GridLayoutManager(this, 2, GridLayoutManager.HORIZONTAL, false));
@@ -209,7 +179,7 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
     }
 
     private void setupSaleSection() {
-        saleProductAdapter = new HomeSaleProductAdapter(this::openProductDetail);
+        saleProductAdapter = new HomeSaleProductAdapter(product -> openProductDetail());
         binding.homeSaleRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         binding.homeSaleRecyclerView.setAdapter(saleProductAdapter);
         binding.homeSaleRecyclerView.setHasFixedSize(false);
@@ -625,37 +595,19 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
             ProductEntity product = new ProductEntity();
             product._id = stringValue(raw.get("_id"));
             if (product._id.isEmpty()) {
-                product._id = stringValue(raw.get("id"));
-            }
-            if (product._id.isEmpty()) {
-                product._id = stringValue(raw.get("productId"));
-            }
-            if (product._id.isEmpty()) {
                 product._id = stringValue(raw.get("product_id"));
             }
             product.name = stringValue(raw.get("name"));
             product.slug = stringValue(raw.get("slug"));
-            product.price = numberValue(firstNonNull(raw, "price", "sale_price", "salePrice", "final_price"));
-            product.salePrice = nullableNumber(firstNonNull(raw, "salePrice", "sale_price", "final_price"));
-            product.oldPrice = nullableNumber(firstNonNull(raw, "old_price", "original_price", "compare_at_price", "market_price"));
+            product.price = numberValue(raw.get("price"));
+            product.oldPrice = nullableNumber(raw.get("old_price"));
             product.category_id = stringValue(raw.get("category_id"));
             product.brand = stringValue(raw.get("brand"));
             product.imageUrl = firstImageUrl(raw.get("images"));
-            product.images = product.imageUrl;
             product.active = true;
             products.add(product);
         }
         return products;
-    }
-
-    private Object firstNonNull(Map<String, Object> data, String... keys) {
-        for (String key : keys) {
-            Object value = data.get(key);
-            if (value != null) {
-                return value;
-            }
-        }
-        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -811,14 +763,6 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         startActivity(new Intent(this, ProductDetailActivity.class));
     }
 
-    private void openProductDetail(ProductEntity product) {
-        Intent intent = new Intent(this, ProductDetailActivity.class);
-        if (product != null && product._id != null && !product._id.trim().isEmpty() && !product._id.startsWith("fallback-")) {
-            intent.putExtra("product_id", product._id);
-        }
-        startActivity(intent);
-    }
-
     private void openCategoryProducts(String categoryId, String categoryName) {
         Intent intent = new Intent(this, AuraProductsActivity.class);
         intent.putExtra(AuraProductsActivity.EXTRA_CATEGORY_ID, categoryId);
@@ -836,26 +780,11 @@ public class HomeActivity extends BaseActivity<ActivityHomeBinding> {
         startActivity(intent);
     }
 
-    private void addProductToCart(ProductEntity product) {
+    private void addProductToCart() {
         if (!AuthGate.requireLogin(this, CartActivity.class)) {
             return;
         }
-        if (product == null || product._id == null || product._id.trim().isEmpty() || product._id.startsWith("fallback-")) {
-            Toast.makeText(this, "Không thể thêm sản phẩm này vào giỏ hàng", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        cartRepository.addProduct(product, 1, new CartRepository.CartCallback() {
-            @Override
-            public void onSuccess() {
-                Toast.makeText(HomeActivity.this, getString(R.string.toast_added_to_cart), Toast.LENGTH_SHORT).show();
-                BottomNavigationHelper.setupHeader(HomeActivity.this);
-            }
-
-            @Override
-            public void onError(String message) {
-                Toast.makeText(HomeActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
-        });
+        openCart();
     }
 
     private List<ProductEntity> createFallbackProducts() {

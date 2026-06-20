@@ -8,12 +8,13 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.aura_pc_app.data.cart.CartRepositoryImpl;
 import com.example.aura_pc_app.data.db.entity.CartItemEntity;
+import com.example.aura_pc_app.domain.cart.CartRepository;
 import com.example.aura_pc_app.ui.base.BaseViewModel;
 
 import java.util.List;
 
 public class CartViewModel extends BaseViewModel {
-    private final CartRepositoryImpl repository;
+    private final CartRepository repository;
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>(false);
     private LiveData<List<CartItemEntity>> cartItems;
 
@@ -46,17 +47,13 @@ public class CartViewModel extends BaseViewModel {
         repository.removeItem(item, callback());
     }
 
-    public void refreshMissingPrices(List<CartItemEntity> items) {
-        repository.refreshMissingPrices(items);
-    }
-
     private void updateQuantity(CartItemEntity item, int quantity) {
         loading.setValue(true);
         repository.updateQuantity(item, quantity, callback());
     }
 
-    private com.example.aura_pc_app.domain.cart.CartRepository.CartCallback callback() {
-        return new com.example.aura_pc_app.domain.cart.CartRepository.CartCallback() {
+    private CartRepository.CartCallback callback() {
+        return new CartRepository.CartCallback() {
             @Override
             public void onSuccess() {
                 loading.setValue(false);

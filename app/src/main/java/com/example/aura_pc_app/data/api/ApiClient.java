@@ -40,7 +40,6 @@ public class ApiClient {
 
         // Concept 3 — HTTP logging (BODY in debug, NONE in release)
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.redactHeader("Authorization");
         if (BuildConfig.DEBUG) {
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         } else {

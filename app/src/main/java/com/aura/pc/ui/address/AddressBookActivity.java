@@ -25,8 +25,6 @@ import java.util.List;
  * Tương đương tab "Sổ địa chỉ" của trang Tài khoản trên website.
  */
 public class AddressBookActivity extends AppCompatActivity implements AddressAdapter.Listener {
-    public static final String EXTRA_SELECT_MODE = "extra_select_mode";
-    public static final String EXTRA_SELECTED_ADDRESS = "extra_selected_address";
 
     private AddressRepository repository;
     private AddressAdapter adapter;
@@ -94,17 +92,6 @@ public class AddressBookActivity extends AppCompatActivity implements AddressAda
     }
 
     // ── Adapter callbacks ─────────────────────────────────
-
-    @Override
-    public void onSelect(Address address) {
-        if (!getIntent().getBooleanExtra(EXTRA_SELECT_MODE, false)) {
-            return;
-        }
-        Intent result = new Intent();
-        result.putExtra(EXTRA_SELECTED_ADDRESS, address);
-        setResult(RESULT_OK, result);
-        finish();
-    }
 
     @Override
     public void onEdit(Address address) {

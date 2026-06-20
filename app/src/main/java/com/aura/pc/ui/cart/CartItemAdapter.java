@@ -79,16 +79,6 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
         return new ArrayList<>(selectedKeys);
     }
 
-    public ArrayList<String> getSelectedProductIds() {
-        ArrayList<String> productIds = new ArrayList<>();
-        for (CartItemEntity item : items) {
-            if (selectedKeys.contains(cartKey(item)) && item.productId != null && !item.productId.trim().isEmpty()) {
-                productIds.add(item.productId.trim());
-            }
-        }
-        return productIds;
-    }
-
     public boolean areAllItemsSelected() {
         return !items.isEmpty() && selectedKeys.size() == items.size();
     }
@@ -172,8 +162,8 @@ public class CartItemAdapter extends RecyclerView.Adapter<CartItemAdapter.CartIt
     }
 
     public static String cartKey(CartItemEntity item) {
-        String productId = item == null || item.productId == null ? "" : item.productId.trim();
-        String variantId = item == null || item.variantId == null ? "" : item.variantId.trim();
+        String productId = item == null || item.productId == null ? "" : item.productId;
+        String variantId = item == null || item.variantId == null ? "" : item.variantId;
         return productId + "\n" + variantId;
     }
 

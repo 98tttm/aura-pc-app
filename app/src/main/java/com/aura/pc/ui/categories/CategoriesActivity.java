@@ -183,16 +183,16 @@ public class CategoriesActivity extends AppCompatActivity {
         List<Map<String, Object>> fallback = new ArrayList<>();
         fallback.add(mapCategory("laptop", null, "Laptop", 1));
         fallback.add(mapCategory("pc", null, "PC", 1));
-        fallback.add(mapCategory("linh-kien", null, "Linh Kiện", 1));
-        fallback.add(mapCategory("phu-kien", null, "Phụ kiện", 1));
-        fallback.add(mapCategory("man-hinh", null, "Màn hình", 1));
+        fallback.add(mapCategory("linh-kien", null, "Linh Kiá»‡n", 1));
+        fallback.add(mapCategory("phu-kien", null, "Phá»¥ kiá»‡n", 1));
+        fallback.add(mapCategory("man-hinh", null, "MÃ n hÃ¬nh", 1));
         fallback.add(mapCategory("gaming-gear", null, "Gaming gear", 1));
-        fallback.add(mapCategory("ban-ghe", null, "Bàn-Ghế", 1));
+        fallback.add(mapCategory("ban-ghe", null, "BÃ n-Gháº¿", 1));
         fallback.add(mapCategory("laptop-asus", "laptop", "ASUS", 2));
         fallback.add(mapCategory("laptop-lenovo", "laptop", "LENOVO", 2));
         fallback.add(mapCategory("laptop-gaming-ai", "laptop", "Laptop A.I", 2));
-        fallback.add(mapCategory("laptop-van-phong", "laptop", "Văn phòng", 2));
-        fallback.add(mapCategory("laptop-sinh-vien", "laptop", "SINH VIÊN", 2));
+        fallback.add(mapCategory("laptop-van-phong", "laptop", "VÄƒn phÃ²ng", 2));
+        fallback.add(mapCategory("laptop-sinh-vien", "laptop", "SINH VIÃŠN", 2));
         consumeCategories(fallback);
     }
 
@@ -312,7 +312,7 @@ public class CategoriesActivity extends AppCompatActivity {
     private void renderStaticFilters() {
         if (priceGrid != null) {
             priceGrid.removeAllViews();
-            for (String label : Arrays.asList("Dưới 10tr", "10 - 15tr", "15 - 20tr", "20 - 30tr", "30 - 50tr", "Trên 50tr")) {
+            for (String label : Arrays.asList("DÆ°á»›i 10tr", "10 - 15tr", "15 - 20tr", "20 - 30tr", "30 - 50tr", "TrÃªn 50tr")) {
                 priceGrid.addView(createSmallButton(label, false,
                         () -> openProductList(selectedRoot, AuraProductsActivity.FILTER_TYPE_PRICE, label, 0, 0)));
             }
@@ -323,8 +323,8 @@ public class CategoriesActivity extends AppCompatActivity {
         if (needsGrid == null) return;
         needsGrid.removeAllViews();
         List<CategoryItem> candidates = childrenOf(selectedRoot.categoryId);
-        List<CategoryItem> needs = filterByKeywords(candidates, Arrays.asList("văn phòng", "sinh viên", "gaming", "ai", "đồ họa"));
-        List<String> fallbackLabels = Arrays.asList("Văn phòng", "Sinh viên", "Gaming");
+        List<CategoryItem> needs = filterByKeywords(candidates, Arrays.asList("vÄƒn phÃ²ng", "sinh viÃªn", "gaming", "ai", "Ä‘á»“ há»a"));
+        List<String> fallbackLabels = Arrays.asList("VÄƒn phÃ²ng", "Sinh viÃªn", "Gaming");
         int fallbackIndex = 0;
         while (needs.size() < 3 && fallbackIndex < fallbackLabels.size()) {
             String label = fallbackLabels.get(fallbackIndex);

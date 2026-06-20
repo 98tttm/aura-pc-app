@@ -28,9 +28,6 @@ public interface CartDao {
     @Query("SELECT COALESCE(SUM(quantity), 0) FROM cart_items")
     LiveData<Integer> getCartItemCountLive();
 
-    @Query("SELECT COUNT(*) FROM cart_items")
-    LiveData<Integer> getDistinctCartItemCountLive();
-
     @Query("SELECT * FROM cart_items WHERE productId = :productId AND variantId = :variantId LIMIT 1")
     CartItemEntity getByCartKey(String productId, String variantId);
 

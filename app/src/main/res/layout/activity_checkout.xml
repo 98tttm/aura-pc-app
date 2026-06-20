@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingBottom="132dp">
+        android:paddingBottom="148dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -66,58 +66,6 @@
             </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/checkoutStepper"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:paddingStart="20dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="20dp"
-                android:paddingBottom="4dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/stepAddress"
-                    android:layout_width="0dp"
-                    android:layout_height="36dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_chip_active"
-                    android:gravity="center"
-                    android:text="Địa chỉ"
-                    android:textColor="@color/white"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/stepVoucher"
-                    android:layout_width="0dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_chip_default"
-                    android:gravity="center"
-                    android:text="Voucher"
-                    android:textColor="@color/black"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/stepPayment"
-                    android:layout_width="0dp"
-                    android:layout_height="36dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_chip_default"
-                    android:gravity="center"
-                    android:text="Thanh toán"
-                    android:textColor="@color/black"
-                    android:textSize="13sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/stepAddressContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -223,10 +171,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
-                    android:fontFamily="sans-serif-bold"
                     android:text="Chọn phương thức giao hàng"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="24sp" />
 
                 <FrameLayout
                     android:id="@+id/shipping_method_1"
@@ -246,8 +193,8 @@
                         android:paddingEnd="22dp">
 
                         <ImageView
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
                             android:src="@drawable/ic_shipping_box_red" />
 
                         <TextView
@@ -260,7 +207,7 @@
                             android:maxLines="2"
                             android:text="Giao siêu tốc: trước 10 giờ ngày 15/06/2026"
                             android:textColor="@color/black"
-                            android:textSize="15sp" />
+                            android:textSize="17sp" />
                     </LinearLayout>
 
                     <FrameLayout
@@ -297,8 +244,8 @@
                         android:paddingEnd="22dp">
 
                         <ImageView
-                            android:layout_width="28dp"
-                            android:layout_height="26dp"
+                            android:layout_width="34dp"
+                            android:layout_height="30dp"
                             android:src="@drawable/ic_shipping_fast_red" />
 
                         <TextView
@@ -311,7 +258,7 @@
                             android:maxLines="2"
                             android:text="Giao thông thường: trước 12 giờ ngày 15/06/2026"
                             android:textColor="@color/black"
-                            android:textSize="15sp" />
+                            android:textSize="17sp" />
                     </LinearLayout>
 
                     <FrameLayout
@@ -331,7 +278,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/stepPaymentContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -372,7 +318,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/stepVoucherContent"
                 android:layout_width="match_parent"
                 android:layout_height="92dp"
                 android:layout_marginStart="20dp"
@@ -389,52 +334,26 @@
                     android:layout_height="12dp"
                     android:src="@drawable/ic_checkout_ticket" />
 
-                <EditText
-                    android:id="@+id/etCheckoutVoucher"
+                <TextView
                     android:layout_width="0dp"
-                    android:layout_height="56dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:clickable="true"
-                    android:cursorVisible="true"
-                    android:enabled="true"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:hint="Nhập mã giảm giá"
-                    android:imeOptions="actionDone"
-                    android:inputType="textCapCharacters"
-                    android:maxLength="40"
-                    android:singleLine="true"
-                    android:textColor="@color/black"
-                    android:textColorHint="#6B7280"
+                    android:text="Nhập mã giảm giá"
+                    android:textColor="#6B7280"
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/btnApplyVoucher"
                     android:layout_width="117dp"
                     android:layout_height="56dp"
                     android:background="@drawable/bg_checkout_promo_button"
-                    android:clickable="true"
                     android:fontFamily="sans-serif-medium"
-                    android:focusable="true"
                     android:gravity="center"
                     android:text="Áp dụng"
                     android:textColor="@color/white"
                     android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvVoucherError"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="6dp"
-                android:layout_marginEnd="24dp"
-                android:textColor="#DC2626"
-                android:textSize="12sp"
-                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -488,6 +407,7 @@
                         android:layout_marginTop="16dp">
 
                         <TextView
+                            android:id="@+id/tvCheckoutShippingPrice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Phí vận chuyển"
@@ -495,7 +415,6 @@
                             android:textSize="16sp" />
 
                         <TextView
-                            android:id="@+id/tvCheckoutShippingPrice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
@@ -517,7 +436,6 @@
                             android:textSize="16sp" />
 
                         <TextView
-                            android:id="@+id/tvCheckoutDiscountPrice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
@@ -661,8 +579,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="12dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -712,7 +629,6 @@
                 app:tint="@color/white" />
 
             <TextView
-                android:id="@+id/tvConfirmOrderText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -721,18 +637,6 @@
                 android:textColor="@color/white"
                 android:textSize="20sp" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvCheckoutSubmitError"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:gravity="center"
-            android:textColor="#DC2626"
-            android:textSize="12sp"
-            android:visibility="gone" />
 
         <TextView
             android:layout_width="match_parent"

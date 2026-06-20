@@ -22,11 +22,7 @@ import com.aura.pc.utils.BottomNavigationHelper;
 import com.aura.pc.ui.productdetail.ProductDetailActivity;
 import com.example.aura_pc_app.R;
 import com.example.aura_pc_app.data.api.ApiClient;
-import com.example.aura_pc_app.data.cart.CartProductMapper;
-import com.example.aura_pc_app.data.cart.CartRepositoryImpl;
-import com.example.aura_pc_app.data.db.entity.ProductEntity;
 import com.example.aura_pc_app.databinding.ActivityProductListBinding;
-import com.example.aura_pc_app.domain.cart.CartRepository;
 import com.example.aura_pc_app.ui.base.BaseActivity;
 import com.example.aura_pc_app.utils.ProductSearchUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -49,7 +45,6 @@ public class ProductListActivity extends BaseActivity<ActivityProductListBinding
 
     private ProductListViewModel viewModel;
     private ProductPagingAdapter adapter;
-    private CartRepository cartRepository;
     private boolean isSpinnerInitialized = false;
 
     // Sort options
@@ -73,7 +68,6 @@ public class ProductListActivity extends BaseActivity<ActivityProductListBinding
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cartRepository = new CartRepositoryImpl(this);
         
         binding.btnBack.setOnClickListener(v -> finish());
         getWindow().setStatusBarColor(getColor(R.color.aura_orange));
@@ -131,7 +125,9 @@ public class ProductListActivity extends BaseActivity<ActivityProductListBinding
 
         adapter = new ProductPagingAdapter();
         adapter.setOnProductClickListener(this::openProductDetail);
-        adapter.setOnAddToCartListener(this::addProductToCart);
+        adapter.setOnAddToCartListener(product ->
+                Toast.makeText(this, getString(R.string.toast_added_to_cart), Toast.LENGTH_SHORT).show()
+        );
         adapter.loadFavoriteIds(this);
         rv.setAdapter(adapter);
 
@@ -410,25 +406,5 @@ public class ProductListActivity extends BaseActivity<ActivityProductListBinding
             intent.putExtra("product_name", (String) nameObj);
         }
         startActivity(intent);
-    }
-
-    private void addProductToCart(Map<String, Object> product) {
-        ProductEntity entity = CartProductMapper.fromApiMap(product);
-        if (entity == null) {
-            Toast.makeText(this, "Không thể thêm sản phẩm này vào giỏ hàng", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        cartRepository.addProduct(entity, 1, new CartRepository.CartCallback() {
-            @Override
-            public void onSuccess() {
-                Toast.makeText(ProductListActivity.this, getString(R.string.toast_added_to_cart), Toast.LENGTH_SHORT).show();
-                BottomNavigationHelper.setupHeader(ProductListActivity.this);
-            }
-
-            @Override
-            public void onError(String message) {
-                Toast.makeText(ProductListActivity.this, message, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }
