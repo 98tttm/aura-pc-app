@@ -12,9 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aura.pc.ui.products.ProductListActivity;
 import com.aura.pc.ui.productdetail.ProductDetailActivity;
+import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.R;
+import com.example.aura_pc_app.data.cart.CartRepositoryImpl;
 import com.example.aura_pc_app.data.db.AppDatabase;
+import com.example.aura_pc_app.data.db.entity.ProductEntity;
 import com.example.aura_pc_app.data.db.entity.WishlistEntity;
+import com.example.aura_pc_app.domain.cart.CartRepository;
 import com.example.aura_pc_app.utils.LocaleManager;
 
 import java.util.List;
@@ -25,6 +29,7 @@ public class WishlistActivity extends AppCompatActivity {
     private RecyclerView rvWishlist;
     private View emptyState;
     private WishlistAdapter adapter;
+    private CartRepository cartRepository;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -35,6 +40,7 @@ public class WishlistActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wishlist);
+        cartRepository = new CartRepositoryImpl(this);
 
         rvWishlist = findViewById(R.id.rvWishlist);
         emptyState = findViewById(R.id.emptyState);
@@ -78,9 +84,7 @@ public class WishlistActivity extends AppCompatActivity {
             });
         });
 
-        adapter.setOnAddToCartListener(item -> {
-            Toast.makeText(this, getString(R.string.toast_added_to_cart), Toast.LENGTH_SHORT).show();
-        });
+        adapter.setOnAddToCartListener(this::addWishlistItemToCart);
 
         adapter.setOnItemClickListener(item -> {
             Intent intent = new Intent(this, ProductDetailActivity.class);
@@ -107,5 +111,33 @@ public class WishlistActivity extends AppCompatActivity {
             rvWishlist.setVisibility(View.VISIBLE);
             emptyState.setVisibility(View.GONE);
         }
+    }
+
+    private void addWishlistItemToCart(WishlistEntity item) {
+        if (item == null || item.productId == null || item.productId.trim().isEmpty()) {
+            Toast.makeText(this, "Không thể thêm sản phẩm này vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        ProductEntity product = new ProductEntity();
+        product._id = item.productId;
+        product.name = item.name;
+        product.price = item.oldPrice > 0 ? item.oldPrice : item.price;
+        product.salePrice = item.price > 0 ? item.price : null;
+        product.oldPrice = item.oldPrice > 0 ? item.oldPrice : null;
+        product.imageUrl = item.imageUrl;
+        product.images = item.imageUrl;
+        product.active = true;
+        cartRepository.addProduct(product, 1, new CartRepository.CartCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(WishlistActivity.this, getString(R.string.toast_added_to_cart), Toast.LENGTH_SHORT).show();
+                BottomNavigationHelper.setupHeader(WishlistActivity.this);
+            }
+
+            @Override
+            public void onError(String message) {
+                Toast.makeText(WishlistActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

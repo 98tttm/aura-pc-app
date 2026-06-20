@@ -12,8 +12,7 @@
         <androidx.core.widget.NestedScrollView
             android:id="@+id/homeScrollView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:clipToPadding="false"
             android:overScrollMode="never"
             android:paddingBottom="112dp"
@@ -116,6 +115,7 @@
                             app:tint="@color/aura_white" />
 
                         <TextView
+                            android:id="@+id/topCartBadge"
                             android:layout_width="13dp"
                             android:layout_height="13dp"
                             android:layout_gravity="top|end"
@@ -127,7 +127,9 @@
                             android:includeFontPadding="false"
                             android:text="@string/home_badge_count"
                             android:textColor="@color/aura_white"
-                            android:textSize="6sp" />
+                            android:textSize="6sp"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
                     </FrameLayout>
                 </LinearLayout>
 
@@ -1380,6 +1382,7 @@
                 app:tint="@color/aura_white" />
 
             <TextView
+                android:id="@+id/stickyCartBadge"
                 android:layout_width="13dp"
                 android:layout_height="13dp"
                 android:layout_gravity="top|end"
@@ -1391,7 +1394,9 @@
                 android:includeFontPadding="false"
                 android:text="@string/home_badge_count"
                 android:textColor="@color/aura_white"
-                android:textSize="6sp" />
+                android:textSize="6sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
         </FrameLayout>
     </LinearLayout>
 

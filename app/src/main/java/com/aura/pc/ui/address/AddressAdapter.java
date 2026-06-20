@@ -17,6 +17,7 @@ import java.util.List;
 public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.VH> {
 
     public interface Listener {
+        void onSelect(Address address);
         void onEdit(Address address);
         void onDelete(Address address);
         void onSetDefault(Address address);
@@ -68,6 +69,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.VH> {
         h.setDefault.setOnClickListener(v -> listener.onSetDefault(a));
         h.edit.setOnClickListener(v -> listener.onEdit(a));
         h.delete.setOnClickListener(v -> listener.onDelete(a));
+        h.itemView.setOnClickListener(v -> listener.onSelect(a));
     }
 
     @Override

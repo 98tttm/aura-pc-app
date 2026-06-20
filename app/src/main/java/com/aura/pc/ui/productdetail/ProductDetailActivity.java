@@ -29,10 +29,13 @@ import com.example.aura_pc_app.adapter.RelatedProductAdapter;
 import com.example.aura_pc_app.adapter.SpecAdapter;
 import com.example.aura_pc_app.adapter.ViewedProductAdapter;
 import com.example.aura_pc_app.data.api.ApiClient;
+import com.example.aura_pc_app.data.cart.CartProductMapper;
+import com.example.aura_pc_app.data.cart.CartRepositoryImpl;
 import com.example.aura_pc_app.domain.repository.mock.MockData;
 import com.aura.pc.utils.BottomNavigationHelper;
 import com.example.aura_pc_app.domain.model.Product;
 import com.example.aura_pc_app.domain.model.ProductSpec;
+import com.example.aura_pc_app.domain.cart.CartRepository;
 import com.example.aura_pc_app.utils.AuthGate;
 import com.example.aura_pc_app.utils.LocaleManager;
 import com.google.gson.Gson;
@@ -46,6 +49,7 @@ import java.util.Locale;
 import java.util.concurrent.Executors;
 
 import com.example.aura_pc_app.data.db.AppDatabase;
+import com.example.aura_pc_app.data.db.entity.ProductEntity;
 import com.example.aura_pc_app.data.db.entity.WishlistEntity;
 
 public class ProductDetailActivity extends AppCompatActivity {
@@ -58,6 +62,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     private boolean isFavorite = false;
     
     private String currentProductId;
+    private Map<String, Object> currentProductData;
+    private CartRepository cartRepository;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -69,6 +75,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        cartRepository = new CartRepositoryImpl(this);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -170,8 +177,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 if (!AuthGate.requireLogin(this, CartActivity.class)) {
                     return;
                 }
-                android.widget.Toast.makeText(this, getString(R.string.toast_added_to_cart), android.widget.Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, CartActivity.class));
+                addCurrentProductToCart(true);
             });
         }
         if (btnBuyNow != null) {
@@ -179,7 +185,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 if (!AuthGate.requireLogin(this, CheckoutActivity.class)) {
                     return;
                 }
-                startActivity(new Intent(this, CheckoutActivity.class));
+                addCurrentProductToCart(false, true);
             });
         }
     }
@@ -230,6 +236,11 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void bindRealProductData(Map<String, Object> productData) {
+        currentProductData = productData;
+        String productId = firstString(productData, "_id", "id", "product_id", "productId");
+        if (productId != null && !productId.isEmpty()) {
+            currentProductId = productId;
+        }
         String name = (String) productData.get("name");
         String descHtml = (String) productData.get("description_html");
         String desc = (String) productData.get("description");
@@ -523,9 +534,53 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void openProductDetail(Map<String, Object> product) {
         Intent intent = new Intent(this, ProductDetailActivity.class);
-        String productId = (String) product.get("_id");
+        String productId = firstString(product, "_id", "id", "product_id", "productId");
         intent.putExtra("product_id", productId);
         startActivity(intent);
+    }
+
+    private void addCurrentProductToCart(boolean openCartOnSuccess) {
+        addCurrentProductToCart(openCartOnSuccess, false);
+    }
+
+    private void addCurrentProductToCart(boolean openCartOnSuccess, boolean openCheckoutOnSuccess) {
+        ProductEntity entity = CartProductMapper.fromApiMap(currentProductData);
+        if (entity == null) {
+            android.widget.Toast.makeText(this, "Không thể thêm sản phẩm này vào giỏ hàng", android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
+        cartRepository.addProduct(entity, 1, new CartRepository.CartCallback() {
+            @Override
+            public void onSuccess() {
+                android.widget.Toast.makeText(ProductDetailActivity.this, getString(R.string.toast_added_to_cart), android.widget.Toast.LENGTH_SHORT).show();
+                BottomNavigationHelper.setupHeader(ProductDetailActivity.this);
+                if (openCartOnSuccess) {
+                    startActivity(new Intent(ProductDetailActivity.this, CartActivity.class));
+                } else if (openCheckoutOnSuccess) {
+                    ArrayList<String> selectedKeys = new ArrayList<>();
+                    selectedKeys.add(entity._id + "\n");
+                    Intent intent = new Intent(ProductDetailActivity.this, CheckoutActivity.class);
+                    intent.putStringArrayListExtra(CheckoutActivity.EXTRA_SELECTED_CART_KEYS, selectedKeys);
+                    startActivity(intent);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                android.widget.Toast.makeText(ProductDetailActivity.this, message, android.widget.Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private String firstString(Map<String, Object> data, String... keys) {
+        if (data == null) return "";
+        for (String key : keys) {
+            Object value = data.get(key);
+            if (value instanceof String && !((String) value).trim().isEmpty()) {
+                return ((String) value).trim();
+            }
+        }
+        return "";
     }
 
     private String formatCurrency(double amount) {

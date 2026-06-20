@@ -116,7 +116,7 @@ public class BottomNavigationHelper {
         }
         AppDatabase.getInstance(activity)
                 .cartDao()
-                .getCartItemCountLive()
+                .getDistinctCartItemCountLive()
                 .observe((LifecycleOwner) activity, count -> {
                     int safeCount = count == null ? 0 : count;
                     updateBadge(headerBadge, safeCount);

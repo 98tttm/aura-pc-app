@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
@@ -37,6 +39,7 @@
         <activity android:name="com.aura.pc.ui.profile.CheckingAccountActivity" />
         <activity android:name="com.aura.pc.ui.profile.CompleteProfileActivity" />
         <activity android:name="com.aura.pc.ui.categories.CategoriesActivity" />
+        <activity android:name="com.aura.pc.ui.products.ProductListActivity" />
         <activity android:name="com.aura.pc.ui.products.AuraProductsActivity" />
         <activity android:name="com.aura.pc.ui.cart.CartActivity" />
         <activity android:name="com.aura.pc.ui.blog.BlogActivity" />

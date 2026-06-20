@@ -216,42 +216,60 @@
             <LinearLayout
                 android:id="@+id/promoCodeRow"
                 android:layout_width="match_parent"
-                android:layout_height="72dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"
-                android:gravity="top"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <EditText
-                    android:id="@+id/cartCouponInput"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="43dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_cart_coupon_input_figma"
-                    android:hint="@string/cart_coupon_hint"
-                    android:includeFontPadding="false"
-                    android:inputType="text"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:singleLine="true"
-                    android:textColor="#FF0B1C30"
-                    android:textColorHint="#FF45464D"
-                    android:textSize="16sp" />
+                    android:gravity="top"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/cartCouponInput"
+                        android:layout_width="0dp"
+                        android:layout_height="43dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_cart_coupon_input_figma"
+                        android:hint="@string/cart_coupon_hint"
+                        android:imeOptions="actionDone"
+                        android:includeFontPadding="false"
+                        android:inputType="textCapCharacters"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:singleLine="true"
+                        android:textColor="#FF0B1C30"
+                        android:textColorHint="#FF45464D"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/cartApplyCoupon"
+                        android:layout_width="80dp"
+                        android:layout_height="43dp"
+                        android:layout_marginStart="6dp"
+                        android:background="@drawable/bg_cart_apply_button_figma"
+                        android:clickable="true"
+                        android:elevation="4dp"
+                        android:focusable="true"
+                        android:fontFamily="sans-serif-bold"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:text="@string/cart_apply"
+                        android:textColor="@color/aura_white"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/cartApplyCoupon"
-                    android:layout_width="80dp"
-                    android:layout_height="43dp"
-                    android:layout_marginStart="6dp"
-                    android:background="@drawable/bg_cart_apply_button_figma"
-                    android:clickable="true"
-                    android:elevation="4dp"
-                    android:focusable="true"
-                    android:fontFamily="sans-serif-bold"
-                    android:gravity="center"
+                    android:id="@+id/tvCartCouponMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
                     android:includeFontPadding="false"
-                    android:text="@string/cart_apply"
-                    android:textColor="@color/aura_white"
-                    android:textSize="12sp" />
+                    android:textColor="@color/discount_text"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    tools:text="Mã giảm giá không hợp lệ" />
             </LinearLayout>
 
             <LinearLayout
@@ -312,6 +330,7 @@
                             android:textSize="16sp" />
 
                         <TextView
+                            android:id="@+id/tvCartDiscountPrice"
                             android:layout_width="wrap_content"
                             android:layout_height="24dp"
                             android:layout_alignParentEnd="true"
@@ -395,13 +414,15 @@
             android:id="@+id/cbSelectAll"
             android:layout_width="wrap_content"
             android:layout_height="43dp"
-            android:buttonTint="@color/aura_black"
+            android:button="@drawable/selector_select_all_checkbox"
+            android:buttonTint="@null"
             android:fontFamily="sans-serif-bold"
             android:gravity="center_vertical"
             android:includeFontPadding="false"
             android:text="@string/cart_select_all"
             android:textColor="@color/aura_black"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            app:buttonTint="@null" />
 
         <TextView
             android:id="@+id/btnCheckout"

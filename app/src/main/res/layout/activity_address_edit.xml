@@ -63,6 +63,18 @@
                 android:paddingHorizontal="14dp"
                 android:popupBackground="@color/white" />
 
+            <TextView
+                android:id="@+id/btnUseCurrentLocation"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_default_outline_badge"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="center"
+                android:text="@string/address_use_current_location"
+                android:textColor="@color/orange_primary"
+                android:textSize="14sp" />
+
             <!-- Họ và tên -->
             <TextView style="@style/AddrFieldLabel" android:text="@string/address_field_fullname" />
 
