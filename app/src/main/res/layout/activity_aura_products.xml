@@ -565,7 +565,8 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:contentDescription="@string/cd_notifications"
-            android:focusable="true">
+            android:focusable="true"
+            android:visibility="visible">
 
             <ImageView
                 android:layout_width="22dp"
@@ -597,7 +598,8 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:contentDescription="@string/home_open_cart"
-            android:focusable="true">
+            android:focusable="true"
+            android:visibility="visible">
 
             <ImageView
                 android:layout_width="22dp"
