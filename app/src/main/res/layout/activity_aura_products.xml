@@ -54,6 +54,19 @@
                         android:scaleType="fitCenter"
                         android:src="@drawable/figma_home_logo" />
 
+                    <ImageButton
+                        android:id="@+id/categoryParentBackButton"
+                        android:layout_width="32dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="2dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/cd_back"
+                        android:padding="4dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_profile_back_white"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="25dp"
@@ -129,6 +142,20 @@
                             android:textSize="6sp" />
                     </FrameLayout>
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/productListBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="156dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/bg_product_list_banner"
+                    android:contentDescription="@null"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/figma_home_banner"
+                    tools:src="@drawable/home_banner_tuf_gaming" />
 
                 <LinearLayout
                     android:id="@+id/topSearchBox"
@@ -353,6 +380,25 @@
                     android:gravity="center_horizontal"
                     android:useDefaultMargins="false" />
 
+                <TextView
+                    android:id="@+id/loadMoreButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/bg_aura_product_card_elevated"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="sans-serif-bold"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:text="@string/product_list_load_more_initial"
+                    android:textColor="@color/aura_orange"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="116dp"
@@ -556,6 +602,41 @@
                 android:textColor="@color/aura_ink"
                 android:textColorHint="#FFB8B8B8"
                 android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/stickyCategoryTitleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-bold"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/aura_white"
+                android:textSize="13sp"
+                tools:text="Laptop gaming" />
+
+            <TextView
+                android:id="@+id/stickyBreadcrumbText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textColor="@color/aura_white"
+                android:textSize="10sp"
+                android:visibility="gone"
+                tools:text="Laptop gaming / Acer"
+                tools:visibility="visible" />
         </LinearLayout>
 
         <FrameLayout
