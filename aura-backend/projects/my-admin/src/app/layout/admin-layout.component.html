@@ -1,0 +1,228 @@
+<div class="layout" [class.layout--collapsed]="sidebarCollapsed()">
+  <div class="sidebar-backdrop" (click)="toggleSidebar()"></div>
+  <aside class="sidebar">
+    <div class="sidebar__header">
+      <img
+        [src]="themeService.theme() === 'dark' ? 'assets/WEBSOURCE/LogoWhite.png' : 'assets/WEBSOURCE/logo152238.png'"
+        alt="AuraPC"
+        class="sidebar__logo-img"
+      />
+      <span class="sidebar__logo-text">AuraPC</span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a routerLink="/" [class.active]="router.url === '/'" class="sidebar__link" title="Trang chủ" (click)="closeSidebarOnMobile()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5z"/>
+          <path d="M14 5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5z"/>
+          <path d="M4 16a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3z"/>
+          <path d="M14 13a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-6z"/>
+        </svg>
+        <span class="sidebar__link-text">Trang chủ</span>
+      </a>
+
+      <a routerLink="/products" routerLinkActive="active" class="sidebar__link" title="Sản phẩm" (click)="closeSidebarOnMobile()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+        <span class="sidebar__link-text">Sản phẩm</span>
+      </a>
+
+      <a routerLink="/categories" routerLinkActive="active" class="sidebar__link" title="Danh mục" (click)="closeSidebarOnMobile()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 3h7v7H3z"/><path d="M14 3h7v7h-7z"/><path d="M3 14h7v7H3z"/><path d="M14 14h7v7h-7z"/>
+        </svg>
+        <span class="sidebar__link-text">Danh mục</span>
+      </a>
+
+      <a routerLink="/orders" routerLinkActive="active" class="sidebar__link" title="Đơn hàng" (click)="closeSidebarOnMobile()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="3" width="20" height="18" rx="2"/>
+          <path d="M8 7h8"/>
+          <path d="M8 11h6"/>
+          <path d="M8 15h4"/>
+        </svg>
+        <span class="sidebar__link-text">Đơn hàng</span>
+      </a>
+
+      <a routerLink="/promotions" routerLinkActive="active" class="sidebar__link" title="Khuyến mãi" (click)="closeSidebarOnMobile()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+        <span class="sidebar__link-text">Khuyến mãi</span>
+      </a>
+
+      <a routerLink="/warranty" routerLinkActive="active" class="sidebar__link" title="Bảo hành" (click)="closeSidebarOnMobile()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span class="sidebar__link-text">Bảo hành</span>
+      </a>
+
+      <a routerLink="/users" routerLinkActive="active" class="sidebar__link" title="Khách hàng" (click)="closeSidebarOnMobile()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <span class="sidebar__link-text">Khách hàng</span>
+      </a>
+
+      <a routerLink="/support" routerLinkActive="active" class="sidebar__link" title="Tư vấn" (click)="closeSidebarOnMobile()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M4 6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H9l-4 4v-4H7a3 3 0 0 1-3-3V6z"/>
+          <path d="M9 8h6"/>
+          <path d="M9 12h4"/>
+        </svg>
+        <span class="sidebar__link-text">Tư vấn</span>
+      </a>
+
+      <a routerLink="/hub" routerLinkActive="active" class="sidebar__link" title="AuraHub" (click)="closeSidebarOnMobile()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="4" width="18" height="14" rx="3" />
+          <path d="M8 10h8" />
+          <path d="M8 14h5" />
+          <path d="M6 20l3-3" />
+        </svg>
+        <span class="sidebar__link-text">AuraHub</span>
+      </a>
+
+      <a routerLink="/blogs" routerLinkActive="active" class="sidebar__link" title="Bài viết" (click)="closeSidebarOnMobile()">
+        <svg class="sidebar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+        <span class="sidebar__link-text">Bài viết</span>
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__user-avatar">
+          {{ (admin()?.name || 'A').charAt(0).toUpperCase() }}
+        </div>
+        <div class="sidebar__user-info">
+          <span class="sidebar__user-name">{{ admin()?.name || 'Admin' }}</span>
+          <span class="sidebar__user-email">{{ admin()?.email || '' }}</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar__left">
+        <button class="topbar__menu-btn" (click)="toggleSidebar()" title="Toggle sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </button>
+
+        <div class="topbar__search">
+          <svg class="topbar__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" placeholder="Tìm sản phẩm, đơn hàng, ..." class="topbar__search-input" />
+        </div>
+      </div>
+
+      <div class="topbar__right">
+        <a routerLink="/products/new" class="topbar__add-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Thêm sản phẩm
+        </a>
+
+        <button class="topbar__icon-btn" (click)="toggleTheme()" [title]="themeService.theme() === 'light' ? 'Chế độ tối' : 'Chế độ sáng'">
+          @if (themeService.theme() === 'light') {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          } @else {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          }
+        </button>
+
+        <div class="topbar__notif-wrap">
+          <button #notifButton class="topbar__icon-btn topbar__notif-btn" title="Thông báo" (click)="toggleNotifications($event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            @if (unreadCount() > 0) {
+              <span class="topbar__notif-badge">{{ unreadCount() > 99 ? '99+' : unreadCount() }}</span>
+            }
+          </button>
+
+          @if (notifOpen()) {
+            <div #notifMenu class="topbar__notif-menu" (click)="$event.stopPropagation()">
+              <div class="topbar__notif-menu-header">
+                <span>Thông báo</span>
+                @if (unreadCount() > 0) {
+                  <button type="button" class="topbar__notif-mark-all" (click)="markAllNotificationsRead()">
+                    Đánh dấu đã đọc
+                  </button>
+                }
+              </div>
+
+              @if (notifLoading()) {
+                <div class="topbar__notif-empty">Đang tải...</div>
+              } @else if (notifications().length === 0) {
+                <div class="topbar__notif-empty">Chưa có thông báo nào</div>
+              } @else {
+                <div class="topbar__notif-list">
+                  @for (item of notifications(); track item._id) {
+                    <button
+                      type="button"
+                      class="topbar__notif-item"
+                      [class.topbar__notif-item--unread]="isNotificationUnread(item)"
+                      (click)="openNotification(item)"
+                    >
+                      <div class="topbar__notif-item-head">
+                        <span class="topbar__notif-type">{{ notificationTypeLabel(item.type) }}</span>
+                        <span class="topbar__notif-time">{{ notificationTimeAgo(item.createdAt) }}</span>
+                      </div>
+                      <div class="topbar__notif-title">{{ item.title }}</div>
+                      <div class="topbar__notif-message">{{ item.message }}</div>
+                      <div class="topbar__notif-order">#{{ item.orderNumber }}</div>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="topbar__avatar" (click)="logout()" title="Đăng xuất">
+          {{ (admin()?.name || 'A').charAt(0).toUpperCase() }}
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+
+<app-toast />
+<app-confirm-dialog />

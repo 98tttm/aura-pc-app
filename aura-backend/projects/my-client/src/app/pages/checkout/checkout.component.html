@@ -1,0 +1,497 @@
+<section class="checkout-page">
+    <div class="checkout-container">
+        <!-- Back -->
+        <a routerLink="/cart" class="checkout-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Quay lại giỏ hàng
+        </a>
+
+        @if (cartItems().length > 0) {
+        <app-checkout-stepper [step]="2"></app-checkout-stepper>
+        }
+
+        @if (cartItems().length === 0) {
+        <div class="checkout-empty">
+            <p>Giỏ hàng trống. <a routerLink="/san-pham">Tiếp tục mua sắm</a></p>
+        </div>
+        } @else {
+        <div class="checkout-layout">
+            <!-- ===== LEFT COLUMN ===== -->
+            <div class="checkout-left">
+
+                <!-- Product Summary -->
+                <div class="checkout-card">
+                    <h2 class="checkout-section-title">Danh sách sản phẩm</h2>
+                    <div class="checkout-shipping-banner">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="#FF6D2D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="3" width="15" height="13"></rect>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                        </svg>
+                        <span>Miễn phí vận chuyển đối với đơn hàng trên 500.000₫</span>
+                    </div>
+                    @for (item of cartItems(); track item.product._id) {
+                    <div class="checkout-product">
+                        <img class="checkout-product__img" [src]="getImage(item.product)" [alt]="item.product.name" />
+                        <div class="checkout-product__info">
+                            <h3 class="checkout-product__name">{{ item.product.name }}</h3>
+                            <span class="checkout-product__price">{{ priceLabel(item.product) }}</span>
+                        </div>
+                        <span class="checkout-product__qty">x{{ item.qty }}</span>
+                    </div>
+                    }
+                </div>
+
+                <!-- Buyer Info -->
+                <div class="checkout-card">
+                    <h3 class="checkout-section-title">Thông tin người đặt</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Họ và tên <span class="required">*</span></label>
+                            <input type="text" [(ngModel)]="fullName" placeholder="Nhập họ và tên" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại <span class="required">*</span></label>
+                            <input type="tel" [(ngModel)]="phone" placeholder="Nhập số điện thoại" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email (không bắt buộc)</label>
+                        <input type="email" [(ngModel)]="email" placeholder="Nhập email" />
+                    </div>
+                </div>
+
+                <!-- Address / Receiver section -->
+                <div class="checkout-card">
+                    <div class="checkout-card-header">
+                        <h3 class="checkout-section-title">Địa chỉ nhận hàng</h3>
+                        @if (isLoggedIn() && addressService.addresses().length > 0) {
+                        <button class="btn-change-address" (click)="openAddressModal()">Thay đổi</button>
+                        }
+                    </div>
+
+                    @if (isLoggedIn()) {
+                    <!-- Logged-in User Address Card -->
+                    @if (addressService.addresses().length === 0) {
+                    <div class="empty-address">
+                        <p>Bạn chưa có địa chỉ nhận hàng nào.</p>
+                        <button class="btn-add-address-empty" (click)="switchToAddMode(); showAddressModal.set(true)">
+                            Thêm địa chỉ mới
+                        </button>
+                    </div>
+                    } @else {
+                    @if (selectedAddressId) {
+                    <div class="selected-address-card">
+                        <div class="selected-address__header">
+                            <span class="selected-address__name">{{ receiverName }}</span>
+                            <span class="selected-address__separator">|</span>
+                            <span class="selected-address__phone">{{ receiverPhone }}</span>
+                        </div>
+                        <div class="selected-address__detail">
+                            {{ address }}<br>
+                            {{ ward }}, {{ district }}, {{ city }}
+                        </div>
+                        @if (isAddressDefault(selectedAddressId)) {
+                        <span class="badge-default">Mặc định</span>
+                        }
+                    </div>
+                    } @else {
+                    <div class="empty-address">
+                        <p>Vui lòng chọn một địa chỉ nhận hàng.</p>
+                        <button class="btn-change-address" (click)="openAddressModal()">Chọn địa chỉ</button>
+                    </div>
+                    }
+                    }
+                    } @else {
+                    <!-- Guest Form -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Tỉnh / Thành phố</label>
+                            <select [(ngModel)]="city" (change)="onGuestProvinceChange()">
+                                <option value="">Chọn Tỉnh / Thành phố</option>
+                                @for (p of addressService.provinces(); track p.code) {
+                                <option [value]="p.name">{{ p.name }}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quận / Huyện</label>
+                            <select [(ngModel)]="district" (change)="onGuestDistrictChange()" [disabled]="!city">
+                                <option value="">Chọn Quận / Huyện</option>
+                                @for (d of districts(); track d.code) {
+                                <option [value]="d.name">{{ d.name }}</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phường / Xã</label>
+                        <select [(ngModel)]="ward" [disabled]="!district">
+                            <option value="">Chọn Phường / Xã</option>
+                            @for (w of wards(); track w.code) {
+                            <option [value]="w.name">{{ w.name }}</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Địa chỉ cụ thể <span class="required">*</span></label>
+                        <input type="text" [(ngModel)]="address" placeholder="Số nhà, tên đường..." />
+                    </div>
+                    <div class="form-row" style="margin-top: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Họ và tên người nhận</label>
+                            <input type="text" [(ngModel)]="receiverName"
+                                placeholder="Mặc định theo thông tin người đặt" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại người nhận</label>
+                            <input type="tel" [(ngModel)]="receiverPhone" placeholder="Mặc định theo người đặt" />
+                        </div>
+                    </div>
+                    }
+                </div>
+
+                <!-- Note -->
+                <div class="checkout-card">
+                    <h3 class="checkout-section-title">Ghi chú</h3>
+                    <div class="form-group">
+                        <textarea [(ngModel)]="note" placeholder="Ví dụ: Hãy gọi cho tôi 15 phút trước khi giao"
+                            rows="3"></textarea>
+                    </div>
+
+                    <div class="invoice-row">
+                        <span class="invoice-label">Yêu cầu xuất hóa đơn điện tử</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" [(ngModel)]="requestInvoice" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    @if (requestInvoice) {
+                    <div class="invoice-form" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #eee;">
+                        <div class="form-row" style="margin-bottom: 1rem;">
+                            <label class="payment-option" [class.payment-option--active]="invoiceType === 'personal'"
+                                (click)="invoiceType = 'personal'">
+                                <span class="payment-radio" [class.active]="invoiceType === 'personal'"></span>
+                                <span>Cá nhân</span>
+                            </label>
+                            <label class="payment-option" [class.payment-option--active]="invoiceType === 'company'"
+                                (click)="invoiceType = 'company'">
+                                <span class="payment-radio" [class.active]="invoiceType === 'company'"></span>
+                                <span>Công ty</span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email nhận hóa đơn <span class="required">*</span></label>
+                            <input type="email" [(ngModel)]="invoiceEmail" placeholder="Nhập email xuất hóa đơn" />
+                        </div>
+                    </div>
+                    }
+                </div>
+
+                <!-- Payment Method -->
+                <div class="checkout-card">
+                    <h3 class="checkout-section-title">Chọn phương thức thanh toán</h3>
+
+                    <label class="payment-option" [class.payment-option--active]="paymentMethod === 'cod'"
+                        (click)="paymentMethod = 'cod'">
+                        <span class="payment-radio" [class.active]="paymentMethod === 'cod'"></span>
+                        <span class="payment-icon payment-icon--svg payment-icon--black" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M12.379 4h-7.258c-.395 0-.736 0-1.017.023-.297.024-.592.078-.875.222-.424.216-.768.56-.984.984-.144.283-.198.578-.222.875-.023.28-.023.622-.023 1.017v3.008c0 .395 0 .736.023 1.017.024.297.078.592.222.875.216.424.56.768.984.984.283.144.578.198.875.222.121.01.254.016.397.019.001.243.006.46.022.65.024.297.078.592.222.875.216.424.56.768.984.984.283.144.578.198.875.222.28.023.622.023 1.017.023h7.258c.395 0 .736 0 1.017-.023.297-.024.592-.078.875-.222.424-.216.768-.56.984-.984.144-.283.198-.578.222-.875.023-.28.023-.622.023-1.017v-3.008c0-.395 0-.736-.023-1.017-.024-.297-.078-.592-.222-.875-.216-.424-.56-.768-.983-.984-.284-.144-.58-.198-.876-.222-.121-.01-.254-.016-.397-.019-.001-.243-.006-.46-.022-.65-.024-.297-.078-.592-.222-.875-.216-.424-.56-.768-.984-.984-.283-.144-.578-.198-.875-.222-.28-.023-.622-.023-1.017-.023Zm-8.153 7.732c.08.007.17.01.274.013v-1.874c0-.395 0-.736.023-1.017.024-.297.078-.592.222-.875.216-.424.56-.768.984-.984.283-.144.578-.198.875-.222.28-.023.622-.023 1.017-.023h6.378c-.001-.219-.006-.386-.017-.524-.017-.204-.045-.28-.064-.316-.072-.142-.186-.256-.327-.328-.038-.02-.113-.047-.317-.064-.212-.017-.492-.018-.924-.018h-7.2c-.432 0-.712 0-.924.018-.204.017-.28.045-.316.064-.142.072-.256.186-.328.328-.02.037-.047.112-.064.316-.017.212-.018.492-.018.924v2.95c0 .432 0 .712.018.924.017.204.045.28.064.317.072.14.186.255.328.327.037.02.112.047.316.064Zm5.904 2.03c-.37-.537-.63-1.334-.63-2.262 0-.928.26-1.725.63-2.262.372-.541.785-.738 1.12-.738.335 0 .748.197 1.12.738.37.537.63 1.334.63 2.262 0 .928-.26 1.725-.63 2.262-.372.541-.785.738-1.12.738-.335 0-.748-.197-1.12-.738Z" />
+                            </svg>
+                        </span>
+                        <span>Thanh toán tiền mặt khi nhận hàng</span>
+                    </label>
+
+                    <label class="payment-option" [class.payment-option--active]="paymentMethod === 'qr'"
+                        (click)="paymentMethod = 'qr'">
+                        <span class="payment-radio" [class.active]="paymentMethod === 'qr'"></span>
+                        <span class="payment-icon payment-icon--svg payment-icon--black" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path
+                                    d="M5.75 6.25a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 .5.5v.5a.5.5 0 0 1-.5.5h-.5a.5.5 0 0 1-.5-.5v-.5Z" />
+                                <path fill-rule="evenodd"
+                                    d="M3.5 5.25c0-.966.784-1.75 1.75-1.75h2.5c.966 0 1.75.784 1.75 1.75v2.5a1.75 1.75 0 0 1-1.75 1.75h-2.5a1.75 1.75 0 0 1-1.75-1.75v-2.5Zm1.75-.25a.25.25 0 0 0-.25.25v2.5c0 .138.112.25.25.25h2.5a.25.25 0 0 0 .25-.25v-2.5a.25.25 0 0 0-.25-.25h-2.5Z" />
+                                <path
+                                    d="M6.25 12.75a.5.5 0 0 0-.5.5v.5a.5.5 0 0 0 .5.5h.5a.5.5 0 0 0 .5-.5v-.5a.5.5 0 0 0-.5-.5h-.5Z" />
+                                <path fill-rule="evenodd"
+                                    d="M3.5 12.25c0-.966.784-1.75 1.75-1.75h2.5c.966 0 1.75.784 1.75 1.75v2.5a1.75 1.75 0 0 1-1.75 1.75h-2.5a1.75 1.75 0 0 1-1.75-1.75v-2.5Zm1.75-.25a.25.25 0 0 0-.25.25v2.5c0 .138.112.25.25.25h2.5a.25.25 0 0 0 .25-.25v-2.5a.25.25 0 0 0-.25-.25h-2.5Z" />
+                                <path
+                                    d="M12.75 6.25a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 .5.5v.5a.5.5 0 0 1-.5.5h-.5a.5.5 0 0 1-.5-.5v-.5Z" />
+                                <path fill-rule="evenodd"
+                                    d="M12.25 3.5a1.75 1.75 0 0 0-1.75 1.75v2.5c0 .966.784 1.75 1.75 1.75h2.5a1.75 1.75 0 0 0 1.75-1.75v-2.5a1.75 1.75 0 0 0-1.75-1.75h-2.5Zm-.25 1.75a.25.25 0 0 1 .25-.25h2.5a.25.25 0 0 1 .25.25v2.5a.25.25 0 0 1-.25.25h-2.5a.25.25 0 0 1-.25-.25v-2.5Z" />
+                                <path
+                                    d="M11 10.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Z" />
+                                <path
+                                    d="M10.5 15a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Z" />
+                                <path
+                                    d="M15 10.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Z" />
+                                <path
+                                    d="M14.5 15a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Z" />
+                                <path
+                                    d="M13 12.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1Z" />
+                            </svg>
+                        </span>
+                        <span>Thanh toán bằng chuyển khoản (QR Code)</span>
+                    </label>
+
+                    <label class="payment-option" [class.payment-option--active]="paymentMethod === 'momo'"
+                        (click)="paymentMethod = 'momo'">
+                        <span class="payment-radio" [class.active]="paymentMethod === 'momo'"></span>
+                        <img src="assets/figma/515c49e4ff04f92775dfa684cb71aab58d94394c.png" alt="MoMo"
+                            class="payment-logo" />
+                        <span>Thanh toán bằng ví MoMo</span>
+                    </label>
+
+                    <label class="payment-option" [class.payment-option--active]="paymentMethod === 'zalopay'"
+                        (click)="paymentMethod = 'zalopay'">
+                        <span class="payment-radio" [class.active]="paymentMethod === 'zalopay'"></span>
+                        <img src="assets/LOGO/zalopay.png" alt="ZaloPay" class="payment-logo" />
+                        <span>Thanh toán bằng ví ZaloPay</span>
+                    </label>
+
+                    <label class="payment-option" [class.payment-option--active]="paymentMethod === 'atm'"
+                        (click)="paymentMethod = 'atm'">
+                        <span class="payment-radio" [class.active]="paymentMethod === 'atm'"></span>
+                        <img src="assets/figma/2fa2c0072b5eed1fbba69aed2773ab02e7354df4.png" alt="ATM"
+                            class="payment-logo" />
+                        <span>Thanh toán bằng thẻ ATM nội địa, NAPAS</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- ===== RIGHT COLUMN: Order Summary ===== -->
+            <div class="checkout-right">
+                <div class="checkout-summary">
+                    <!-- Voucher -->
+                    @if (appliedVoucher(); as v) {
+                    <div class="voucher-applied">
+                        <div class="voucher-applied__info">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                            <span class="voucher-applied__code">{{ v.code }}</span>
+                            <span class="voucher-applied__desc">-{{ v.discountPercent }}%</span>
+                        </div>
+                    </div>
+                    } @else {
+                    <button class="coupon-btn" disabled style="opacity: 0.5; cursor: default;">
+                        <span class="coupon-btn__text">Áp dụng ưu đãi từ giỏ hàng</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                    }
+
+                    <div class="summary-row">
+                        <span class="summary-label">Tổng tiền</span>
+                        <span class="summary-val">{{ formatPrice(originalTotal()) }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Giảm giá trực tiếp</span>
+                        <span class="summary-val summary-val--discount">{{ directDiscountLabel() }}</span>
+                    </div>
+                    @if (appliedVoucher()) {
+                    <div class="summary-row">
+                        <span class="summary-label">Giảm giá voucher</span>
+                        <span class="summary-val summary-val--discount">-{{ formatPrice(voucherDiscount()) }}</span>
+                    </div>
+                    }
+                    <div class="summary-row">
+                        <span class="summary-label">Phí vận chuyển</span>
+                        @if (shippingFee() === 0) {
+                        <span class="summary-val summary-val--free">Miễn phí</span>
+                        } @else {
+                        <span class="summary-val">{{ formatPrice(shippingFee()) }}</span>
+                        }
+                    </div>
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-row summary-row--total">
+                        <span class="summary-label">Thành tiền</span>
+                        <span class="summary-val summary-val--total">{{ formatPrice(finalTotal()) }}</span>
+                    </div>
+
+                    @if (errorMessage()) {
+                    <div class="checkout-submit-error">
+                        {{ errorMessage() }}
+                        @if (dedupedOrderNumber()) {
+                          <a [routerLink]="['/tra-cuu-don-hang']" [queryParams]="{ order: dedupedOrderNumber() }" class="checkout-dedup-link">
+                            Xem đơn hàng #{{ dedupedOrderNumber() }}
+                          </a>
+                        }
+                    </div>
+                    }
+
+                    <button class="btn-submit" (click)="submitOrder()" [disabled]="submitting()">
+                        {{ submitting() ? 'Đang xử lý...' : 'Thanh toán' }}
+                    </button>
+
+                    <p class="checkout-terms">
+                        Bằng việc tiến hành đặt mua hàng, bạn đồng ý với
+                        <a routerLink="/ve-aurapc/chinh-sach-bao-mat-du-lieu-ca-nhan">Điều khoản dịch vụ</a> của AuraPC
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== ADDRESS SLIDING MODAL ====== -->
+        @if (showAddressModal()) {
+        <div class="chk-modal-overlay" (click)="closeAddressModal()">
+            <div class="chk-modal-container" (click)="$event.stopPropagation()">
+                <div class="chk-modal-header">
+                    <h3 class="chk-modal-title">
+                        {{ addressModalMode() === 'select' ? 'Chọn địa chỉ nhận hàng' : 'Thêm địa chỉ mới' }}
+                    </h3>
+                    <button class="chk-modal-close" (click)="closeAddressModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                    <!-- Back button for Add mode -->
+                    @if (addressModalMode() === 'add') {
+                    <button class="chk-modal-back" (click)="switchToSelectMode()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    }
+                </div>
+
+                <div class="chk-modal-body">
+                    <div class="chk-modal-slider" [class.show-add]="addressModalMode() === 'add'">
+                        <!-- Pane 1: Selection List -->
+                        <div class="chk-modal-pane pane-select">
+                            <div class="chk-address-list">
+                                @for (addr of addressService.addresses(); track addr._id) {
+                                <label class="chk-address-item" [class.active]="tempSelectedAddressId === addr._id">
+                                    <div class="chk-address-radio">
+                                        <input type="radio" name="tempAddr" [value]="addr._id"
+                                            [(ngModel)]="tempSelectedAddressId" />
+                                        <span class="custom-radio"></span>
+                                    </div>
+                                    <div class="chk-address-info">
+                                        <div class="chk-address-name">{{ addr.fullName }} - {{ addr.phone }}</div>
+                                        <div class="chk-address-detail">{{ addr.address }}</div>
+                                        <div class="chk-address-ward">{{ addr.ward }}, {{ addr.district }}, {{ addr.city
+                                            }}</div>
+                                        <div class="chk-address-tags">
+                                            <span class="chk-badge">{{ addr.label }}</span>
+                                            @if (addr.isDefault) {
+                                            <span class="chk-badge chk-badge--default">Mặc định</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </label>
+                                }
+                            </div>
+                            <div class="chk-modal-footer">
+                                @if (modalError() && addressModalMode() === 'select') {
+                                <div class="checkout-submit-error" style="margin-top: 0; margin-bottom: 8px;">
+                                    {{ modalError() }}
+                                </div>
+                                }
+                                <button class="btn-chk-confirm" (click)="confirmTempAddress()">Xác nhận</button>
+                                <button class="btn-chk-add-new" (click)="switchToAddMode()">Thêm địa chỉ mới</button>
+                            </div>
+                        </div>
+
+                        <!-- Pane 2: Add Form -->
+                        <div class="chk-modal-pane pane-add">
+                            <div class="chk-add-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Họ tên người nhận <span
+                                                class="required">*</span></label>
+                                        <input type="text" [(ngModel)]="addrFullName" placeholder="Họ và tên" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Số điện thoại <span class="required">*</span></label>
+                                        <input type="tel" [(ngModel)]="addrPhone" placeholder="Số điện thoại" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tỉnh / Thành phố <span class="required">*</span></label>
+                                    <select [(ngModel)]="addrCity" (change)="onProvinceChange()">
+                                        <option value="">Chọn Tỉnh / Thành phố</option>
+                                        @for (p of addressService.provinces(); track p.code) {
+                                        <option [value]="p.name">{{ p.name }}</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Quận / Huyện <span class="required">*</span></label>
+                                        <select [(ngModel)]="addrDistrict" (change)="onDistrictChange()"
+                                            [disabled]="!addrCity">
+                                            <option value="">Chọn Quận / Huyện</option>
+                                            @for (d of districts(); track d.code) {
+                                            <option [value]="d.name">{{ d.name }}</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Phường / Xã <span class="required">*</span></label>
+                                        <select [(ngModel)]="addrWard" [disabled]="!addrDistrict">
+                                            <option value="">Chọn Phường / Xã</option>
+                                            @for (w of wards(); track w.code) {
+                                            <option [value]="w.name">{{ w.name }}</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Địa chỉ cụ thể <span class="required">*</span></label>
+                                    <input type="text" [(ngModel)]="addrAddress" placeholder="Số nhà, tên đường..." />
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Loại địa chỉ</label>
+                                        <select [(ngModel)]="addrLabel">
+                                            <option value="Nhà riêng">Nhà riêng</option>
+                                            <option value="Văn phòng">Văn phòng</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="invoice-row" style="margin-top: 12px; margin-bottom: 0;">
+                                    <span class="invoice-label">Đặt làm địa chỉ mặc định</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" [(ngModel)]="addrIsDefault" />
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                @if (modalError() && addressModalMode() === 'add') {
+                                <div class="checkout-submit-error" style="margin-top: 12px; margin-bottom: 0;">
+                                    {{ modalError() }}
+                                </div>
+                                }
+                            </div>
+                            <div class="chk-modal-footer">
+                                <button class="btn-chk-confirm" style="width: 100%;" (click)="saveNewAddress()">Hoàn
+                                    thành</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+        }
+
+        <!-- COD: OTP Dialog Sub-component -->
+        @if (showCodOtpPopup()) {
+        <app-cod-otp-dialog #codOtpDialog [phone]="codOtpPhone" [submitting]="submitting()"
+            (verified)="onOtpVerified($event)" (closed)="closeCodOtpPopup()" (resendOtp)="onResendOtp()" />
+        }
+    </div>
+</section>

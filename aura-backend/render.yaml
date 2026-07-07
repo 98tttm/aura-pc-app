@@ -1,0 +1,49 @@
+# Render: set env in dashboard (this file does not store secrets).
+# Canonical client: use ONE host for FRONTEND_URL, MOMO_REDIRECT_URL, ZALOPAY_REDIRECT_URL
+# (e.g. https://www.aurapc.io.vn/... ) so payment return does not hit a wrong Vercel project (NOT_FOUND).
+# See server/docs/DEPLOY_RENDER.md for full checklist.
+services:
+  - type: web
+    name: aurapc-backend
+    env: node
+    plan: free
+    region: singapore
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    branch: main
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: MOMO_PARTNER_CODE
+        sync: false
+      - key: MOMO_ACCESS_KEY
+        sync: false
+      - key: MOMO_SECRET_KEY
+        sync: false
+      - key: MOMO_REDIRECT_URL
+        sync: false
+      - key: MOMO_IPN_URL
+        sync: false
+      - key: MOMO_MOCK_MODE
+        sync: false
+      - key: ZALOPAY_CALLBACK_URL
+        sync: false
+      - key: ZALOPAY_REDIRECT_URL
+        sync: false
+      - key: REPLICATE_API_TOKEN
+        sync: false
+      - key: AURA_VISUAL_WEBHOOK_URL
+        sync: false
+      - key: PORT
+        value: 10000
+    autoDeploy: true

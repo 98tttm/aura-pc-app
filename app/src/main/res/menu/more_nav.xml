@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_users"
+        android:icon="@drawable/ic_users"
+        android:title="Khách hàng" />
+    <item
+        android:id="@+id/nav_blog"
+        android:icon="@drawable/ic_blog"
+        android:title="Blog" />
+    <item
+        android:id="@+id/nav_hub"
+        android:icon="@drawable/ic_hub"
+        android:title="AuraHub" />
+    <item
+        android:id="@+id/nav_support"
+        android:icon="@drawable/ic_support"
+        android:title="Hỗ trợ" />
+    <item
+        android:id="@+id/nav_warranty"
+        android:icon="@drawable/ic_warranty"
+        android:title="Bảo hành" />
+    <item
+        android:id="@+id/nav_categories"
+        android:icon="@drawable/ic_inventory"
+        android:title="Danh mục" />
+    <item
+        android:id="@+id/nav_promotions"
+        android:icon="@drawable/ic_promotions"
+        android:title="Khuyến mãi" />
+    <item
+        android:id="@+id/nav_reviews"
+        android:icon="@drawable/ic_review"
+        android:title="Đánh giá" />
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Cài đặt" />
+</menu>

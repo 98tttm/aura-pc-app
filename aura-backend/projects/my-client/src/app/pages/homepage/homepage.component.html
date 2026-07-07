@@ -1,0 +1,399 @@
+<!-- ============================================
+     INTRO: Clean logo + loading bar
+     ============================================ -->
+@if (!introComplete()) {
+<div class="intro" [class.intro--exit]="modelLoaded()">
+  <video class="intro__video" autoplay muted loop playsinline preload="auto" src="assets/video/universe.mp4"></video>
+  <div class="intro__glow"></div>
+  <img src="assets/c8c67b26bfbd0df3a88be06bec886fd8bd006e7d.png" alt="AuraPC" class="intro__logo">
+  <div class="intro__bar">
+    <div class="intro__bar-fill"></div>
+  </div>
+</div>
+}
+
+<!-- Nội dung chính: hiện dần khi intro biến mất -->
+@if (introComplete() && homepageAdVisible()) {
+<div class="homepage-ad-popup" role="dialog" aria-modal="true" aria-label="AuraPC promotion">
+  <div class="homepage-ad-popup__backdrop" (click)="closeHomepageAd()"></div>
+  <div class="homepage-ad-popup__panel" [style.width]="homepageAds[homepageAdIndex()].width">
+    <button type="button" class="homepage-ad-popup__close" (click)="closeHomepageAd()" aria-label="Đóng quảng cáo">
+      <span aria-hidden="true">×</span>
+    </button>
+    <button type="button" class="homepage-ad-popup__nav homepage-ad-popup__nav--prev" (click)="prevHomepageAd()"
+      aria-label="Quảng cáo trước">
+      <span aria-hidden="true">‹</span>
+    </button>
+    <div class="homepage-ad-popup__viewport" [style.aspect-ratio]="homepageAds[homepageAdIndex()].ratio">
+      <div class="homepage-ad-popup__track" [style.transform]="'translateX(-' + (homepageAdIndex() * 100) + '%)'">
+        @for (ad of homepageAds; track ad.image) {
+        <a class="homepage-ad-popup__link" [href]="ad.href" target="_blank" rel="noopener noreferrer sponsored">
+          <img [src]="ad.image" [alt]="ad.alt" />
+        </a>
+        }
+      </div>
+    </div>
+    <button type="button" class="homepage-ad-popup__nav homepage-ad-popup__nav--next" (click)="nextHomepageAd()"
+      aria-label="Quảng cáo tiếp theo">
+      <span aria-hidden="true">›</span>
+    </button>
+    <div class="homepage-ad-popup__dots" aria-hidden="true">
+      @for (ad of homepageAds; track ad.image; let i = $index) {
+      <span [class.homepage-ad-popup__dot--active]="i === homepageAdIndex()" class="homepage-ad-popup__dot"></span>
+      }
+    </div>
+  </div>
+</div>
+}
+
+<div class="main-reveal" [class.main-reveal--visible]="introComplete()">
+  <!-- ============================================
+     HERO: Interactive 3D Model
+     ============================================ -->
+  <section class="hero">
+    <div class="hero__canvas" #heroCanvas></div>
+    <div class="hero__vignette"></div>
+
+    <!-- Hai khối text: trượt vào bằng transition, ẩn cùng hướng lúc xuất hiện (trái ra trái, phải ra phải) + mờ -->
+    @if (introComplete()) {
+    <div class="hero__text hero__text--left" [class.hero__text--visible]="heroTextVisible()"
+      [class.hero__text--hidden]="!!activeHotspot()">
+      <h2 class="hero__text-heading">
+        @if (heroHeaderSet() === 0) {
+        <span class="hero__text-heading-line hero__text-heading-line--1">Khám phá</span>
+        <span class="hero__text-heading-line hero__text-heading-line--2 hero__text-accent">công nghệ Aura</span>
+        } @else {
+        <span class="hero__text-heading-line hero__text-heading-line--1">BƯỚC VÀO</span>
+        <span class="hero__text-heading-line hero__text-heading-line--2 hero__text-accent">HỆ SINH THÁI AURA</span>
+        }
+      </h2>
+      <p class="hero__text-sub">Cấu hình đỉnh cao cho những giới hạn mới</p>
+      <span class="hero__text-line"></span>
+    </div>
+    <div class="hero__text hero__text--right" [class.hero__text--visible]="heroTextVisible()"
+      [class.hero__text--hidden]="!!activeHotspot()">
+      <h2 class="hero__text-heading">
+        @if (heroHeaderSet() === 0) {
+        <span class="hero__text-heading-line hero__text-heading-line--1">Cá nhân hóa</span>
+        <span class="hero__text-heading-line hero__text-heading-line--2">chỉ với <span
+            class="hero__text-accent">một</span> chạm</span>
+        } @else {
+        <span class="hero__text-heading-line hero__text-heading-line--1">TRẢI NGHIỆM</span>
+        <span class="hero__text-heading-line hero__text-heading-line--2 hero__text-accent">KHÔNG GIỚI HẠN</span>
+        }
+      </h2>
+      <p class="hero__text-sub">Trải nghiệm vượt trội thực tế ảo</p>
+      <span class="hero__text-line"></span>
+    </div>
+    }
+
+    <!-- Hotspot dots -->
+    @if (introComplete()) {
+    @for (hs of hotspots; track hs.id) {
+    <button class="hotspot" [class.hotspot--hidden]="!hs.visible || !!activeHotspot()" [style.left.px]="hs.screenX"
+      [style.top.px]="hs.screenY" (click)="onHotspotClick(hs); $event.stopPropagation()" [attr.aria-label]="hs.label">
+      <span class="hotspot__ping"></span>
+      <span class="hotspot__dot"></span>
+      <span class="hotspot__label">{{ hs.label }}</span>
+    </button>
+    }
+    }
+
+    <!-- Product Info Panel (AuraBuilder-style: image, name nhỏ, tech specs) -->
+    @if (activeHotspot(); as hs) {
+    <div class="info-panel">
+      <button class="info-panel__close" (click)="onZoomOut()" aria-label="Đóng">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+      @if (activeHotspotProduct()) {
+      <img [src]="productImageUrl(activeHotspotProduct()!)" [alt]="activeHotspotProduct()!.name"
+        class="info-panel__img" />
+      }
+      <p class="info-panel__name">{{ activeHotspotProduct() ? activeHotspotProduct()!.name : hs.label }}</p>
+      <ul class="info-panel__specs">
+        @for (spec of (activeHotspotProduct() ? getProductSpecs(activeHotspotProduct()!) : hs.specs); track spec) {
+        <li>{{ spec }}</li>
+        }
+      </ul>
+      <div class="info-panel__actions">
+        @if (hs.productSlug || activeHotspotProduct()?.slug) {
+        <a [routerLink]="['/san-pham', hs.productSlug || activeHotspotProduct()!.slug]" class="info-panel__btn">Xem sản
+          phẩm</a>
+        } @else {
+        <a routerLink="/" class="info-panel__btn">Xem sản phẩm</a>
+        }
+        <button class="info-panel__back" (click)="onZoomOut()">← Quay lại tổng quan</button>
+      </div>
+    </div>
+    }
+
+    <!-- Scroll hint -->
+    @if (introComplete() && !activeHotspot()) {
+    <div class="hero__hint">
+      <p>Kéo để xoay &bull; Click vào điểm sáng để khám phá</p>
+      <div class="hero__scroll-line"></div>
+    </div>
+    }
+  </section>
+
+  <!-- ============================================
+     SECTION 2: ICON STRIP (logo hãng công nghệ – cuộn tự động)
+     Hàng 1: phải → trái. Hàng 2: trái → phải.
+     ============================================ -->
+  <section class="icon-strip">
+    <video class="icon-strip__video" autoplay muted loop playsinline src="assets/video/universe.mp4"></video>
+    <div class="icon-strip__row icon-strip__row--1" aria-hidden="true">
+      <div class="icon-strip__track">
+        @for (logo of iconStripLogos; track 'a'+$index) {
+        <a [routerLink]="['/san-pham']" [queryParams]="{brand: logo.brand}" queryParamsHandling="merge"
+          class="icon-strip__item icon-strip__item--link">
+          <img [src]="logo.src" [alt]="logo.alt" class="icon-strip__logo" loading="lazy" />
+        </a>
+        }
+        @for (logo of iconStripLogos; track 'b'+$index) {
+        <a [routerLink]="['/san-pham']" [queryParams]="{brand: logo.brand}" queryParamsHandling="merge"
+          class="icon-strip__item icon-strip__item--link">
+          <img [src]="logo.src" [alt]="logo.alt" class="icon-strip__logo" loading="lazy" />
+        </a>
+        }
+      </div>
+    </div>
+    <div class="icon-strip__row icon-strip__row--2" aria-hidden="true">
+      <div class="icon-strip__track icon-strip__track--reverse">
+        @for (logo of iconStripLogos; track 'c'+$index) {
+        <a [routerLink]="['/san-pham']" [queryParams]="{brand: logo.brand}" queryParamsHandling="merge"
+          class="icon-strip__item icon-strip__item--link">
+          <img [src]="logo.src" [alt]="logo.alt" class="icon-strip__logo" loading="lazy" />
+        </a>
+        }
+        @for (logo of iconStripLogos; track 'd'+$index) {
+        <a [routerLink]="['/san-pham']" [queryParams]="{brand: logo.brand}" queryParamsHandling="merge"
+          class="icon-strip__item icon-strip__item--link">
+          <img [src]="logo.src" [alt]="logo.alt" class="icon-strip__logo" loading="lazy" />
+        </a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+     SECTION 3: FEATURED PRODUCTS + BACKGROUND VIDEO START
+     ============================================ -->
+  <div class="scroll-video-zone">
+    <video class="scroll-video" autoplay muted loop playsinline src="assets/video/universe.mp4"></video>
+
+  <section class="featured">
+    <div class="container">
+      @if (featuredProducts().length > 0) {
+      <h2 class="section-title fade-in">SẢN PHẨM NỔI BẬT</h2>
+      <div class="featured__grid">
+        @for (p of featuredProducts(); track p._id) {
+        <a [routerLink]="['/san-pham', p.slug]" class="featured__card fade-in-left">
+          <div class="featured__image">
+            <img [src]="productImageUrl(p)" [alt]="p.name" />
+          </div>
+          <div class="featured__info">
+            <h2 class="featured__name">{{ p.name }}</h2>
+            <p class="featured__desc">{{ p.shortDescription || (productPrice(p) | number:'1.0-0') + '₫' }}</p>
+            <span class="featured__btn">MUA NGAY</span>
+          </div>
+        </a>
+        }
+      </div>
+      } @else {
+      <div class="featured__static">
+        <a routerLink="/collabs/minecraft" class="featured__banner fade-in-left">
+          <img src="assets/thumbnail/minecraft.png" alt="Minecraft Collection" />
+        </a>
+        <a href="https://shopee.vn/shop/793341363" target="_blank" rel="noopener noreferrer sponsored"
+          class="featured__banner featured__banner--ad-square fade-in-right">
+          <img src="assets/ads/shopee-aurapc.png" alt="AuraPC Shopee Mall" />
+        </a>
+      </div>
+      }
+    </div>
+  </section>
+
+  <section class="wide-promo">
+    <div class="container">
+      <a class="wide-promo__link" href="https://shopee.vn/shop/793341363" target="_blank"
+        rel="noopener noreferrer sponsored">
+        <img src="assets/ads/homepage-wide-rog-007.jpg" alt="ROG GeForce RTX 50 Series First Light promotion"
+          loading="lazy" />
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================
+     SECTION 4: CATEGORY GRID
+     ============================================ -->
+  <section class="categories">
+    <div class="container">
+      <h2 class="section-title fade-in">KHÁM PHÁ THEO DANH MỤC</h2>
+
+      @if (topCategories().length > 0) {
+      <div class="categories__grid stagger-children">
+        @for (cat of topCategories(); track cat._id) {
+        <a [routerLink]="['/san-pham']" [queryParams]="{category: cat.category_id || cat.slug}"
+          class="categories__item fade-in">
+          <img [src]="categoryImage(cat)" [alt]="cat.name" class="categories__img" loading="lazy" />
+          <div class="categories__overlay">
+            <span class="categories__label">// {{ cat.name | uppercase }}</span>
+            <span class="categories__arrow">&rarr;</span>
+          </div>
+        </a>
+        }
+      </div>
+      } @else {
+      <div class="categories__grid stagger-children">
+        <a routerLink="/san-pham" [queryParams]="{category: 'vo-may'}" class="categories__item fade-in">
+          <img src="assets/images/cat-vo-may.jpg" alt="Vỏ máy" class="categories__img" loading="lazy" />
+          <div class="categories__overlay"><span class="categories__label">// VỎ MÁY</span><span
+              class="categories__arrow">&rarr;</span></div>
+        </a>
+        <a routerLink="/san-pham" [queryParams]="{category: 'may-tinh-choi-game'}" class="categories__item fade-in">
+          <img src="assets/cate/laptop.png" alt="Máy tính chơi game" class="categories__img" loading="lazy" />
+          <div class="categories__overlay"><span class="categories__label">// MÁY TÍNH CHƠI GAME</span><span
+              class="categories__arrow">&rarr;</span></div>
+        </a>
+        <a routerLink="/san-pham" [queryParams]="{category: 'bo-nho-ram'}" class="categories__item fade-in">
+          <img src="assets/images/cat-ram.jpg" alt="Bộ nhớ RAM" class="categories__img" loading="lazy" />
+          <div class="categories__overlay"><span class="categories__label">// BỘ NHỚ RAM</span><span
+              class="categories__arrow">&rarr;</span></div>
+        </a>
+        <a routerLink="/san-pham" [queryParams]="{category: 'ban-phim'}" class="categories__item fade-in">
+          <img src="assets/images/cat-ban-phim.jpg" alt="Bàn phím" class="categories__img" loading="lazy" />
+          <div class="categories__overlay"><span class="categories__label">// BÀN PHÍM</span><span
+              class="categories__arrow">&rarr;</span></div>
+        </a>
+        <a routerLink="/san-pham" [queryParams]="{category: 'tai-nghe'}" class="categories__item fade-in">
+          <img src="assets/images/cat-tai-nghe.jpg" alt="Tai nghe" class="categories__img" loading="lazy" />
+          <div class="categories__overlay"><span class="categories__label">// TAI NGHE</span><span
+              class="categories__arrow">&rarr;</span></div>
+        </a>
+        <a routerLink="/san-pham" [queryParams]="{category: 'nguon-may-tinh'}" class="categories__item fade-in">
+          <img src="assets/images/cat-nguon.jpg" alt="Nguồn máy tính" class="categories__img" loading="lazy" />
+          <div class="categories__overlay"><span class="categories__label">// NGUỒN MÁY TÍNH</span><span
+              class="categories__arrow">&rarr;</span></div>
+        </a>
+        <a routerLink="/san-pham" [queryParams]="{category: 'tan-nhiet'}" class="categories__item fade-in">
+          <img src="assets/images/cat-tan-nhiet.jpg" alt="Tản nhiệt" class="categories__img" loading="lazy" />
+          <div class="categories__overlay"><span class="categories__label">// TẢN NHIỆT</span><span
+              class="categories__arrow">&rarr;</span></div>
+        </a>
+      </div>
+      }
+    </div>
+  </section>
+
+  <!-- ============================================
+     SECTION 5: BLOG / GUIDES
+     ============================================ -->
+  @if (apiBlogs().length > 0) {
+  <section class="blog">
+    <div class="container">
+      <div class="blog__header fade-in">
+        <h2 class="section-title section-title--blog">BẢN TIN CÔNG NGHỆ</h2>
+      </div>
+      <div class="blog__grid blog__grid--bento stagger-children">
+        @for (post of apiBlogs(); track post._id; let i = $index) {
+        <a [routerLink]="['/blog', post.slug]" class="blog__card blog__card--bento fade-in"
+          [class.blog__card--featured]="i === 0">
+          <div class="blog__card-media">
+            <img class="blog__card-media-img" [src]="blogCoverUrl(post)" [alt]="post.title" loading="lazy" />
+            <div class="blog__card-gradient"></div>
+          </div>
+          <div class="blog__card-content">
+            <span class="blog__card-tag">BLOG</span>
+            <h3 class="blog__card-title">{{ post.title }}</h3>
+          </div>
+        </a>
+        }
+      </div>
+    </div>
+  </section>
+  }
+
+  <!-- ============================================
+     SECTION 6: WHY AURA PC
+     ============================================ -->
+  <section class="why-aura">
+    <div class="container">
+      <div class="why-aura__content">
+        <div class="why-aura__text fade-in-left">
+          <h2 class="why-aura__title">Vì sao nên là AuraPC?</h2>
+          <a routerLink="/ve-aurapc" class="blog__explore">Khám phá ngay &rarr;</a>
+        </div>
+        <div class="why-aura__benefits stagger-children">
+          @for (benefit of benefits; track benefit.title) {
+          <div class="why-aura__benefit fade-in">
+            <div class="why-aura__icon">
+              @if (benefit.imageUrl) {
+                <img [src]="benefit.imageUrl" [alt]="benefit.title" class="why-aura__icon-img" />
+              }
+            </div>
+            <p class="why-aura__benefit-title">{{ benefit.title }}</p>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </div> <!-- end .scroll-video-zone -->
+
+  <!-- ============================================
+     SECTION 7: AURA HUB + DEALS
+     ============================================ -->
+  <section class="auralab">
+    <div class="container">
+      <div class="auralab__grid">
+        <!-- Left: AURA HUB large card -->
+        <div class="auralab__main fade-in-left">
+          <div class="auralab__image-wrapper">
+            <img src="assets/images/auralab-keyboard.jpg" alt="Aura Hub" class="auralab__image" loading="lazy" />
+          </div>
+          <div class="auralab__info">
+            <h2 class="auralab__title">AURA HUB</h2>
+            <p class="auralab__desc">Cộng đồng AuraPC — chia sẻ kiến thức, hỏi đáp, và kết nối cùng những người đam mê
+              công nghệ.</p>
+            <a routerLink="/aura-hub" class="auralab__link">KHÁM PHÁ CỘNG ĐỒNG &gt;</a>
+          </div>
+        </div>
+
+        <!-- Right: 2 stacked cards -->
+        <div class="auralab__side">
+          <div class="auralab__deal fade-in-right">
+            <div class="auralab__deal-content">
+              <h3 class="auralab__deal-badge">AURA PC BUILDER</h3>
+              <p class="auralab__deal-desc">Tự do tuỳ chỉnh từ hiệu năng, linh kiện đến phong cách RGB và thẩm mỹ tổng
+                thể.</p>
+              <a routerLink="/aura-builder" class="auralab__deal-link">MUA NGAY &gt;</a>
+            </div>
+            <div class="auralab__deal-img">
+              <img src="assets/images/aura-builder.jpg" alt="Aura PC Builder" loading="lazy" />
+            </div>
+          </div>
+
+          <div class="auralab__deal fade-in-right">
+            <div class="auralab__deal-content">
+              <h3 class="auralab__deal-badge">ƯU ĐÃI ĐẶC BIỆT</h3>
+              <p class="auralab__deal-desc">Khám phá những deal tốt nhất trong tuần dành cho các cấu hình và linh kiện
+                cao cấp của AURA PC.</p>
+              <a routerLink="/san-pham" class="auralab__deal-link">MUA NGAY &gt;</a>
+            </div>
+            <div class="auralab__deal-img">
+              <img src="assets/ads/homepage-special-deal.png" alt="Đại tiệc ROG Giáng Sinh ly kỳ" loading="lazy" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="homepage-recently-viewed">
+    <app-recently-viewed-section title="Sản phẩm vừa xem" [limit]="4" [showEmpty]="true"></app-recently-viewed-section>
+  </div>
+</div><!-- .main-reveal -->

@@ -1,0 +1,9 @@
+{
+  "buildCommand": "node scripts/vercel-build.cjs",
+  "outputDirectory": "dist/vercel-output",
+  "framework": null,
+  "installCommand": "npm install",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

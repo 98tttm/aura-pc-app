@@ -1,0 +1,227 @@
+<section class="cart-page">
+    <div class="cart-container">
+        <!-- Back link -->
+        <a routerLink="/san-pham" class="cart-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Tiếp tục mua sắm
+        </a>
+
+        @if (cartItems().length > 0) {
+        <app-checkout-stepper [step]="1"></app-checkout-stepper>
+        }
+
+        @if (cartItems().length === 0) {
+        <div class="cart-empty">
+            <div class="cart-empty__inner">
+                <svg class="cart-empty__icon" xmlns="http://www.w3.org/2000/svg" width="80" height="80"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z" />
+                    <path d="M3 6h18" />
+                    <path d="M16 10a4 4 0 01-8 0" />
+                </svg>
+                <h3 class="cart-empty__title">Chưa có sản phẩm nào trong giỏ</h3>
+                <p class="cart-empty__sub">Cùng khám phá hàng ngàn sản phẩm công nghệ tại AuraPC nhé!</p>
+                <a routerLink="/san-pham" class="btn-explore">Khám phá ngay</a>
+            </div>
+        </div>
+        } @else {
+        <div class="cart-layout">
+            <!-- ===== LEFT: Cart Items ===== -->
+            <div class="cart-main">
+                <!-- Select All + Delete Selected + Column Headers -->
+                <div class="cart-head">
+                    <label class="ck-wrap cart-head__select">
+                        <input type="checkbox" [checked]="isAllSelected()" (change)="toggleSelectAll()" />
+                        <span class="ck-box"></span>
+                        <span class="ck-label">Chọn tất cả ({{ cartCount() }})</span>
+                    </label>
+                    <div class="cart-head__cols">
+                        <span class="cart-head__col cart-head__col--price">Giá thành</span>
+                        <span class="cart-head__col cart-head__col--qty">Số lượng</span>
+                        <span class="cart-head__col cart-head__col--del">
+                            <button class="cart-head__delete-btn" [disabled]="selectedCount() === 0"
+                                (click)="requestDeleteSelected()" title="Xóa sản phẩm đã chọn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                    </path>
+                                </svg>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Items -->
+                @for (item of cartItems(); track productId(item.product)) {
+                <div class="cart-item" id="cart-item-{{productId(item.product)}}"
+                    [class.cart-item--selected]="isSelected(productId(item.product))">
+                    <label class="ck-wrap cart-item__check">
+                        <input type="checkbox" [checked]="isSelected(productId(item.product))"
+                            (change)="toggleSelection(productId(item.product), $event)" />
+                        <span class="ck-box"></span>
+                    </label>
+
+                    <a [routerLink]="['/san-pham', productSlug(item.product)]" class="cart-item__img">
+                        <img [src]="getImage(item.product)" [alt]="item.product.name" />
+                    </a>
+
+                    <div class="cart-item__info">
+                        <a [routerLink]="['/san-pham', productSlug(item.product)]" class="cart-item__name">
+                            {{ item.product.name }}
+                        </a>
+                        @if (hasSale(item.product)) {
+                        <span class="cart-item__sale">-{{ salePercent(item.product) }}%</span>
+                        }
+                    </div>
+
+                    <div class="cart-item__price">
+                        <span class="cart-item__price-now">{{ priceLabel(item.product) }}</span>
+                        @if (hasSale(item.product)) {
+                        <span class="cart-item__price-old">{{ oldPriceLabel(item.product) }}</span>
+                        }
+                    </div>
+
+                    <div class="cart-item__qty">
+                        @if (isOutOfStock(item)) {
+                        <span class="cart-item__out-of-stock">Hết hàng</span>
+                        } @else {
+                        <button class="qty-btn" (click)="decreaseQty(productId(item.product))">−</button>
+                        <input type="number" class="qty-val" [value]="item.qty" (change)="onQtyInput($event, productId(item.product), item)" min="1" [max]="item.product.stock ?? 99" />
+                        <button class="qty-btn" [disabled]="isMaxStock(item)" (click)="increaseQty(productId(item.product))">+</button>
+                        }
+                    </div>
+
+                    <button class="cart-item__del" (click)="remove(productId(item.product))" title="Xóa sản phẩm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                }
+            </div>
+
+            <!-- ===== RIGHT: Order Summary ===== -->
+            <div class="cart-sidebar">
+                <div class="summary-card">
+                    <!-- Voucher -->
+                    @if (appliedVoucher(); as v) {
+                    <div class="voucher-applied">
+                        <div class="voucher-applied__info">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                            <span class="voucher-applied__code">{{ v.code }}</span>
+                            <span class="voucher-applied__desc">-{{ v.discountPercent }}%</span>
+                        </div>
+                        <button class="voucher-applied__remove" (click)="removeVoucher()" title="Xóa mã">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                    } @else {
+                    <button class="coupon-btn" (click)="openVoucherModal()">
+                        <span class="coupon-btn__text">Áp dụng ưu đãi để được giảm giá</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                    }
+
+                    <div class="summary-row">
+                        <span class="summary-label">Tổng tiền</span>
+                        <span class="summary-val">{{ originalTotalLabel() }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Giảm giá trực tiếp</span>
+                        <span class="summary-val summary-val--discount">{{ directDiscountLabel() }}</span>
+                    </div>
+                    @if (appliedVoucher()) {
+                    <div class="summary-row">
+                        <span class="summary-label">Giảm giá voucher</span>
+                        <span class="summary-val summary-val--discount">{{ voucherDiscountLabel() }}</span>
+                    </div>
+                    }
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-row summary-row--total">
+                        <span class="summary-label">Thành tiền</span>
+                        <span class="summary-val summary-val--total">{{ finalTotalLabel() }}</span>
+                    </div>
+
+                    <button class="btn-checkout" (click)="goToCheckout()" [disabled]="selectedTotal() <= 0">Mua
+                        hàng</button>
+
+                    <p class="summary-terms">
+                        Bằng việc tiến hành đặt mua hàng, bạn đồng ý với
+                        <a routerLink="/ve-aurapc/chinh-sach-bao-mat-du-lieu-ca-nhan">Điều khoản dịch vụ</a> của AuraPC
+                    </p>
+
+                    <div class="summary-payments">
+                        <span class="summary-payments__label">Hỗ trợ thanh toán</span>
+                        <div class="summary-payments__icons">
+                            <img src="assets/figma/515c49e4ff04f92775dfa684cb71aab58d94394c.png" alt="Momo" />
+                            <img src="assets/figma/2fa2c0072b5eed1fbba69aed2773ab02e7354df4.png" alt="ATM" />
+                            <img src="assets/figma/892e22da16197098391a26772aa96ffd9a832813.png" alt="Visa" />
+                            <img src="assets/figma/d6ae29042e93314bb9c94bd274147d405a51220c.png" alt="Master" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <app-recently-viewed-section title="Sản phẩm vừa xem" [limit]="4"></app-recently-viewed-section>
+
+    <!-- Delete Confirmation Popup -->
+    @if (showDeletePopup()) {
+    <div class="delete-popup-overlay" (click)="cancelDelete()">
+        <div class="delete-popup" (click)="$event.stopPropagation()">
+            <h3 class="delete-popup__title">Xác nhận xóa</h3>
+            <p class="delete-popup__msg">
+                Bạn có chắc muốn xóa <strong>{{ deleteTargetName() }}</strong> khỏi giỏ hàng?
+            </p>
+            <div class="delete-popup__actions">
+                <button class="delete-popup__btn delete-popup__btn--cancel" (click)="cancelDelete()">Hủy</button>
+                <button class="delete-popup__btn delete-popup__btn--confirm" (click)="confirmDelete()">Xóa</button>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- Voucher Modal -->
+    @if (showVoucherModal()) {
+    <div class="voucher-overlay" (click)="closeVoucherModal()">
+        <div class="voucher-modal" (click)="$event.stopPropagation()">
+            <div class="voucher-modal__header">
+                <h3 class="voucher-modal__title">Nhập mã giảm giá</h3>
+                <button class="voucher-modal__close" (click)="closeVoucherModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="voucher-modal__body">
+                <div class="voucher-modal__input-wrap">
+                    <input type="text" class="voucher-modal__input" placeholder="Nhập mã voucher"
+                        [value]="couponCode()" (input)="couponCode.set($any($event.target).value)"
+                        (keydown.enter)="applyVoucher()" />
+                    <button class="voucher-modal__apply" (click)="applyVoucher()" [disabled]="voucherLoading() || !couponCode().trim()">
+                        @if (voucherLoading()) { Đang kiểm tra... } @else { Áp dụng }
+                    </button>
+                </div>
+                @if (voucherError()) {
+                <p class="voucher-modal__error">{{ voucherError() }}</p>
+                }
+            </div>
+        </div>
+    </div>
+    }
+</section>

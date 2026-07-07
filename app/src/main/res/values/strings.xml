@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AuraPC Admin</string>
+    <string name="default_notification_channel_id">aura_admin_default</string>
+
+    <!-- Login -->
+    <string name="login_title">AuraPC Admin</string>
+    <string name="login_subtitle">Đăng nhập để quản trị hệ thống</string>
+    <string name="login_email_hint">Email quản trị viên</string>
+    <string name="login_password_hint">Mật khẩu</string>
+    <string name="login_action">Đăng nhập</string>
+    <string name="login_biometric">Sử dụng sinh trắc học</string>
+    <string name="login_biometric_subtitle">Mở khoá bằng vân tay hoặc khuôn mặt</string>
+    <string name="login_remember">Ghi nhớ đăng nhập</string>
+    <string name="login_failed">Đăng nhập thất bại. Vui lòng kiểm tra email/mật khẩu.</string>
+
+    <!-- Main -->
+    <string name="nav_dashboard">Tổng quan</string>
+    <string name="nav_orders">Đơn hàng</string>
+    <string name="nav_products">Sản phẩm</string>
+    <string name="nav_analytics">Phân tích</string>
+    <string name="nav_more">Thêm</string>
+
+    <!-- Common -->
+    <string name="error_generic">Đã có lỗi xảy ra. Vui lòng thử lại.</string>
+    <string name="error_network">Mất kết nối mạng</string>
+    <string name="loading">Đang tải…</string>
+    <string name="retry">Thử lại</string>
+    <string name="cancel">Huỷ</string>
+    <string name="save">Lưu</string>
+    <string name="confirm">Xác nhận</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="logout_confirm">Bạn có chắc muốn đăng xuất?</string>
+    <string name="empty_data">Không có dữ liệu</string>
+    <string name="all">Tất cả</string>
+    <string name="selected_count">Đã chọn %1$d</string>
+    <string name="filter">Bộ lọc</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_revenue_today">Doanh thu hôm nay</string>
+    <string name="dashboard_orders_new">Đơn mới</string>
+    <string name="dashboard_customers">Khách hàng</string>
+    <string name="dashboard_products">Sản phẩm</string>
+    <string name="dashboard_revenue_chart">Biểu đồ doanh thu</string>
+    <string name="dashboard_top_products">Top sản phẩm bán chạy</string>
+    <string name="dashboard_recent_orders">Đơn hàng gần đây</string>
+    <string name="dashboard_low_stock">Cảnh báo tồn kho</string>
+    <string name="dashboard_period_7d">7 ngày</string>
+    <string name="dashboard_period_30d">30 ngày</string>
+    <string name="dashboard_period_12m">12 tháng</string>
+
+    <!-- Orders -->
+    <string name="order_status_pending">Chờ xác nhận</string>
+    <string name="order_status_confirmed">Đã xác nhận</string>
+    <string name="order_status_processing">Đang xử lý</string>
+    <string name="order_status_shipped">Đang giao</string>
+    <string name="order_status_delivered">Đã giao</string>
+    <string name="order_status_cancelled">Đã huỷ</string>
+    <string name="order_update_status">Cập nhật trạng thái</string>
+    <string name="order_cancel">Huỷ đơn</string>
+    <string name="order_cancel_reason">Lý do huỷ</string>
+    <string name="order_internal_note">Ghi chú nội bộ</string>
+    <string name="order_items">Sản phẩm (%1$d)</string>
+    <string name="order_customer">Khách hàng</string>
+    <string name="order_payment">Thanh toán</string>
+    <string name="order_paid">Đã thanh toán</string>
+    <string name="order_unpaid">Chưa thanh toán</string>
+
+    <!-- Products -->
+    <string name="product_filter_all">Tất cả</string>
+    <string name="product_filter_in_stock">Còn hàng</string>
+    <string name="product_filter_low_stock">Sắp hết</string>
+    <string name="product_filter_out_of_stock">Hết hàng</string>
+    <string name="product_add">Thêm sản phẩm</string>
+    <string name="product_edit">Sửa sản phẩm</string>
+    <string name="product_delete">Xoá sản phẩm</string>
+    <string name="product_bulk_update">Cập nhật hàng loạt</string>
+    <string name="product_low_stock_title">Sản phẩm sắp hết hàng</string>
+
+    <!-- Users -->
+    <string name="user_block">Khoá tài khoản</string>
+    <string name="user_unblock">Mở khoá</string>
+    <string name="user_orders_count">%1$d đơn</string>
+    <string name="user_total_spent">Tổng chi: %1$s</string>
+
+    <!-- Notifications -->
+    <string name="notification_admin_bell">Thông báo admin</string>
+
+    <!-- Support -->
+    <string name="support_send">Gửi</string>
+    <string name="support_type_message">Nhập tin nhắn…</string>
+    <string name="support_assign_me">Nhận hỗ trợ</string>
+
+    <!-- Promotions -->
+    <string name="promo_active">Đang kích hoạt</string>
+    <string name="promo_inactive">Ngừng kích hoạt</string>
+    <string name="promo_usage">Đã dùng %1$d / %2$s</string>
+
+    <!-- Settings -->
+    <string name="settings_admin_accounts">Tài khoản quản trị</string>
+    <string name="settings_biometric">Đăng nhập bằng sinh trắc học</string>
+    <string name="settings_biometric_enable">Bật</string>
+    <string name="settings_biometric_disable">Tắt</string>
+    <string name="settings_about">Giới thiệu</string>
+    <string name="settings_version">Phiên bản</string>
+
+    <!-- Misc -->
+    <string name="more">Thêm</string>
+    <string name="status">Trạng thái</string>
+    <string name="action_update">Cập nhật</string>
+    <string name="action_delete">Xoá</string>
+    <string name="action_view">Xem</string>
+    <string name="action_back">Quay lại</string>
+    <string name="back">Quay lại</string>
+    <string name="no_notifications">Chưa có thông báo</string>
+    <string name="nav_blog">Blog</string>
+    <string name="nav_categories">Danh mục</string>
+</resources>

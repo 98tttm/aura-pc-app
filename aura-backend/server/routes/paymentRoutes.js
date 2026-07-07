@@ -1,0 +1,1095 @@
+const express = require('express');
+const router = express.Router();
+const axios = require('axios');
+const mongoose = require('mongoose');
+const Order = require('../models/Order');
+const Product = require('../models/Product');
+const Promotion = require('../models/Promotion');
+const PromotionUsage = require('../models/PromotionUsage');
+const { requireAuth } = require('../middleware/auth');
+const momoUtils = require('../utils/momo');
+const zalopayUtils = require('../utils/zalopay');
+const { createAdminNotification } = require('../utils/adminNotifications');
+const { buildInvoicePdf } = require('../utils/invoicePdf');
+const { getEmailTransporter } = require('../utils/email');
+
+const PendingPayment = require('../models/PendingPayment');
+
+const FREE_SHIPPING_THRESHOLD = 500000; // 500.000₫
+const SHIPPING_FEE = 30000; // 30.000₫
+
+// ── Pending Payments Store (MongoDB) ────────────────────────────────
+// Order is NOT created until payment is confirmed (callback/IPN/redirect).
+// Pending data is stored in MongoDB with 30-minute TTL (auto-deleted).
+
+async function storePending(orderNumber, data) {
+    await PendingPayment.findOneAndUpdate(
+        { orderNumber },
+        { orderNumber, data, createdAt: new Date() },
+        { upsert: true },
+    );
+}
+
+async function getPending(orderNumber) {
+    const doc = await PendingPayment.findOne({ orderNumber }).lean();
+    return doc ? doc.data : null;
+}
+
+async function removePending(orderNumber) {
+    await PendingPayment.deleteOne({ orderNumber });
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────
+
+function generateOrderNumber(prefix = 'MOMO') {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = prefix;
+    for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+function buildMockPayUrl(orderNumber, paymentMethod) {
+    // Mock: always send user to FRONTEND_URL when set (same host as checkout).
+    // Avoids Vercel NOT_FOUND when MOMO_REDIRECT_URL points at wrong project (e.g. aurapc.vercel.app).
+    const frontend = (process.env.FRONTEND_URL || '').replace(/\/$/, '');
+    let baseRedirect = momoUtils.config.redirectUrl;
+    if (frontend) {
+        baseRedirect = `${frontend}/checkout-momo-return`;
+    } else if (baseRedirect.includes('localhost')) {
+        baseRedirect = 'http://localhost:4200/checkout-momo-return';
+    }
+    const url = new URL(baseRedirect);
+    const message = paymentMethod === 'atm'
+        ? 'Thanh toán ATM MoMo giả lập thành công.'
+        : 'Thanh toán MoMo giả lập thành công.';
+
+    url.searchParams.set('resultCode', '0');
+    url.searchParams.set('orderId', orderNumber);
+    url.searchParams.set('message', message);
+    url.searchParams.set('mock', '1');
+    return url.toString();
+}
+
+function orderAddressFingerprint(shippingAddress = {}) {
+    return [
+        shippingAddress.fullName,
+        shippingAddress.phone,
+        shippingAddress.address,
+        shippingAddress.ward,
+        shippingAddress.district,
+        shippingAddress.city,
+    ]
+        .map((value) => String(value || '').trim().toLowerCase())
+        .join('|');
+}
+
+function orderItemsFingerprint(items = []) {
+    return items
+        .map((item) => {
+            const productId = item?.product?._id || item?.product || item?.name || '';
+            const qty = Math.max(1, Number(item?.qty) || 1);
+            const price = Number(item?.price) || 0;
+            return `${String(productId)}:${qty}:${price}`;
+        })
+        .sort()
+        .join('|');
+}
+
+function buildDuplicateFingerprint({ items, shippingAddress, total, paymentMethod }) {
+    return [
+        paymentMethod || '',
+        Number(total) || 0,
+        orderAddressFingerprint(shippingAddress),
+        orderItemsFingerprint(items),
+    ].join('||');
+}
+
+async function findRecentDuplicateOrder({ userId, items, shippingAddress, total, paymentMethod, windowMs = 15 * 60 * 1000 }) {
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) return null;
+
+    const since = new Date(Date.now() - windowMs);
+    const candidates = await Order.find({
+        user: new mongoose.Types.ObjectId(userId),
+        paymentMethod,
+        total: Number(total) || 0,
+        status: { $in: ['pending', 'confirmed', 'processing', 'shipped', 'delivered'] },
+        createdAt: { $gte: since },
+    }).lean();
+
+    const target = buildDuplicateFingerprint({ items, shippingAddress, total, paymentMethod });
+    return candidates.find((order) => (
+        buildDuplicateFingerprint({
+            items: order.items || [],
+            shippingAddress: order.shippingAddress || {},
+            total: order.total,
+            paymentMethod: order.paymentMethod,
+        }) === target
+    )) || null;
+}
+
+async function notifyPaidOrder(order) {
+    await createAdminNotification({
+        type: 'order_new',
+        order: order._id,
+        orderNumber: order.orderNumber,
+        title: 'Có đơn hàng mới',
+        message: `Đơn #${order.orderNumber} đã thanh toán và đang chờ xác nhận`,
+        metadata: {
+            status: order.status,
+            total: order.total,
+            isPaid: order.isPaid,
+            paymentMethod: order.paymentMethod,
+        },
+    });
+}
+
+/**
+ * Validate items, check stock, calculate total.
+ * Returns { orderItems, finalTotal, discountAmount, promoDiscount, appliedPromotion } or throws.
+ */
+async function validateAndBuildItems(items, directDiscount, { promotionCode, userId } = {}) {
+    const productIds = items
+        .map((item) => item.product)
+        .filter((id) => id && mongoose.Types.ObjectId.isValid(id));
+
+    if (productIds.length === 0) {
+        throw Object.assign(new Error('No valid product IDs'), { statusCode: 400 });
+    }
+
+    const products = await Product.find({ _id: { $in: productIds } })
+        .select('_id name price salePrice stock')
+        .lean();
+
+    const productMap = new Map();
+    products.forEach((p) => productMap.set(String(p._id), p));
+
+    let originalTotal = 0;
+    const orderItems = [];
+
+    for (const item of items) {
+        const dbProduct = productMap.get(String(item.product));
+        if (!dbProduct) {
+            throw Object.assign(new Error(`Product not found: ${item.product}`), { statusCode: 400 });
+        }
+        const qty = Math.max(1, Number(item.qty) || 1);
+        const stock = dbProduct.stock ?? 0;
+        if (stock === 0) {
+            throw Object.assign(new Error(`Sản phẩm "${dbProduct.name}" đã hết hàng.`), { statusCode: 400 });
+        }
+        if (qty > stock) {
+            throw Object.assign(new Error(`Sản phẩm "${dbProduct.name}" chỉ còn ${stock} sản phẩm trong kho.`), { statusCode: 400 });
+        }
+        const verifiedPrice = dbProduct.salePrice ?? dbProduct.price ?? 0;
+        originalTotal += verifiedPrice * qty;
+        orderItems.push({
+            product: item.product,
+            name: dbProduct.name || item.name,
+            price: verifiedPrice,
+            qty,
+        });
+    }
+
+    const discountAmount = Number(directDiscount) || 0;
+    const subtotal = Math.max(0, originalTotal - discountAmount);
+
+    // === PROMOTION VALIDATION ===
+    let promoDiscount = 0;
+    let appliedPromotion = null;
+    let validatedPromo = null;
+    if (promotionCode) {
+        validatedPromo = await Promotion.findOne({ code: promotionCode.toUpperCase().trim(), isActive: true });
+        if (!validatedPromo) {
+            throw Object.assign(new Error('Mã giảm giá không hợp lệ.'), { statusCode: 400 });
+        }
+        const now = new Date();
+        if (now < new Date(validatedPromo.startDate) || now > new Date(validatedPromo.endDate)) {
+            throw Object.assign(new Error('Mã giảm giá đã hết hạn.'), { statusCode: 400 });
+        }
+        if (validatedPromo.maxUsage != null && validatedPromo.usedCount >= validatedPromo.maxUsage) {
+            throw Object.assign(new Error('Mã giảm giá đã hết lượt sử dụng.'), { statusCode: 400 });
+        }
+        if (subtotal < validatedPromo.minOrderAmount) {
+            throw Object.assign(new Error('Đơn hàng không đạt giá trị tối thiểu để dùng mã.'), { statusCode: 400 });
+        }
+        if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+            const userUsageCount = await PromotionUsage.countDocuments({ promotion: validatedPromo._id, user: userId });
+            if (userUsageCount >= validatedPromo.maxUsagePerUser) {
+                throw Object.assign(new Error('Bạn đã sử dụng mã này đủ số lần.'), { statusCode: 400 });
+            }
+        }
+        const rawDiscount = (subtotal * validatedPromo.discountPercent) / 100;
+        promoDiscount = Math.round(
+            validatedPromo.maxDiscountAmount != null ? Math.min(rawDiscount, validatedPromo.maxDiscountAmount) : rawDiscount
+        );
+        appliedPromotion = {
+            code: validatedPromo.code,
+            discountPercent: validatedPromo.discountPercent,
+            discountAmount: promoDiscount,
+        };
+    }
+
+    const finalTotal = Math.max(0, subtotal - promoDiscount);
+
+    return { orderItems, finalTotal, discountAmount: discountAmount + promoDiscount, promoDiscount, appliedPromotion, validatedPromo };
+}
+
+/**
+ * Create Order in DB from pending payment data. Returns the saved order.
+ */
+async function createOrderFromPending(pendingData, { isPaid = true } = {}) {
+    const order = new Order({
+        orderNumber: pendingData.orderNumber,
+        user: pendingData.userId,
+        items: pendingData.orderItems,
+        total: pendingData.finalTotal,
+        discount: pendingData.discountAmount,
+        shippingFee: pendingData.shippingFee || 0,
+        shippingAddress: pendingData.shippingAddress,
+        paymentMethod: pendingData.paymentMethod,
+        appliedPromotion: pendingData.appliedPromotion || undefined,
+        isPaid,
+        paidAt: isPaid ? new Date() : null,
+        status: 'pending',
+        zaloPayTransId: pendingData.zaloPayTransId || null,
+    });
+    await order.save();
+
+    // Track promotion usage
+    if (pendingData.validatedPromoId && pendingData.userId) {
+        const userObjectId = mongoose.Types.ObjectId.isValid(pendingData.userId)
+            ? new mongoose.Types.ObjectId(pendingData.userId) : null;
+        if (userObjectId) {
+            await Promotion.updateOne({ _id: pendingData.validatedPromoId }, { $inc: { usedCount: 1 } });
+            await PromotionUsage.create({ promotion: pendingData.validatedPromoId, user: userObjectId, order: order._id });
+        }
+    }
+
+    // Gửi hóa đơn điện tử qua email nếu khách yêu cầu
+    if (pendingData.requestInvoice && pendingData.invoiceEmail) {
+        sendInvoiceEmail(order.toObject ? order.toObject() : order, pendingData.invoiceEmail, pendingData.invoiceType)
+            .catch(err => console.error(`[Email] Gửi hóa đơn thất bại cho đơn #${order.orderNumber}:`, err.message));
+    }
+
+    return order;
+}
+
+/**
+ * Gửi hóa đơn điện tử qua email (fire-and-forget, không block flow chính)
+ */
+async function sendInvoiceEmail(order, emailTo, invoiceType = 'personal') {
+    const transporter = getEmailTransporter();
+    if (!transporter) return;
+    const fromEmail = process.env.EMAIL_USER || process.env.GMAIL_USER;
+    const pdfBuffer = await buildInvoicePdf(order, invoiceType === 'company' ? 'company' : 'personal');
+    await transporter.sendMail({
+        from: `"AuraPC" <${fromEmail}>`,
+        to: emailTo.trim(),
+        subject: `Hóa đơn điện tử đơn hàng #${order.orderNumber} - AuraPC`,
+        html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;font-family:'Segoe UI',Arial,sans-serif;background:#f5f5f5;color:#333;">
+  <div style="max-width:600px;margin:0 auto;background:#fff;">
+    <div style="padding:24px;background:#1a1a2e;text-align:center;">
+      <span style="font-size:1.4rem;font-weight:800;letter-spacing:3px;color:#fff;">AURA</span><span style="font-size:1.4rem;font-weight:800;letter-spacing:3px;color:#f97316;">PC</span>
+    </div>
+    <div style="padding:24px;">
+      <h2 style="margin:0 0 8px;font-size:1.1rem;color:#1a1a2e;">Cảm ơn bạn đã mua hàng tại AuraPC!</h2>
+      <p style="color:#666;font-size:0.9rem;">Đơn hàng <strong>#${order.orderNumber}</strong> đã được xác nhận thanh toán.</p>
+      <p style="color:#666;font-size:0.9rem;">Hóa đơn điện tử được đính kèm trong email này dưới dạng file PDF.</p>
+      <div style="margin:20px 0;padding:16px;background:#f8f9fa;border-radius:8px;">
+        <p style="margin:0 0 4px;font-size:0.85rem;color:#666;">Tổng thanh toán:</p>
+        <p style="margin:0;font-size:1.25rem;font-weight:700;color:#f97316;">${Number(order.total).toLocaleString('vi-VN')}đ</p>
+      </div>
+      <p style="color:#999;font-size:0.8rem;">Nếu bạn có thắc mắc, vui lòng liên hệ bộ phận hỗ trợ AuraPC.</p>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid #eee;text-align:center;">
+      <p style="margin:0;font-size:0.8rem;color:#999;">AuraPC — Gaming PC & Linh kiện chính hãng</p>
+    </div>
+  </div>
+</body>
+</html>`,
+        attachments: [{
+            filename: `HoaDon_${order.orderNumber}.pdf`,
+            content: pdfBuffer,
+        }],
+    });
+}
+
+// ── MoMo ────────────────────────────────────────────────────────────
+
+// POST /api/payment/momo/create
+// Validates items, calls MoMo API, stores pending. Does NOT create Order yet.
+router.post('/momo/create', requireAuth, async (req, res) => {
+    let paymentMethod = req.body?.paymentMethod;
+    let finalTotal = 0;
+
+    try {
+        const userId = req.userId;
+        const { items, shippingAddress, directDiscount, promotionCode, requestInvoice, invoiceEmail, invoiceType } = req.body;
+
+        if (!['momo', 'atm'].includes(paymentMethod)) {
+            return res.status(400).json({ success: false, message: 'Invalid payment method' });
+        }
+
+        if (!items || !items.length) {
+            return res.status(400).json({ success: false, message: 'Cart items required' });
+        }
+
+        const { orderItems, finalTotal: subtotalAfterDiscount, discountAmount, appliedPromotion, validatedPromo } = await validateAndBuildItems(items, directDiscount, { promotionCode, userId });
+        const shippingFeeCalc = subtotalAfterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+        finalTotal = subtotalAfterDiscount + shippingFeeCalc;
+
+        const orderNumber = generateOrderNumber('MOMO');
+
+        const duplicateOrder = await findRecentDuplicateOrder({
+            userId,
+            items: orderItems,
+            shippingAddress: shippingAddress || {},
+            total: finalTotal,
+            paymentMethod,
+        });
+        if (duplicateOrder) {
+            if (momoUtils.config.mockMode) {
+                return res.json({
+                    success: true,
+                    payUrl: buildMockPayUrl(duplicateOrder.orderNumber, paymentMethod),
+                    mock: true,
+                    deduped: true,
+                });
+            }
+
+            return res.status(409).json({
+                success: false,
+                message: `Bạn vừa tạo một đơn tương tự gần đây. Vui lòng kiểm tra đơn #${duplicateOrder.orderNumber}.`,
+                orderNumber: duplicateOrder.orderNumber,
+                deduped: true,
+            });
+        }
+
+        const configIssues = momoUtils.getCreateConfigIssues({
+            paymentMethod,
+            amount: finalTotal,
+        });
+
+        if (configIssues.length) {
+            return res.status(400).json({
+                success: false,
+                message: configIssues[0],
+                issues: configIssues,
+            });
+        }
+
+        // Store pending data (order will be created on payment confirmation)
+        const pendingData = {
+            orderNumber,
+            userId,
+            orderItems,
+            finalTotal,
+            discountAmount,
+            shippingFee: shippingFeeCalc,
+            shippingAddress,
+            paymentMethod,
+            appliedPromotion: appliedPromotion || undefined,
+            validatedPromoId: validatedPromo?._id || null,
+            requestInvoice: !!requestInvoice,
+            invoiceEmail: invoiceEmail || '',
+            invoiceType: invoiceType || 'personal',
+        };
+
+        const requestId = `${orderNumber}_${Date.now()}`;
+        const orderInfo = `Thanh toan don hang ${orderNumber} tai AuraPC`;
+        const amount = String(finalTotal);
+        const requestType = paymentMethod === 'atm' ? 'payWithATM' : 'captureWallet';
+
+        const payload = momoUtils.buildCreatePayload({
+            requestId,
+            amount,
+            orderId: orderNumber,
+            orderInfo,
+            requestType,
+        });
+
+        if (momoUtils.config.mockMode) {
+            // Mock mode: create order immediately as paid
+            const order = await createOrderFromPending(pendingData, { isPaid: true });
+            await notifyPaidOrder(order);
+
+            return res.json({
+                success: true,
+                payUrl: buildMockPayUrl(orderNumber, paymentMethod),
+                mock: true,
+            });
+        }
+
+        payload.signature = momoUtils.createSignature(payload);
+
+        const momoResponse = await axios.post(momoUtils.config.endpoint, payload, {
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+            timeout: 30000,
+        });
+
+        if (Number(momoResponse.data?.resultCode) !== 0 || !momoResponse.data?.payUrl) {
+            console.error('MoMo Create Error:', momoResponse.data);
+            return res.status(400).json({
+                success: false,
+                message: momoResponse.data?.message || 'MoMo từ chối khởi tạo giao dịch.',
+                resultCode: momoResponse.data?.resultCode,
+                momo: momoResponse.data,
+            });
+        }
+
+        // Store pending — order will be created only when IPN/redirect confirms payment
+        await storePending(orderNumber, pendingData);
+
+        return res.json({ success: true, payUrl: momoResponse.data.payUrl });
+    } catch (error) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({ success: false, message: error.message });
+        }
+        if (error.response?.data) {
+            const momoError = error.response.data;
+            const issues = momoUtils.getCreateConfigIssues({
+                paymentMethod,
+                amount: finalTotal,
+            });
+
+            if (Number(momoError.resultCode) === 11007) {
+                issues.unshift('Chữ ký HMAC không hợp lệ. Hãy kiểm tra MOMO_PARTNER_CODE / MOMO_ACCESS_KEY / MOMO_SECRET_KEY có thuộc cùng một merchant sandbox.');
+            }
+
+            console.error('MoMo Create Rejected:', momoError);
+            return res.status(400).json({
+                success: false,
+                message: momoError.message || 'MoMo từ chối request tạo thanh toán.',
+                resultCode: momoError.resultCode,
+                momo: momoError,
+                issues,
+            });
+        }
+
+        console.error('MoMo Create Exception:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Lỗi server khi tạo thanh toán MoMo',
+            code: error.code || undefined,
+        });
+    }
+});
+
+// POST /api/payment/momo/ipn
+// MoMo server-to-server callback. Creates Order if payment succeeded.
+router.post('/momo/ipn', async (req, res) => {
+    try {
+        const data = req.body;
+
+        const isValid = momoUtils.verifyIpnSignature(data);
+        if (!isValid) {
+            console.error('Invalid MoMo IPN Signature:', data);
+            return res.status(400).json({ message: 'Invalid signature' });
+        }
+
+        const { orderId, resultCode } = data;
+
+        if (Number(resultCode) === 0) {
+            // Check if order already exists (created by redirect confirm)
+            const existingOrder = await Order.findOne({ orderNumber: orderId });
+            if (existingOrder) {
+                if (!existingOrder.isPaid) {
+                    existingOrder.isPaid = true;
+                    existingOrder.paidAt = new Date();
+                    await existingOrder.save();
+                    await notifyPaidOrder(existingOrder);
+                }
+                await removePending(orderId);
+                console.log(`Order ${orderId} marked as paid from MoMo IPN`);
+                return res.status(204).send();
+            }
+
+            // Create order from pending data
+            const pendingData = await getPending(orderId);
+            if (pendingData) {
+                const order = await createOrderFromPending(pendingData, { isPaid: true });
+                await notifyPaidOrder(order);
+                await removePending(orderId);
+                console.log(`Order ${orderId} created and marked as paid from MoMo IPN`);
+            } else {
+                console.error('MoMo IPN - No pending data for:', orderId);
+            }
+        } else {
+            // Payment failed — just remove pending, no order created
+            await removePending(orderId);
+            console.log(`MoMo IPN: Payment failed for ${orderId}, status ${resultCode}`);
+        }
+
+        return res.status(204).send();
+    } catch (error) {
+        console.error('MoMo IPN Exception:', error);
+        return res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// GET /api/payment/momo/confirm
+// Called from frontend redirect. Creates order if payment succeeded and IPN hasn't already.
+router.get('/momo/confirm', requireAuth, async (req, res) => {
+    try {
+        const { orderId, resultCode } = req.query;
+
+        if (!orderId) {
+            return res.status(400).json({ success: false, message: 'Missing orderId' });
+        }
+
+        // Check if order already exists (created by IPN)
+        const existingOrder = await Order.findOne({ orderNumber: orderId });
+        if (existingOrder) {
+            await removePending(orderId);
+            return res.json({ success: true, orderNumber: existingOrder.orderNumber, alreadyCreated: true });
+        }
+
+        if (String(resultCode) !== '0') {
+            await removePending(orderId);
+            return res.status(400).json({ success: false, message: 'Thanh toán không thành công.' });
+        }
+
+        const pendingData = await getPending(orderId);
+        if (!pendingData) {
+            return res.status(404).json({ success: false, message: 'Phiên thanh toán đã hết hạn.' });
+        }
+
+        const order = await createOrderFromPending(pendingData, { isPaid: true });
+        await notifyPaidOrder(order);
+        await removePending(orderId);
+
+        return res.json({ success: true, orderNumber: order.orderNumber });
+    } catch (error) {
+        console.error('MoMo Confirm Exception:', error);
+        return res.status(500).json({ success: false, message: 'Lỗi server' });
+    }
+});
+
+// ── ZaloPay ──────────────────────────────────────────────────────────
+
+// POST /api/payment/zalopay/create
+// Validates items, calls ZaloPay API, stores pending. Does NOT create Order yet.
+router.post('/zalopay/create', requireAuth, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { items, shippingAddress, directDiscount, promotionCode, requestInvoice, invoiceEmail, invoiceType } = req.body;
+
+        if (!items || !items.length) {
+            return res.status(400).json({ success: false, message: 'Cart items required' });
+        }
+
+        const { orderItems, finalTotal: subtotalAfterDiscount, discountAmount, appliedPromotion, validatedPromo } = await validateAndBuildItems(items, directDiscount, { promotionCode, userId });
+        const shippingFeeCalc = subtotalAfterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+        const finalTotal = subtotalAfterDiscount + shippingFeeCalc;
+        const orderNumber = generateOrderNumber('ZLP');
+
+        // Check for duplicate orders
+        const duplicateOrder = await findRecentDuplicateOrder({
+            userId,
+            items: orderItems,
+            shippingAddress: shippingAddress || {},
+            total: finalTotal,
+            paymentMethod: 'zalopay',
+        });
+        if (duplicateOrder) {
+            return res.status(409).json({
+                success: false,
+                message: `Bạn vừa tạo một đơn tương tự gần đây. Vui lòng kiểm tra đơn #${duplicateOrder.orderNumber}.`,
+                orderNumber: duplicateOrder.orderNumber,
+                deduped: true,
+            });
+        }
+
+        const configIssues = zalopayUtils.getConfigIssues();
+        if (configIssues.length) {
+            return res.status(400).json({
+                success: false,
+                message: configIssues[0],
+                issues: configIssues,
+            });
+        }
+
+        // Build ZaloPay create order payload
+        const zaloPayload = zalopayUtils.buildCreatePayload({
+            orderNumber,
+            amount: finalTotal,
+            description: `AuraPC - Thanh toan don hang #${orderNumber}`,
+            items: orderItems.map((i) => ({ name: i.name, qty: i.qty, price: i.price })),
+            userId: String(userId),
+        });
+
+        // Call ZaloPay API
+        const zaloResponse = await axios.post(zalopayUtils.config.endpoint, null, {
+            params: zaloPayload,
+            timeout: 30000,
+        });
+
+        const zaloData = zaloResponse.data;
+
+        if (Number(zaloData.return_code) !== 1 || !zaloData.order_url) {
+            console.error('ZaloPay Create Error:', zaloData);
+            return res.status(400).json({
+                success: false,
+                message: zaloData.return_message || 'ZaloPay từ chối khởi tạo giao dịch.',
+                returnCode: zaloData.return_code,
+                zalopay: zaloData,
+            });
+        }
+
+        // Store pending — order will be created only when callback/confirm confirms payment
+        await storePending(orderNumber, {
+            orderNumber,
+            userId,
+            orderItems,
+            finalTotal,
+            discountAmount,
+            shippingFee: shippingFeeCalc,
+            shippingAddress,
+            paymentMethod: 'zalopay',
+            zaloPayTransId: zaloPayload.app_trans_id,
+            appliedPromotion: appliedPromotion || undefined,
+            validatedPromoId: validatedPromo?._id || null,
+            requestInvoice: !!requestInvoice,
+            invoiceEmail: invoiceEmail || '',
+            invoiceType: invoiceType || 'personal',
+        });
+
+        return res.json({
+            success: true,
+            orderUrl: zaloData.order_url,
+            orderNumber,
+            appTransId: zaloPayload.app_trans_id,
+        });
+    } catch (error) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({ success: false, message: error.message });
+        }
+        if (error.response?.data) {
+            console.error('ZaloPay Create Rejected:', error.response.data);
+            return res.status(400).json({
+                success: false,
+                message: error.response.data.return_message || 'ZaloPay từ chối request tạo thanh toán.',
+                zalopay: error.response.data,
+            });
+        }
+        console.error('ZaloPay Create Exception:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Lỗi server khi tạo thanh toán ZaloPay',
+        });
+    }
+});
+
+// POST /api/payment/zalopay/callback
+// ZaloPay server-to-server callback. Creates Order if payment succeeded.
+router.post('/zalopay/callback', async (req, res) => {
+    try {
+        const { data: dataStr, mac, type } = req.body;
+
+        // Only handle order callbacks (type=1)
+        if (type !== 1) {
+            return res.json({ return_code: 1, return_message: 'OK' });
+        }
+
+        // Verify MAC using key2
+        const isValid = zalopayUtils.verifyCallbackMac(dataStr, mac);
+        if (!isValid) {
+            console.error('Invalid ZaloPay Callback MAC');
+            return res.json({ return_code: -1, return_message: 'mac not equal' });
+        }
+
+        const callbackData = JSON.parse(dataStr);
+        const appTransId = callbackData.app_trans_id;
+        const orderNumber = appTransId.split('_').slice(1).join('_');
+
+        // Check if order already exists (created by redirect confirm)
+        const existingOrder = await Order.findOne({ orderNumber });
+        if (existingOrder) {
+            if (!existingOrder.isPaid) {
+                existingOrder.isPaid = true;
+                existingOrder.paidAt = new Date();
+                existingOrder.zaloPayTransId = String(callbackData.zp_trans_id || appTransId);
+                await existingOrder.save();
+                await notifyPaidOrder(existingOrder);
+            }
+            await removePending(orderNumber);
+            return res.json({ return_code: 1, return_message: 'success' });
+        }
+
+        // Create order from pending data
+        const pendingData = await getPending(orderNumber);
+        if (pendingData) {
+            pendingData.zaloPayTransId = String(callbackData.zp_trans_id || appTransId);
+            const order = await createOrderFromPending(pendingData, { isPaid: true });
+            await notifyPaidOrder(order);
+            await removePending(orderNumber);
+            console.log(`Order ${orderNumber} created and marked as paid from ZaloPay callback`);
+        } else {
+            console.error('ZaloPay Callback - No pending data for:', orderNumber);
+        }
+
+        return res.json({ return_code: 1, return_message: 'success' });
+    } catch (error) {
+        console.error('ZaloPay Callback Exception:', error);
+        return res.json({ return_code: 0, return_message: 'exception' });
+    }
+});
+
+// GET /api/payment/zalopay/confirm
+// Called from frontend redirect. Creates order if payment succeeded and callback hasn't already.
+router.get('/zalopay/confirm', requireAuth, async (req, res) => {
+    try {
+        const { apptransid, status } = req.query;
+
+        if (!apptransid) {
+            return res.status(400).json({ success: false, message: 'Missing apptransid' });
+        }
+
+        const orderNumber = apptransid.split('_').slice(1).join('_');
+
+        // Check if order already exists (created by callback)
+        const existingOrder = await Order.findOne({ orderNumber });
+        if (existingOrder) {
+            await removePending(orderNumber);
+            return res.json({ success: true, orderNumber: existingOrder.orderNumber, alreadyCreated: true });
+        }
+
+        if (String(status) !== '1') {
+            await removePending(orderNumber);
+            return res.status(400).json({ success: false, message: 'Thanh toán không thành công.' });
+        }
+
+        const pendingData = await getPending(orderNumber);
+        if (!pendingData) {
+            return res.status(404).json({ success: false, message: 'Phiên thanh toán đã hết hạn.' });
+        }
+
+        pendingData.zaloPayTransId = apptransid;
+        const order = await createOrderFromPending(pendingData, { isPaid: true });
+        await notifyPaidOrder(order);
+        await removePending(orderNumber);
+
+        return res.json({ success: true, orderNumber: order.orderNumber });
+    } catch (error) {
+        console.error('ZaloPay Confirm Exception:', error);
+        return res.status(500).json({ success: false, message: 'Lỗi server' });
+    }
+});
+
+// POST /api/payment/zalopay/query
+// Query ZaloPay order status
+router.post('/zalopay/query', requireAuth, async (req, res) => {
+    try {
+        const { appTransId } = req.body;
+        if (!appTransId) {
+            return res.status(400).json({ success: false, message: 'appTransId required' });
+        }
+
+        const mac = zalopayUtils.createQueryMac(appTransId);
+        const queryResponse = await axios.post(zalopayUtils.config.queryEndpoint, null, {
+            params: {
+                app_id: parseInt(zalopayUtils.config.appId, 10),
+                app_trans_id: appTransId,
+                mac,
+            },
+            timeout: 15000,
+        });
+
+        return res.json({ success: true, ...queryResponse.data });
+    } catch (error) {
+        console.error('ZaloPay Query Exception:', error);
+        return res.status(500).json({ success: false, message: 'Lỗi truy vấn trạng thái ZaloPay' });
+    }
+});
+
+// ── VietQR ───────────────────────────────────────────────────────────
+//
+// VietQR flow khác MoMo/ZaloPay ở hai điểm chính:
+//   1. Không có SDK / API key gọi tới ngân hàng — chỉ render QR tĩnh
+//      EMVCo từ BIN + số tài khoản + amount + addInfo. Dùng public
+//      image API của VietQR (img.vietqr.io — không auth, miễn phí).
+//   2. Bank app không phải lúc nào cũng gọi IPN về backend → app phải
+//      luôn cung cấp endpoint /confirm thủ công và polling /status.
+//
+// Order chỉ được tạo khi backend xác nhận thanh toán — đồng nhất
+// pattern với momo/zalopay (store pending → IPN/confirm → create order).
+
+function buildVietQrImageUrl(bankBin, accountNo, templateId, amount, addInfo, accountName) {
+    const params = new URLSearchParams();
+    params.set('amount', String(Math.round(Number(amount) || 0)));
+    if (addInfo) params.set('addInfo', addInfo);
+    if (accountName) params.set('accountName', accountName);
+    return `https://img.vietqr.io/image/${bankBin}-${accountNo}-${templateId}.png?${params.toString()}`;
+}
+
+/**
+ * Sinh chuỗi EMVCo TLV từ account/amount để app có thể render QR local
+ * bằng ZXing nếu image API vietqr.io không khả dụng (offline / rate-limit).
+ * Theo NAPAS IBFT spec — đủ trường để app bank đọc được.
+ */
+function buildVietQrEmvco({ bankBin, accountNo, amount, addInfo }) {
+    function tlv(id, value) {
+        const v = Buffer.from(value || '', 'utf8');
+        return `${id}${String(v.length).padStart(2, '0')}${v.toString('latin1')}`;
+    }
+    // 00: Payload Format Indicator (QRIBFCT)
+    // 01: Point of Initiation Method (12 = dynamic, có amount)
+    // 38: Merchant Account Information (NAPAS) — phải có sub-TLV
+    // 53: Transaction Currency (704 = VND)
+    // 54: Transaction Amount
+    // 58: Country Code (VN)
+    // 62: Additional Data Field (addInfo trong sub-TLV 08)
+    // 63: CRC (tính sau)
+    const merchantInfo =
+        tlv('00', 'AURA.PC') +                 // GUID NAPAS
+        tlv('01', String(bankBin || '')) +      // BIN
+        tlv('02', String(accountNo || ''));     // Số tài khoản
+    const amountStr = String(Math.round(Number(amount) || 0));
+    const addInfoSub = tlv('08', String(addInfo || ''));
+    const payload =
+        tlv('00', '01') +
+        tlv('01', '12') +
+        tlv('38', merchantInfo) +
+        tlv('53', '704') +
+        (amountStr !== '0' ? tlv('54', amountStr) : '') +
+        tlv('58', 'VN') +
+        tlv('62', addInfoSub) +
+        '6304';
+    // CRC16-CCITT (poly 0x1021, init 0xFFFF) theo EMVCo spec
+    const buf = Buffer.from(payload, 'latin1');
+    let crc = 0xFFFF;
+    for (let i = 0; i < buf.length; i++) {
+        crc ^= buf[i] << 8;
+        for (let j = 0; j < 8; j++) {
+            if (crc & 0x8000) crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+            else crc = (crc << 1) & 0xFFFF;
+        }
+    }
+    const crcHex = crc.toString(16).toUpperCase().padStart(4, '0');
+    return payload + crcHex;
+}
+
+function getVietQrConfig() {
+    const bankBin = process.env.VIETQR_BANK_BIN || '';
+    const accountNo = process.env.VIETQR_ACCOUNT_NO || '';
+    const accountName = process.env.VIETQR_ACCOUNT_NAME || 'AURA PC';
+    const templateId = process.env.VIETQR_TEMPLATE || 'compact2';
+    const isMock = !bankBin || !accountNo;
+    return { bankBin, accountNo, accountName, templateId, isMock };
+}
+
+// POST /api/payment/vietqr/create
+router.post('/vietqr/create', requireAuth, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { items, shippingAddress, directDiscount, promotionCode, requestInvoice, invoiceEmail, invoiceType } = req.body;
+
+        if (!items || !items.length) {
+            return res.status(400).json({ success: false, message: 'Cart items required' });
+        }
+
+        const { orderItems, finalTotal: subtotalAfterDiscount, discountAmount, appliedPromotion, validatedPromo } = await validateAndBuildItems(items, directDiscount, { promotionCode, userId });
+        const shippingFeeCalc = subtotalAfterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+        const finalTotal = subtotalAfterDiscount + shippingFeeCalc;
+        const orderNumber = generateOrderNumber('VIQ');
+
+        const duplicateOrder = await findRecentDuplicateOrder({
+            userId,
+            items: orderItems,
+            shippingAddress: shippingAddress || {},
+            total: finalTotal,
+            paymentMethod: 'vietqr',
+        });
+        if (duplicateOrder) {
+            return res.status(409).json({
+                success: false,
+                message: `Bạn vừa tạo một đơn tương tự gần đây. Vui lòng kiểm tra đơn #${duplicateOrder.orderNumber}.`,
+                orderNumber: duplicateOrder.orderNumber,
+                deduped: true,
+            });
+        }
+
+        const cfg = getVietQrConfig();
+        const addInfo = `AuraPC ${orderNumber}`;
+        const qrUrl = cfg.isMock
+            ? ''
+            : buildVietQrImageUrl(cfg.bankBin, cfg.accountNo, cfg.templateId, finalTotal, addInfo, cfg.accountName);
+        const qrData = buildVietQrEmvco({
+            bankBin: cfg.bankBin,
+            accountNo: cfg.accountNo,
+            amount: finalTotal,
+            addInfo,
+        });
+
+        await storePending(orderNumber, {
+            orderNumber,
+            userId,
+            orderItems,
+            finalTotal,
+            discountAmount,
+            shippingFee: shippingFeeCalc,
+            shippingAddress,
+            paymentMethod: 'vietqr',
+            vietqrBankBin: cfg.bankBin,
+            vietqrAccountNo: cfg.accountNo,
+            vietqrAccountName: cfg.accountName,
+            vietqrAddInfo: addInfo,
+            appliedPromotion: appliedPromotion || undefined,
+            validatedPromoId: validatedPromo?._id || null,
+            requestInvoice: !!requestInvoice,
+            invoiceEmail: invoiceEmail || '',
+            invoiceType: invoiceType || 'personal',
+        });
+
+        return res.json({
+            success: true,
+            orderNumber,
+            qrUrl,                      // public image URL — null nếu mock-mode
+            qrData,                     // chuỗi EMVCo để app render local
+            amount: finalTotal,
+            bankBin: cfg.bankBin,
+            accountNo: cfg.accountNo,
+            accountName: cfg.accountName,
+            addInfo,
+            mock: cfg.isMock,
+        });
+    } catch (error) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({ success: false, message: error.message });
+        }
+        console.error('VietQR Create Exception:', error);
+        return res.status(500).json({ success: false, message: 'Lỗi server khi tạo thanh toán VietQR' });
+    }
+});
+
+// POST /api/payment/vietqr/notify
+// Public webhook từ ngân hàng / bên trung gian (nếu có). Body:
+//   { orderNumber, status, amount, transactionId? }
+// status 'PAID' / '00' = thành công (mọi giá trị khác = không xác nhận).
+// Idempotent — gọi hai lần vẫn cho cùng kết quả, không tạo Order trùng.
+router.post('/vietqr/notify', async (req, res) => {
+    try {
+        const { orderNumber, status, amount, transactionId } = req.body || {};
+        if (!orderNumber) {
+            return res.status(400).json({ success: false, message: 'orderNumber required' });
+        }
+        const ok = ['PAID', '00', 'SUCCESS', 'COMPLETED'].includes(String(status || '').toUpperCase());
+        if (!ok) {
+            return res.json({ success: false, message: 'Status not PAID, ignored.' });
+        }
+
+        const existingOrder = await Order.findOne({ orderNumber });
+        if (existingOrder) {
+            if (!existingOrder.isPaid) {
+                existingOrder.isPaid = true;
+                existingOrder.paidAt = new Date();
+                if (transactionId) existingOrder.vietqrTransId = String(transactionId);
+                await existingOrder.save();
+                await notifyPaidOrder(existingOrder);
+            }
+            await removePending(orderNumber);
+            return res.json({ success: true, orderNumber: existingOrder.orderNumber, alreadyCreated: true });
+        }
+
+        const pendingData = await getPending(orderNumber);
+        if (!pendingData) {
+            return res.status(404).json({ success: false, message: 'Phiên thanh toán đã hết hạn.' });
+        }
+        if (transactionId) pendingData.vietqrTransId = String(transactionId);
+        const order = await createOrderFromPending(pendingData, { isPaid: true });
+        await notifyPaidOrder(order);
+        await removePending(orderNumber);
+        console.log(`[VietQR] Order ${orderNumber} created from bank notify. amount=${amount}`);
+        return res.json({ success: true, orderNumber: order.orderNumber });
+    } catch (error) {
+        console.error('VietQR Notify Exception:', error);
+        return res.status(500).json({ success: false, message: 'Lỗi server' });
+    }
+});
+
+// POST /api/payment/vietqr/confirm
+// App gọi khi user bấm "Tôi đã thanh toán". Loại bỏ phụ thuộc vào IPN
+// từ ngân hàng — quan trọng vì app VietinBank/VietcomBank/MBVCB không
+// hỗ trợ IPN out. Tạo Order từ pending và đánh dấu isPaid=true.
+router.post('/vietqr/confirm', requireAuth, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { orderNumber, amount } = req.body || {};
+        if (!orderNumber) {
+            return res.status(400).json({ success: false, message: 'orderNumber required' });
+        }
+
+        const existingOrder = await Order.findOne({ orderNumber });
+        if (existingOrder) {
+            if (String(existingOrder.user) !== String(userId)) {
+                return res.status(403).json({ success: false, message: 'Đơn không thuộc tài khoản này.' });
+            }
+            if (!existingOrder.isPaid) {
+                existingOrder.isPaid = true;
+                existingOrder.paidAt = new Date();
+                await existingOrder.save();
+                await notifyPaidOrder(existingOrder);
+            }
+            await removePending(orderNumber);
+            return res.json({ success: true, orderNumber: existingOrder.orderNumber, alreadyCreated: true });
+        }
+
+        const pendingData = await getPending(orderNumber);
+        if (!pendingData) {
+            return res.status(404).json({ success: false, message: 'Phiên thanh toán đã hết hạn hoặc đơn không tồn tại.' });
+        }
+        if (String(pendingData.userId) !== String(userId)) {
+            return res.status(403).json({ success: false, message: 'Đơn không thuộc tài khoản này.' });
+        }
+        if (amount && Number(amount) !== Number(pendingData.finalTotal)) {
+            console.warn(`[VietQR] Amount mismatch ${orderNumber}: client=${amount} pending=${pendingData.finalTotal}`);
+        }
+        const order = await createOrderFromPending(pendingData, { isPaid: true });
+        await notifyPaidOrder(order);
+        await removePending(orderNumber);
+        return res.json({ success: true, orderNumber: order.orderNumber });
+    } catch (error) {
+        if (error.statusCode) {
+            return res.status(error.statusCode).json({ success: false, message: error.message });
+        }
+        console.error('VietQR Confirm Exception:', error);
+        return res.status(500).json({ success: false, message: 'Lỗi server' });
+    }
+});
+
+// GET /api/payment/vietqr/status
+// Polled bởi VietQrPaymentActivity mỗi 3s (max 60s). Trả status theo
+// pending lẫn Order đã tạo — app dùng để biết khi bật success UI.
+router.get('/vietqr/status', requireAuth, async (req, res) => {
+    try {
+        const { orderNumber } = req.query;
+        if (!orderNumber) {
+            return res.status(400).json({ success: false, message: 'orderNumber required' });
+        }
+        const order = await Order.findOne({ orderNumber }).lean();
+        if (order) {
+            return res.json({
+                success: true,
+                status: order.isPaid ? 'paid' : 'pending',
+                isPaid: !!order.isPaid,
+                paymentStatus: order.isPaid ? 'PAID' : 'PENDING',
+                orderId: order._id,
+            });
+        }
+        const pending = await getPending(String(orderNumber));
+        if (pending) {
+            return res.json({ success: true, status: 'pending', isPaid: false, paymentStatus: 'PENDING' });
+        }
+        return res.json({ success: false, status: 'expired', message: 'Không tìm thấy phiên thanh toán.' });
+    } catch (error) {
+        console.error('VietQR Status Exception:', error);
+        return res.status(500).json({ success: false, message: 'Lỗi server' });
+    }
+});
+
+module.exports = router;

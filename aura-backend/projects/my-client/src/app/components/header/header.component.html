@@ -1,0 +1,477 @@
+<div class="header-wrapper" [class.header-wrapper--scrolled]="isScrolled()">
+  <div class="header-fixed-wrap" [class.header-fixed-wrap--hidden]="!headerVisible()">
+    <!-- Thanh xám phía trên: ẩn khi ở đầu trang, chỉ hiện khi cuộn xuống -->
+    <div class="top-bar" [class.top-bar--visible]="isScrolled()">
+      <div class="top-bar__inner">
+        @for (partner of partnerLinks; track partner.url) {
+        <a [href]="partner.url" target="_blank" rel="noopener noreferrer" class="top-bar__link"
+          [attr.aria-label]="partner.alt">
+          <img [src]="partner.img" [alt]="partner.alt" class="top-bar__icon" />
+        </a>
+        @if (!$last) {
+        <span class="top-bar__divider"></span>
+        }
+        }
+      </div>
+    </div>
+
+    <header class="header" [class.header--scrolled]="isScrolled()">
+      <nav class="main-nav">
+        <div class="main-nav__inner">
+          <a routerLink="/" class="logo" (click)="setActiveMenu('products')">
+            <img [src]="assets.logo" alt="AuraPC Logo" class="logo-image">
+            <span class="logo-text">AuraPC</span>
+          </a>
+          <button class="nav-burger" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()" aria-label="Menu">
+            <span class="nav-burger__line"></span>
+            <span class="nav-burger__line"></span>
+            <span class="nav-burger__line"></span>
+          </button>
+
+          <div class="nav-center">
+            @if (searchOpen()) {
+            <div class="nav-search-wrap" #searchWrapRef>
+              <div class="nav-search">
+                <input type="search" class="nav-search__input" placeholder="Tìm sản phẩm..." [ngModel]="searchQuery()"
+                  (ngModelChange)="onSearchInput($event)" (keydown.enter)="submitSearch()" autofocus />
+                <button type="button" class="nav-search__btn" (click)="submitSearch()" aria-label="Tìm kiếm">
+                  <svg class="nav-search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                    <path d="M16 16l4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button type="button" class="nav-search__close" (click)="toggleSearch()" aria-label="Đóng">
+                  <svg class="nav-search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+              @if (searchDropdownVisible()) {
+              <div class="search-dropdown">
+                <!-- Từ khóa gợi ý: Xem tất cả kết quả -->
+                <div class="search-dropdown__keywords">
+                  <a [routerLink]="['/san-pham']" [queryParams]="{search: searchQuery().trim()}"
+                    (click)="toggleSearch()" class="search-dropdown__keyword-link">
+                    <svg class="search-dropdown__keyword-icon" viewBox="0 0 24 24" fill="none">
+                      <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+                      <path d="M16 16l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    Xem tất cả kết quả cho "{{ searchQuery().trim() }}"
+                  </a>
+                </div>
+                @if (searchLoading()) {
+                <div class="search-dropdown__loading">Đang tìm kiếm...</div>
+                } @else if (searchResults().length > 0) {
+                <div class="search-dropdown__divider"></div>
+                <div class="search-dropdown__list">
+                  @for (p of searchResults(); track p._id || p.slug) {
+                  <a [routerLink]="['/san-pham', p.slug]" (click)="toggleSearch()" class="search-dropdown__item">
+                    <img [src]="getProductImageUrl(p)" [alt]="p.name" class="search-dropdown__img" />
+                    <div class="search-dropdown__info">
+                      <span class="search-dropdown__name">{{ p.name }}</span>
+                      <span class="search-dropdown__price">{{ productPrice(p) | number:'1.0-0' }}₫</span>
+                    </div>
+                  </a>
+                  }
+                </div>
+                } @else {
+                <div class="search-dropdown__empty">
+                  <p class="search-dropdown__not-found">Không tìm thấy sản phẩm</p>
+                  <p class="search-dropdown__hint">Thử tìm kiếm với từ khóa khác hoặc
+                    <a [routerLink]="['/san-pham']" (click)="toggleSearch()" class="search-dropdown__link">xem toàn bộ
+                      sản phẩm</a>.
+                  </p>
+                </div>
+                }
+              </div>
+              }
+            </div>
+            } @else {
+            <ul #navMenuRef class="nav-menu" [class.nav-menu--open]="menuOpen()">
+              @for (item of menuItems; track item.id) {
+              @if (item.id === 'products') {
+              <li class="nav-item nav-item--products"
+                (mouseenter)="openProductsDropdown(); onNavItemHover($event, item.id)"
+                (mouseleave)="closeProductsDropdown(); clearNavHover()">
+                <a [routerLink]="item.route" (click)="setActiveMenu(item.id); closeProductsDropdown()">{{ item.label
+                  }}</a>
+              </li>
+              } @else if (item.id === 'news') {
+              <li class="nav-item nav-item--news"
+                (mouseenter)="openNewsDropdown(); onNavItemHover($event, item.id)"
+                (mouseleave)="closeNewsDropdown(); clearNavHover()">
+                <a [routerLink]="item.route" (click)="setActiveMenu(item.id); closeNewsDropdown()">{{ item.label }}</a>
+              </li>
+              } @else {
+              <li class="nav-item" (mouseenter)="onNavItemHover($event, item.id)" (mouseleave)="clearNavHover()">
+                <a [routerLink]="item.route" (click)="setActiveMenu(item.id)">{{ item.label }}</a>
+              </li>
+              }
+              }
+              <div class="nav-indicator" [class.nav-indicator--visible]="navHoveredId() !== null"
+                [style.left.px]="navIndicatorLeft()"
+                [style.width.px]="navHoveredId() !== null ? navIndicatorWidth() : 0"></div>
+            </ul>
+            }
+          </div>
+
+          <div class="nav-actions">
+            <button class="action-btn" (click)="toggleSearch()" aria-label="Tìm kiếm"
+              [class.action-btn--active]="searchOpen()">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+                <path d="M16 16L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </button>
+            @if (currentUser()) {
+            <div class="header-notif-wrap">
+              <button type="button" class="action-btn" aria-label="Thông báo" (click)="toggleNotifications($event)"
+                [class.action-btn--active]="notifOpen()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                @if (notif.unreadCount() > 0) {
+                <span class="header-notif-badge">{{ notif.unreadCount() > 99 ? '99+' : notif.unreadCount() }}</span>
+                }
+              </button>
+              @if (notifOpen()) {
+              <div class="header-notif-menu" (click)="$event.stopPropagation()">
+                <div class="header-notif-menu-header">
+                  <span>Thông báo</span>
+                  @if (notif.unreadCount() > 0) {
+                  <button type="button" class="header-notif-mark-all" (click)="notif.markAllRead()">Đánh dấu đã đọc</button>
+                  }
+                </div>
+                @if (notif.notifLoading()) {
+                <div class="header-notif-empty">Đang tải...</div>
+                } @else if (notif.notifications().length === 0) {
+                <div class="header-notif-empty">Chưa có thông báo nào</div>
+                } @else {
+                <div class="header-notif-list">
+                  @for (item of notif.notifications(); track item._id) {
+                  <button type="button" class="header-notif-item" [class.header-notif-item--unread]="notif.isUnread(item)"
+                    (click)="notif.openNotification(item); closeNotifDropdown()">
+                    <div class="header-notif-item-head">
+                      <span class="header-notif-type">{{ notif.typeLabel(item.type) }}</span>
+                      <span class="header-notif-time">{{ notif.timeAgo(item.createdAt) }}</span>
+                    </div>
+                    <div class="header-notif-title">{{ item.title }}</div>
+                    <div class="header-notif-message">{{ item.message }}</div>
+                    @if (item.metadata?.orderNumber) {
+                    <div class="header-notif-order">#{{ item.metadata?.orderNumber }}</div>
+                    }
+                  </button>
+                  }
+                </div>
+                }
+              </div>
+              }
+            </div>
+            }
+            <div class="user-wrap" (mouseenter)="openUserDropdown()" (mouseleave)="closeUserDropdown()">
+              <button type="button" class="action-btn action-btn--user" (click)="openUser()" aria-label="Tài khoản">
+                @if (currentUser()) {
+                <img [src]="getAvatarUrl(currentUser()!.avatar)" alt="Avatar" class="header-user-avatar">
+                } @else {
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" />
+                  <path d="M4 21c0-3.314 3.582-6 8-6s8 2.686 8 6" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" />
+                </svg>
+                }
+                @if (userDisplayName()) {
+                <span class="action-btn__user-label">{{ userDisplayName() }}</span>
+                }
+              </button>
+
+              <!-- User Dropdown Menu -->
+              @if (userDropdownOpen() && currentUser()) {
+              <div class="user-dropdown">
+                <div class="user-dropdown__inner">
+                  <a routerLink="/tai-khoan" [queryParams]="{ tab: 'profile' }" class="user-dropdown__item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Thông tin cá nhân
+                  </a>
+                  <a routerLink="/tai-khoan" [queryParams]="{ tab: 'orders' }" class="user-dropdown__item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                      <path
+                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                      </path>
+                      <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                      <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                    Đơn hàng của tôi
+                  </a>
+                  <a routerLink="/tai-khoan" [queryParams]="{ tab: 'address' }" class="user-dropdown__item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    Sổ địa chỉ nhận hàng
+                  </a>
+                  <a routerLink="/tai-khoan" [queryParams]="{ tab: 'hub' }" class="user-dropdown__item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    Hoạt động AuraHub
+                  </a>
+                  <div class="user-dropdown__divider"></div>
+                  <button type="button" class="user-dropdown__item user-dropdown__logout" (click)="openLogoutModal()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                      <polyline points="16 17 21 12 16 7"></polyline>
+                      <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Đăng xuất
+                  </button>
+                </div>
+              </div>
+              }
+            </div>
+
+            <div class="cart-wrap" (mouseenter)="openCartDropdown()" (mouseleave)="closeCartDropdown()">
+              <button class="cart-btn" (click)="openCart()" aria-label="Giỏ hàng">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M3 6h18" stroke="currentColor" stroke-width="2" />
+                  <path d="M16 10a4 4 0 01-8 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span class="cart-text">Giỏ hàng</span>
+                @if (cartCount() > 0) {
+                <span class="cart-count">{{ cartCount() }}</span>
+                }
+              </button>
+
+              <!-- Cart Dropdown Menu -->
+              @if (cartDropdownOpen() && cartCount() > 0) {
+              <div class="cart-dropdown">
+                <div class="cart-dropdown__header">Giỏ hàng</div>
+                <div class="cart-dropdown__list">
+                  @for (item of cartItems(); track $index) {
+                  @if (item.product) {
+                  <div class="cart-dropdown__item">
+                    <img [src]="getProductImageUrl(item.product) || 'assets/placeholder-product.png'"
+                      [alt]="item.product.name" class="cart-dropdown__img" />
+                    <div class="cart-dropdown__info">
+                      <a [routerLink]="['/san-pham', item.product._id]" class="cart-dropdown__name"
+                        (click)="closeCartDropdown()">{{ item.product.name }}</a>
+                      <div class="cart-dropdown__bottom">
+                        <div class="cart-dropdown__price-qty">
+                          <span class="cart-dropdown__price">{{ (item.product.salePrice || item.product.price || 0) |
+                            number:'1.0-0' }}₫</span>
+                          <span class="cart-dropdown__qty">x{{ item.qty }}</span>
+                        </div>
+                        <button class="cart-dropdown__delete" (click)="removeFromCart(item.product._id)"
+                          title="Xoá khỏi giỏ">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                            </path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  }
+                  }
+                </div>
+                <div class="cart-dropdown__footer">
+                  <span class="cart-dropdown__total-count">{{ cartCount() }} sản phẩm</span>
+                  <button class="cart-dropdown__btn" (click)="openCart()">Xem giỏ hàng</button>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </nav>
+      @if (menuOpen()) {
+      <div class="nav-overlay" (click)="closeMenu()" role="button" tabindex="0" aria-label="Đóng menu"></div>
+      }
+
+      <!-- Megamenu dropdown Sản phẩm -->
+      @if (megamenuColumns().length) {
+      <div class="megamenu" [class.megamenu--visible]="productsDropdownOpen()" (mouseenter)="openProductsDropdown()"
+        (mouseleave)="closeProductsDropdown()" role="navigation" aria-label="Danh mục sản phẩm">
+        <div class="megamenu__inner">
+          @for (col of megamenuColumns(); track col.title) {
+          <div class="megamenu__column">
+            <a [routerLink]="['/san-pham']" [queryParams]="{ category: col.categoryId }"
+              (click)="closeProductsDropdown(); setActiveMenu('products')" class="megamenu__icon-link">
+              <img [src]="col.icon" [alt]="col.title" class="megamenu__icon" />
+            </a>
+            <a [routerLink]="['/san-pham']" [queryParams]="{ category: col.categoryId }"
+              (click)="closeProductsDropdown(); setActiveMenu('products')" class="megamenu__title-link">{{ col.title
+              }}</a>
+            <ul class="megamenu__list">
+              @for (link of col.items; track link.label) {
+              <li>
+                <a [routerLink]="link.route" [queryParams]="link.queryParams ?? null"
+                  (click)="closeProductsDropdown(); setActiveMenu('products')" class="megamenu__link">{{ link.label
+                  }}</a>
+              </li>
+              }
+            </ul>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Megamenu dropdown Bản tin: 5 danh mục, ảnh từ assets/cateblog -->
+      <div class="megamenu megamenu--news" [class.megamenu--visible]="newsDropdownOpen()"
+        (mouseenter)="openNewsDropdown()" (mouseleave)="closeNewsDropdown()" role="navigation" aria-label="Danh mục bản tin">
+        <div class="megamenu__inner">
+          @for (col of newsMegamenuColumns; track col.title) {
+          <div class="megamenu__column">
+            <a [routerLink]="['/blog']" [queryParams]="{ category: col.categoryId }"
+              (click)="closeNewsDropdown(); setActiveMenu('news')" class="megamenu__icon-link">
+              <img [src]="col.icon" [alt]="col.title" class="megamenu__icon" />
+            </a>
+            <a [routerLink]="['/blog']" [queryParams]="{ category: col.categoryId }"
+              (click)="closeNewsDropdown(); setActiveMenu('news')" class="megamenu__title-link">{{ col.title }}</a>
+            <ul class="megamenu__list">
+              @for (link of col.items; track link.label) {
+              <li>
+                <a [routerLink]="link.route" [queryParams]="link.queryParams ?? null"
+                  (click)="closeNewsDropdown(); setActiveMenu('news')" class="megamenu__link">{{ link.label }}</a>
+              </li>
+              }
+            </ul>
+          </div>
+          }
+        </div>
+      </div>
+    </header>
+  </div>
+</div>
+
+@if (showLoginPopup()) {
+<div class="login-overlay" [class.login-overlay--closing]="overlayClosing()" (click)="closeLoginPopup()" role="button"
+  tabindex="0" aria-label="Đóng">
+  <div class="login-popup" [class.login-popup--otp]="loginStep() === 'otp'"
+    [class.login-popup--success]="loginSuccess()" (click)="$event.stopPropagation()">
+    <button type="button" class="login-popup__close" (click)="closeLoginPopup()" aria-label="Đóng">×</button>
+    <img [src]="assets.loginLogo" alt="AuraPC" class="login-popup__logo" />
+
+    @if (loginStep() === 'phone') {
+    <h2 class="login-popup__title">Đăng nhập</h2>
+    <p class="login-popup__desc">Vui lòng đăng nhập để hưởng những đặc quyền dành cho thành viên.</p>
+    <input type="tel" class="login-popup__input" [class.login-popup__input--error]="phoneError()"
+      placeholder="Nhập Số điện thoại" [ngModel]="loginPhone()"
+      (ngModelChange)="loginPhone.set($event); phoneError.set(null)" />
+    @if (phoneError()) {
+    <p class="login-popup__error" role="alert">
+      <span class="login-popup__error-icon" aria-hidden="true">!</span>
+      {{ phoneError() }}
+    </p>
+    }
+    <button type="button" class="login-popup__btn" (click)="onLoginContinue()">Tiếp tục</button>
+    <p class="login-popup__or">hoặc đăng nhập bằng</p>
+    <div class="login-popup__social">
+      <a href="#" class="login-popup__social-link" aria-label="Đăng nhập Facebook"
+        (click)="$event.preventDefault(); onFacebookLogin()">
+        <span class="login-popup__social-icon login-popup__social-icon--fb">
+          <img [src]="assets.facebookLogo" alt="Facebook" class="login-popup__social-icon-img" />
+        </span>
+      </a>
+      <a href="#" class="login-popup__social-link" aria-label="Đăng nhập Google"
+        (click)="$event.preventDefault(); onGoogleLogin()">
+        <span class="login-popup__social-icon login-popup__social-icon--google">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              fill="#4285F4" />
+            <path
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              fill="#34A853" />
+            <path
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+              fill="#FBBC05" />
+            <path
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+              fill="#EA4335" />
+          </svg>
+        </span>
+      </a>
+    </div>
+    } @else {
+    <div class="login-popup__step-content">
+      <h2 class="login-popup__title">Nhập mã xác thực</h2>
+      <p class="login-popup__desc">
+        Mã xác thực được gửi đến số điện thoại {{ loginPhone() }} có hiệu lực trong {{ countdownText() }}
+      </p>
+      <div class="login-popup__change-phone-wrap">
+        <button type="button" class="login-popup__change-phone" (click)="changePhone()">
+          <svg class="login-popup__change-phone-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          Đổi số điện thoại
+        </button>
+      </div>
+      <div class="login-popup__otp-row">
+        @for (i of [0,1,2,3,4,5]; track i) {
+        <input #otpInput type="text" inputmode="numeric" maxlength="1" class="login-popup__otp-input"
+          [class.login-popup__otp-input--error]="otpError()" [class.login-popup__otp-input--success]="loginSuccess()"
+          [ngModel]="getOtpDigit(i)" (ngModelChange)="setOtpDigit(i, $event)" (keydown)="onOtpKeydown($event, i)" />
+        }
+      </div>
+      @if (otpError()) {
+      <p class="login-popup__error" role="alert">
+        <span class="login-popup__error-icon" aria-hidden="true">!</span>
+        {{ otpError() }}
+      </p>
+      }
+      <button type="button" class="login-popup__btn" (click)="onOtpContinue()">Tiếp tục</button>
+      <button type="button" class="login-popup__resend" (click)="resendOtp()">
+        Gửi lại mã xác thực cho tôi
+      </button>
+    </div>
+    }
+  </div>
+</div>
+}
+
+@if (showLogoutModal()) {
+<div class="logout-modal-overlay" (click)="closeLogoutModal()">
+  <div class="logout-modal" (click)="$event.stopPropagation()">
+    <button class="logout-modal__close" (click)="closeLogoutModal()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <div class="logout-modal__icon">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+    </div>
+
+    <h3 class="logout-modal__title">Đăng xuất?</h3>
+    <p class="logout-modal__desc">Bạn sẽ không nhận được đặc quyền riêng dành cho thành viên.</p>
+
+    <div class="logout-modal__actions">
+      <button class="logout-modal__btn logout-modal__btn--confirm" (click)="confirmLogout()">Đăng xuất</button>
+      <button class="logout-modal__btn logout-modal__btn--cancel" (click)="closeLogoutModal()">Đóng</button>
+    </div>
+  </div>
+</div>
+}

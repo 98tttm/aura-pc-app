@@ -1,0 +1,140 @@
+@if (loading()) {
+  <div class="loading-container">
+    <div class="skeleton skeleton--title" style="width: 200px"></div>
+    <div class="detail-grid" style="margin-top: 1.5rem">
+      <div class="card">
+        <div class="skeleton skeleton--avatar-lg"></div>
+        <div class="skeleton skeleton--text" style="width: 50%; margin-top: 1rem"></div>
+        <div class="skeleton skeleton--text" style="width: 30%; margin-top: 0.5rem"></div>
+      </div>
+      <div class="card">
+        <div class="skeleton skeleton--text" style="width: 40%"></div>
+        <div class="skeleton skeleton--text" style="width: 60%; margin-top: 1rem"></div>
+      </div>
+    </div>
+  </div>
+} @else if (error()) {
+  <div class="alert-error">{{ error() }}</div>
+} @else if (user(); as u) {
+  <div class="page-header">
+    <div>
+      <a routerLink="/users" class="back-link">&larr; Quay lại</a>
+      <h2>Chi tiết khách hàng</h2>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <!-- User Profile -->
+    <div class="card profile-card">
+      <div class="profile-header">
+        <div class="profile-avatar">{{ getInitial() }}</div>
+        <div>
+          <h3 class="profile-name">{{ getUserName() }}</h3>
+          <p class="profile-phone">{{ u.phoneNumber }}</p>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <span class="profile-stat__value">{{ u.orderCount || 0 }}</span>
+          <span class="profile-stat__label">Đơn hàng</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat__value">{{ u.totalSpent | number:'1.0-0' }}đ</span>
+          <span class="profile-stat__label">Đã chi tiêu</span>
+        </div>
+      </div>
+
+      <div class="profile-info">
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span>{{ u.email || '-' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Giới tính</span>
+          <span>{{ u.profile?.gender || '-' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Ngày sinh</span>
+          <span>{{ u.profile?.dateOfBirth ? (u.profile?.dateOfBirth | date:'dd/MM/yyyy') : '-' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Tham gia</span>
+          <span>{{ u.createdAt | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Đăng nhập cuối</span>
+          <span>{{ u.lastLogin ? (u.lastLogin | date:'dd/MM/yyyy HH:mm') : 'Chưa' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Addresses -->
+    <div class="card">
+      <h3 class="card__title">Địa chỉ ({{ u.addresses?.length || 0 }})</h3>
+      @for (addr of u.addresses; track addr._id) {
+        <div class="address-item">
+          <div class="address-item__header">
+            <span class="address-item__label">{{ addr.label }}</span>
+            @if (addr.isDefault) {
+              <span class="badge badge--delivered">Mặc định</span>
+            }
+          </div>
+          <p>{{ addr.fullName }} - {{ addr.phone }}</p>
+          <p class="text-muted">{{ addr.address }}, {{ addr.ward }}, {{ addr.district }}, {{ addr.city }}</p>
+        </div>
+      } @empty {
+        <div class="empty-state" style="padding: 1.5rem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span>Chưa có địa chỉ</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Recent Orders -->
+  <div class="card" style="margin-top: 1.25rem">
+    <h3 class="card__title">Đơn hàng gần đây</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Mã đơn</th>
+          <th>Tổng</th>
+          <th>Trạng thái</th>
+          <th>Ngày tạo</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (order of u.recentOrders; track order._id) {
+          <tr>
+            <td><a [routerLink]="['/orders', order.orderNumber]" class="link">{{ order.orderNumber }}</a></td>
+            <td class="text-bold">{{ order.total | number:'1.0-0' }}đ</td>
+            <td><span class="badge" [class]="'badge--' + order.status">{{ getStatusLabel(order.status) }}</span></td>
+            <td class="text-muted">{{ order.createdAt | date:'dd/MM/yyyy' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="empty-state-cell">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24">
+                  <rect x="2" y="3" width="20" height="18" rx="2"/>
+                </svg>
+                <span>Chưa có đơn hàng</span>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <div class="empty-state" style="padding: 3rem">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32">
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+    </svg>
+    <span>Không tìm thấy khách hàng</span>
+    <a routerLink="/users" class="btn btn--outline btn--sm">Quay lại danh sách</a>
+  </div>
+}
